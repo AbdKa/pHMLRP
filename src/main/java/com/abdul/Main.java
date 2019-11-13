@@ -15,6 +15,7 @@ public class Main {
 
         PHMLRP bound = null;
         int maxCost = 0;
+        int maxCostWithoutMinEdge = 0;
 
         for (int i = 0; i < 1; i++) {
             PHMLRP phmlrp = new PHMLRP(params.getNumNodes(), params.getNumHubs(), params.getNumVehicles(),
@@ -22,10 +23,14 @@ public class Main {
             phmlrp.randomSolution();
 
             final int cost = phmlrp.cost();
+            final int costWithoutMinEdge = phmlrp.costWithoutMinEdge();
 
             if (cost > maxCost) {
                 bound = phmlrp;
                 maxCost = cost;
+            }
+            if (costWithoutMinEdge > maxCostWithoutMinEdge) {
+                maxCostWithoutMinEdge = costWithoutMinEdge;
             }
         }
 
