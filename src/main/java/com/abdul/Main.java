@@ -17,12 +17,13 @@ public class Main {
         int maxCost = 0;
 
         for (int i = 0; i < 1; i++) {
-            PHMLRP phmlrp = new PHMLRP(params.getNumNodes(), params.getNumHubs(), params.getNumVehicles());
+            PHMLRP phmlrp = new PHMLRP(params.getNumNodes(), params.getNumHubs(), params.getNumVehicles(),
+                    params.getCollectionCostCFactor(), params.getDistributionCostCFactor(), params.getHubToHubCFactor());
             phmlrp.randomSolution();
 
             final int cost = phmlrp.cost();
 
-            if(cost > maxCost) {
+            if (cost > maxCost) {
                 bound = phmlrp;
                 maxCost = cost;
             }

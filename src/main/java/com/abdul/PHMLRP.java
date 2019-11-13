@@ -8,13 +8,18 @@ public class PHMLRP {
     private int maxCost = 0;
     private final int numNodes, numHubs, numVehiclesPerHub;
     private int[] hubsArr;
+    private final float collectionCostCFactor, distributionCostCFactor, hubToHubCFactor;
     private ArrayList<List<Integer>> vehiclesList;
     private boolean[] isVisitedCity;
 
-    public PHMLRP(int numNodes, int numHubs, int numVehicles) {
+    public PHMLRP(int numNodes, int numHubs, int numVehicles,
+                  float collectionCostCFactor, float distributionCostCFactor, float hubToHubCFactor) {
         this.numNodes = numNodes;
         this.numHubs = numHubs;
         this.numVehiclesPerHub = numVehicles;
+        this.collectionCostCFactor = collectionCostCFactor;
+        this.distributionCostCFactor = distributionCostCFactor;
+        this.hubToHubCFactor = hubToHubCFactor;
         hubsArr = new int[numHubs];
         vehiclesList = new ArrayList<List<Integer>>();
         isVisitedCity = new boolean[numNodes];
@@ -30,27 +35,6 @@ public class PHMLRP {
         // 3- distribute non-hubs on the vehicles
         assignNonHubsToVehicles();
     }
-
-    /**
-     * @return maxCost of the current vehicles list
-     */
-    /*public int maxCost() {
-        int maxCost = 0;
-        // loop on the vehicles routes
-        for (int i = 0; i < numHubs * numVehiclesPerHub; i++) {
-            // maxCost between a hub and first node in a vehicle's route
-            maxCost += getCost(hubsArr[i / numVehiclesPerHub], vehiclesList.get(i).get(0));
-            // loop on a vehicle's list and calculating the maxCost within the route
-            for (int j = 0; j < vehiclesList.get(i).size() - 1; j++) {
-                maxCost += getCost(vehiclesList.get(i).get(j), vehiclesList.get(i).get(j + 1));
-            }
-            // the maxCost between the last city in a route (vehicle's list) and its hub
-            int lastCity = vehiclesList.get(i).get(vehiclesList.get(i).size() - 1);
-            maxCost += getCost(lastCity, hubsArr[i / numVehiclesPerHub]);
-        }
-        this.maxCost = maxCost;
-        return maxCost;
-    }*/
 
     /**
      * Getting the distance
@@ -119,36 +103,17 @@ public class PHMLRP {
     }
 
     int cost() {
+        int[] collectionCostArr = new int[numHubs * numVehiclesPerHub];
         int[] distributionCostArr = new int[numHubs * numVehiclesPerHub];
-        // calculate distribution costs for vehicles
-        for (int h = 0; h < numHubs; h++) {
-            System.out.printf("Hub %d:\n", h);
-            for (int i = h * numVehiclesPerHub; i < ((h + 1) * numVehiclesPerHub); i++) {
-                int collectionCost = calculateCollectionCost(h, i);
-                distributionCostArr[i] = calculateDistributionCost(h, i);
-                System.out.printf("\tVehicle %d:\tCollection Cost: %d, Distribution Cost: %d\n",
-                        i, collectionCost, distributionCostArr[i]);
-            }
-        }
-
-        System.out.println();
+        fillInCollectionAndDistributionCostArrAndPrint(collectionCostArr, distributionCostArr);
 
         ArrayList<String> tempStrArr = new ArrayList<String>();
         // loop on the hubs
         for (int h = 0; h < numHubs; h++) {
-
-//            System.out.println();
-//            System.out.println("Hub " + h + ": ");
-
             int cost;
-            // loop on vehicles in a hub
+            // loop through vehicles in a hub
             for (int i = h * numVehiclesPerHub; i < ((h + 1) * numVehiclesPerHub); i++) {
-
-//                System.out.print("Vehicle " + i + ": ");
-
-                int collectionCost = calculateCollectionCost(h, i);
-
-//                System.out.println("collectionCost: " + collectionCost);
+                int collectionCost = collectionCostArr[i];
 
                 // loop on other vehicles in the same hub
                 for (int ii = h * numVehiclesPerHub; ii < ((h + 1) * numVehiclesPerHub); ii++) {
@@ -156,12 +121,7 @@ public class PHMLRP {
                     if (i == ii) continue;
 
                     int distributionCost = distributionCostArr[ii];
-
-//                    System.out.println("distributionCost of vehicle " + ii + ": " + distributionCost);
-
                     cost = collectionCost + distributionCost;
-
-//                    System.out.println("cost to vehicle " + ii + ": " + cost);
 
                     if (cost > maxCost) {
                         maxCost = cost;
@@ -174,7 +134,7 @@ public class PHMLRP {
                     if (h == hh) continue;
 
                     // cost between hubs
-                    int betweenHubs = getCost(hubsArr[h], hubsArr[hh]);
+                    int betweenHubs = Math.round(getCost(hubsArr[h], hubsArr[hh]) * hubToHubCFactor);
 
                     if (h < hh && !tempStrArr.contains(h + "" + hh)) {
                         tempStrArr.add(h + "" + hh);
@@ -185,12 +145,7 @@ public class PHMLRP {
                     for (int ii = hh * numVehiclesPerHub; ii < ((hh + 1) * numVehiclesPerHub); ii++) {
 
                         int distributionCost = distributionCostArr[ii];
-
-//                        System.out.println("distributionCost to vehicle " + ii + ": " + distributionCost);
-
                         cost = collectionCost + betweenHubs + distributionCost;
-
-//                        System.out.println("cost to vehicle " + ii + ": " + cost);
 
                         if (cost > maxCost) {
                             maxCost = cost;
@@ -203,6 +158,21 @@ public class PHMLRP {
         System.out.println();
         System.out.println("maxCost is: " + maxCost);
         return maxCost;
+    }
+
+    private void fillInCollectionAndDistributionCostArrAndPrint(int[] collectionCostArr, int[] distributionCostArr) {
+        // calculate collection and distribution costs for vehicles and print them
+        for (int h = 0; h < numHubs; h++) {
+            System.out.printf("Hub %d:\n", h);
+            for (int i = h * numVehiclesPerHub; i < ((h + 1) * numVehiclesPerHub); i++) {
+                collectionCostArr[i] = Math.round(calculateCollectionCost(h, i) * collectionCostCFactor);
+                distributionCostArr[i] = Math.round(calculateDistributionCost(h, i) * distributionCostCFactor);
+                System.out.printf("\tVehicle %d:\tCollection Cost: %d, Distribution Cost: %d\n",
+                        i, collectionCostArr[i], distributionCostArr[i]);
+            }
+        }
+
+        System.out.println();
     }
 
     private int calculateDistributionCost(int h, int v) {
@@ -227,67 +197,6 @@ public class PHMLRP {
         collectionCost += getCost(lastCityWithinVehicle, hubsArr[h]);
         return collectionCost;
     }
-
-    /*private void assignNonHubsToVehicles() {
-      Dividing nodes on the hubs and vehicles
-
-        // Per hub calculations
-        int nodesPerHubCount = (numNodes - numHubs) / numHubs;
-        int remainingNodesPerHub = (numNodes - numHubs) % numHubs;
-        int firstHubNodesCount = nodesPerHubCount + remainingNodesPerHub;
-
-        // Per vehicle calculations
-        int nodesPerVehicleCount = nodesPerHubCount / numVehiclesPerHub;
-        int remainingNodesPerVehicle = nodesPerHubCount % numVehiclesPerHub;
-        int firstVehicleNodesCount = nodesPerVehicleCount + remainingNodesPerVehicle;
-
-        // Calculations for the first hub
-        int firstHubNodesPerVehicleCount = firstHubNodesCount / numVehiclesPerHub;
-        int remainingFirstHubNodePerVehicle = firstHubNodesCount % numVehiclesPerHub;
-        int firstHubFirstVehicleNodesCount = firstHubNodesPerVehicleCount + remainingFirstHubNodePerVehicle;
-
-        // Assigning non-hub nodes to vehicles
-        assignNodesToVehicles(nodesPerVehicleCount, firstVehicleNodesCount,
-                firstHubNodesPerVehicleCount, firstHubFirstVehicleNodesCount);
-    } */
-
-    /*private void assignNodesToVehicles(int nodesPerVehicleCount, int firstVehicleNodesCount,
-                                       int firstHubNodesPerVehicleCount, int firstHubFirstVehicleNodesCount) {
-        // Filling in the vehicles lists by nodes randomly
-         First Hub
-        // The first vehicle in the first hub
-        fillVehiclesLists(vehiclesList.get(0), firstHubFirstVehicleNodesCount);
-        // The rest of vehicles in the first hub
-        for (int i = 1; i < numVehiclesPerHub; i++) {
-            fillVehiclesLists(vehiclesList.get(i), firstHubNodesPerVehicleCount);
-        }
-
-         Rest of hubs
-        // The first vehicle in each hub
-        for (int i = 1; i < numHubs; i++) {
-            int firstVehicleIdx = i * numVehiclesPerHub;
-            fillVehiclesLists(vehiclesList.get(firstVehicleIdx), firstVehicleNodesCount);
-        }
-        // The rest of vehicles in each hub
-        for (int i = 1; i < numHubs; i++) {
-            for (int j = i * numVehiclesPerHub + 1; j < numVehiclesPerHub * (i + 1); j++) {
-                fillVehiclesLists(vehiclesList.get(j), nodesPerVehicleCount);
-            }
-        }
-    }*/
-
-    /*private void fillVehiclesLists(List<Integer> arr, int length) {
-        for (int i = 0; i < length; i++) {
-            Random random = new Random();
-            int nodeNum = random.nextInt(numNodes);
-            if (isVisitedCity[nodeNum]) {
-                i--;
-                continue;
-            }
-            arr.add(i, nodeNum);
-            isVisitedCity[nodeNum] = true;
-        }
-    }*/
 
     /**
      * Prints the resulted hubs with their vehicles' routes

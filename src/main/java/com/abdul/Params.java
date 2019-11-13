@@ -13,6 +13,18 @@ public interface Params {
     @Option(description = "number of vehicles per hub", shortName = "v", longName = "vehicles", defaultValue = "1")
     int getNumVehicles();
 
+    @Option(description = "collection cost coefficient factor", shortName = "cc", longName = "collectionCost",
+            defaultValue = "1.0")
+    float getCollectionCostCFactor();
+
+    @Option(description = "distribution cost coefficient factor", shortName = "dc", longName = "distributionCost",
+            defaultValue = "1.0")
+    float getDistributionCostCFactor();
+
+    @Option(description = "hub-to-hub coefficient factor", shortName = "hh", longName = "hobToHubCost",
+            defaultValue = "1.0")
+    float getHubToHubCFactor();
+
     @Option(description = "use city names when displaying/printing", shortName = "ve", longName = "verbose")
     boolean getVerbose();
 }
