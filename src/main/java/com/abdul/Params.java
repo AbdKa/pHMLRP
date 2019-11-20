@@ -13,11 +13,11 @@ public interface Params {
     @Option(description = "number of vehicles per hub", shortName = "v", longName = "vehicles", defaultValue = "1")
     int getNumVehicles();
 
-    @Option(description = "collection cost coefficient factor", shortName = "cc", longName = "collectionCost",
+    @Option(description = "collection calculateCost coefficient factor", shortName = "cc", longName = "collectionCost",
             defaultValue = "1.0")
     float getCollectionCostCFactor();
 
-    @Option(description = "distribution cost coefficient factor", shortName = "dc", longName = "distributionCost",
+    @Option(description = "distribution calculateCost coefficient factor", shortName = "dc", longName = "distributionCost",
             defaultValue = "1.0")
     float getDistributionCostCFactor();
 

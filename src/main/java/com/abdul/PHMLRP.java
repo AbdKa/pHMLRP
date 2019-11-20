@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.Random;
 
 public class PHMLRP {
-    private int maxCost, maxNonMinEdgeCost = 0;
+    private int maxCost, maxNonMinEdgeCost, maxCostAfterOperation = 0;
     private final int numNodes, numHubs, numVehiclesPerHub;
     private int[] hubsArr;
     private final float collectionCostCFactor, distributionCostCFactor, hubToHubCFactor;
@@ -28,12 +28,24 @@ public class PHMLRP {
         }
     }
 
-    public void randomSolution() {
+    void randomSolution() {
         // 1- pick hubs randomly
         pickHubs();
         // 2- assign non-hub nodes to hubs randomly
         // 3- distribute non-hubs on the vehicles
         assignNonHubsToVehicles();
+    }
+
+    int getMaxCost() {
+        return maxCost;
+    }
+
+    int[] getHubsArr() {
+        return hubsArr;
+    }
+
+    ArrayList<List<Integer>> getVehiclesList() {
+        return vehiclesList;
     }
 
     /**
@@ -43,7 +55,7 @@ public class PHMLRP {
      * @param node2 to node2
      * @return the distance as maxCost
      */
-    private int getCost(int node1, int node2) {
+    private int getDistance(int node1, int node2) {
         return TurkishNetwork.distance[node1][node2];
     }
 
@@ -102,7 +114,7 @@ public class PHMLRP {
         }
     }
 
-    int cost() {
+    int calculateCost(boolean isFromOperation) {
         int[] collectionCostArr = new int[numHubs * numVehiclesPerHub];
         int[] distributionCostArr = new int[numHubs * numVehiclesPerHub];
         fillInCollectionAndDistributionCostArrAndPrint(collectionCostArr, distributionCostArr);
@@ -123,8 +135,14 @@ public class PHMLRP {
                     int distributionCost = distributionCostArr[ii];
                     cost = collectionCost + distributionCost;
 
-                    if (cost > maxCost) {
-                        maxCost = cost;
+                    if (isFromOperation) {
+                        if (cost > maxCostAfterOperation) {
+                            maxCostAfterOperation = cost;
+                        }
+                    } else {
+                        if (cost > maxCost) {
+                            maxCost = cost;
+                        }
                     }
                 }
 
@@ -133,8 +151,8 @@ public class PHMLRP {
                     // skipping current hub
                     if (h == hh) continue;
 
-                    // cost between hubs
-                    int betweenHubs = Math.round(getCost(hubsArr[h], hubsArr[hh]) * hubToHubCFactor);
+                    // calculateCost between hubs
+                    int betweenHubs = Math.round(getDistance(hubsArr[h], hubsArr[hh]) * hubToHubCFactor);
 
                     if (h < hh && !tempStrArr.contains(h + "" + hh)) {
                         tempStrArr.add(h + "" + hh);
@@ -147,16 +165,27 @@ public class PHMLRP {
                         int distributionCost = distributionCostArr[ii];
                         cost = collectionCost + betweenHubs + distributionCost;
 
-                        if (cost > maxCost) {
-                            maxCost = cost;
+                        if (isFromOperation) {
+                            if (cost > maxCostAfterOperation) {
+                                maxCostAfterOperation = cost;
+                            }
+                        } else {
+                            if (cost > maxCost) {
+                                maxCost = cost;
+                            }
                         }
                     }
                 }
             }
         }
 
+        System.out.println("maxCostAfterOperation: " + maxCostAfterOperation);
+        if (isFromOperation && maxCost > maxCostAfterOperation) {
+            maxCost = maxCostAfterOperation;
+            maxCostAfterOperation = 0;
+        }
+
         System.out.println();
-        System.out.println("maxCost is: " + maxCost);
         return maxCost;
     }
 
@@ -168,27 +197,27 @@ public class PHMLRP {
             // loop through vehicles in a hub
             for (int i = h * numVehiclesPerHub; i < ((h + 1) * numVehiclesPerHub); i++) {
                 int minEdgeFirstNode = getMinEdgeFirstNode(h, i);
-                System.out.println(minEdgeFirstNode);
+//                System.out.println(minEdgeFirstNode);
                 cost = getCollectionAndDistributionCostNoMinEdge(h, i, minEdgeFirstNode);
-                System.out.println("Vehicle " + i + " costNoMin: " + cost);
+//                System.out.println("Vehicle " + i + " costNoMin: " + cost);
                 if (cost > maxNonMinEdgeCost) {
                     maxNonMinEdgeCost = cost;
                 }
             }
         }
 
-        System.out.println();
-        System.out.println("Max Cost without the minimum edge is: " + maxNonMinEdgeCost);
+//        System.out.println();
+//        System.out.println("Max Cost without the minimum edge is: " + maxNonMinEdgeCost);
         return maxNonMinEdgeCost;
     }
 
     private int getMinEdgeFirstNode(int h, int v) {
         // between a hub and first node in a vehicle list
         int minEdgeFirstNode = hubsArr[h];
-        int minEdge = getCost(hubsArr[h], vehiclesList.get(v).get(0));
-        // loop on a vehicle's list and calculating the distribution cost
+        int minEdge = getDistance(hubsArr[h], vehiclesList.get(v).get(0));
+        // loop on a vehicle's list and calculating the distribution calculateCost
         for (int j = 0; j < vehiclesList.get(v).size() - 1; j++) {
-            int edgeCost = getCost(vehiclesList.get(v).get(j), vehiclesList.get(v).get(j + 1));
+            int edgeCost = getDistance(vehiclesList.get(v).get(j), vehiclesList.get(v).get(j + 1));
             if (edgeCost < minEdge) {
                 minEdge = edgeCost;
                 minEdgeFirstNode = vehiclesList.get(v).get(j);
@@ -196,13 +225,13 @@ public class PHMLRP {
         }
 
         int lastCityWithinVehicle = vehiclesList.get(v).get(vehiclesList.get(v).size() - 1);
-        // the collection cost between the last city in a route (vehicle's list) and its hub
-        int lastEdge = getCost(lastCityWithinVehicle, hubsArr[h]);
+        // the collection calculateCost between the last city in a route (vehicle's list) and its hub
+        int lastEdge = getDistance(lastCityWithinVehicle, hubsArr[h]);
         if (lastEdge < minEdge) {
             minEdgeFirstNode = lastCityWithinVehicle;
         }
 
-            return minEdgeFirstNode;
+        return minEdgeFirstNode;
     }
 
     private void fillInCollectionAndDistributionCostArrAndPrint(int[] collectionCostArr, int[] distributionCostArr) {
@@ -223,23 +252,23 @@ public class PHMLRP {
     private int calculateDistributionCost(int h, int v) {
         int distributionCost = 0;
         // between a hub and first node in a vehicle list
-        distributionCost += getCost(hubsArr[h], vehiclesList.get(v).get(0));
-        // loop on a vehicle's list and calculating the distribution cost
+        distributionCost += getDistance(hubsArr[h], vehiclesList.get(v).get(0));
+        // loop on a vehicle's list and calculating the distribution calculateCost
         for (int j = 0; j < vehiclesList.get(v).size() - 1; j++) {
-            distributionCost += getCost(vehiclesList.get(v).get(j), vehiclesList.get(v).get(j + 1));
+            distributionCost += getDistance(vehiclesList.get(v).get(j), vehiclesList.get(v).get(j + 1));
         }
         return distributionCost;
     }
 
     private int calculateCollectionCost(int h, int v) {
         int collectionCost = 0;
-        // loop on a vehicle's list and calculating the collection cost
+        // loop on a vehicle's list and calculating the collection calculateCost
         for (int j = 0; j < vehiclesList.get(v).size() - 1; j++) {
-            collectionCost += getCost(vehiclesList.get(v).get(j), vehiclesList.get(v).get(j + 1));
+            collectionCost += getDistance(vehiclesList.get(v).get(j), vehiclesList.get(v).get(j + 1));
         }
-        // the collection cost between the last city in a route (vehicle's list) and its hub
+        // the collection calculateCost between the last city in a route (vehicle's list) and its hub
         int lastCityWithinVehicle = vehiclesList.get(v).get(vehiclesList.get(v).size() - 1);
-        collectionCost += getCost(lastCityWithinVehicle, hubsArr[h]);
+        collectionCost += getDistance(lastCityWithinVehicle, hubsArr[h]);
         return collectionCost;
     }
 
@@ -252,33 +281,71 @@ public class PHMLRP {
         if (hubsArr[h] != minEdgeFirstNode) {
             // if first edge is not the minimum
             // between a hub and first node in a vehicle list
-            collectionCost += getCost(hubsArr[h], vehiclesList.get(v).get(0));
-            // loop on a vehicle's list and calculating the collection cost
+            collectionCost += getDistance(hubsArr[h], vehiclesList.get(v).get(0));
+            // loop on a vehicle's list and calculating the collection calculateCost
             for (int j = 0; j < vehiclesList.get(v).size() - 1; j++) {
-                distributionStartIndex = j+1;
+                distributionStartIndex = j + 1;
                 if (vehiclesList.get(v).get(j) == minEdgeFirstNode) {
                     break;
                 }
-                collectionCost += getCost(vehiclesList.get(v).get(j), vehiclesList.get(v).get(j + 1));
+                collectionCost += getDistance(vehiclesList.get(v).get(j), vehiclesList.get(v).get(j + 1));
             }
         }
 
 
-        // loop on a vehicle's list and calculating the distribution cost
+        // loop on a vehicle's list and calculating the distribution calculateCost
         for (int j = distributionStartIndex; j < vehiclesList.get(v).size() - 1; j++) {
-            distributionCost += getCost(vehiclesList.get(v).get(j), vehiclesList.get(v).get(j + 1));
+            distributionCost += getDistance(vehiclesList.get(v).get(j), vehiclesList.get(v).get(j + 1));
         }
         int lastCityWithinVehicle = vehiclesList.get(v).get(vehiclesList.get(v).size() - 1);
         if (lastCityWithinVehicle != minEdgeFirstNode) {
             // if last edge is not the minimum
-            // the cost between the last node in a route (vehicle's list) and its hub
-            distributionCost += getCost(lastCityWithinVehicle, hubsArr[h]);
+            // the calculateCost between the last node in a route (vehicle's list) and its hub
+            distributionCost += getDistance(lastCityWithinVehicle, hubsArr[h]);
         }
 
         collectionCost = Math.round(collectionCost * collectionCostCFactor);
         distributionCost = Math.round(distributionCost * distributionCostCFactor);
 
         return collectionCost + distributionCost;
+    }
+
+    void randomOperation() {
+        // TODO: Ask?? the maxCost will change depending on the new construction of the routes,
+        //  so shall we change only the route that gives the maxCost or applying the operations on all the routes??
+        // TODO: Ask?? In a specific operation, if the randomly selected route does not satisfy our criteria,
+        //  shall we reselect another one or just abort the operation then randomly select a new operation.
+        Random random = new Random();
+//        int randOpr = random.nextInt(7);
+        int randOpr = 5;
+
+        Operations operations = new Operations(this);
+
+        switch (randOpr) {
+            case 0:
+                operations.insertNodeInRoute();
+                break;
+            case 1:
+                operations.insertNodeBetweenRoutes();
+                break;
+            case 2:
+                operations.swapNodeInRoute();
+                break;
+            case 3:
+                operations.swapNodeWithinRoutes();
+                break;
+            case 4:
+                operations.edgeOpt();
+                break;
+            case 5:
+                operations.swapHubWithNode();
+                break;
+            case 6:
+                operations.twoOptAlgorithm();
+                break;
+        }
+
+        print(false);
     }
 
     /**
@@ -309,11 +376,11 @@ public class PHMLRP {
             }
             System.out.println();
         }
-        Bounds bounds = new Bounds();
-        int bound = bounds.getBound(numNodes + "." + numHubs + "." + numVehiclesPerHub);
+//        Bounds bounds = new Bounds();
+//        int bound = bounds.getBound(numNodes + "." + numHubs + "." + numVehiclesPerHub);
         System.out.println("**Total maxCost is " + this.maxCost);
         System.out.println("**Total maxNonMinEdgeCost is " + this.maxNonMinEdgeCost);
-        System.out.println("**The bound is " + bound);
+//        System.out.println("**The bound is " + bound);
         System.out.println();
     }
 }
