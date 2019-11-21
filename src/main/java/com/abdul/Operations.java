@@ -124,6 +124,9 @@ class Operations {
     }
 
     void swapNodeWithinRoutes() {
+        // if we have less than 2 routes, return.
+        if (phmlrp.getVehiclesList().size() < 2) return;
+
         int currentCost = phmlrp.getMaxCost();
 
         Random random = new Random();
@@ -158,6 +161,47 @@ class Operations {
     }
 
     void edgeOpt() {
+        // if we have less than 2 routes, return.
+        if (phmlrp.getVehiclesList().size() < 2) return;
+
+        int currentCost = phmlrp.getMaxCost();
+
+        Random random = new Random();
+        // picking two routes randomly
+        int randomRouteIdx1 = random.nextInt(phmlrp.getVehiclesList().size());
+        int randomRouteIdx2 = random.nextInt(phmlrp.getVehiclesList().size());
+
+        // if number of nodes in the first route is less than 3, we cannot remove any edge.
+        if (phmlrp.getVehiclesList().get(randomRouteIdx1).size() < 3) return;
+
+        while (randomRouteIdx1 == randomRouteIdx2) {
+            // while the two randomly selected routes are the same, re-pick another one
+            randomRouteIdx2 = random.nextInt(phmlrp.getVehiclesList().size());
+        }
+
+        // the two random indices, one from each route
+        int randomNodeIdx1 = random.nextInt(phmlrp.getVehiclesList().get(randomRouteIdx1).size()-1);
+        int randomNewIdx = random.nextInt(phmlrp.getVehiclesList().get(randomRouteIdx2).size());
+
+        // removing the node from the first route then add it to the new one
+        int removedNode1 = phmlrp.getVehiclesList().get(randomRouteIdx1).remove(randomNodeIdx1);
+        int removedNode2 = phmlrp.getVehiclesList().get(randomRouteIdx1).remove(randomNodeIdx1);
+        phmlrp.getVehiclesList().get(randomRouteIdx2).add(randomNewIdx, removedNode1);
+        phmlrp.getVehiclesList().get(randomRouteIdx2).add(randomNewIdx+1, removedNode2);
+
+//        System.out.println(" route1: " + randomRouteIdx1 + " nodeIndex: " + randomNodeIdx1 +
+//                " route2: " + randomRouteIdx2 + " newIndex: " + randomNewIdx);
+
+        // get the new cost after the change
+        int newCost = phmlrp.calculateCost(true);
+        if (newCost >= currentCost) {
+            // if the new cost is greater than or equal to the former cost,
+            // remove the node from new index then to add it into its original index
+            removedNode1 = phmlrp.getVehiclesList().get(randomRouteIdx2).remove(randomNewIdx);
+            removedNode2 = phmlrp.getVehiclesList().get(randomRouteIdx2).remove(randomNewIdx);
+            phmlrp.getVehiclesList().get(randomRouteIdx1).add(randomNodeIdx1, removedNode1);
+            phmlrp.getVehiclesList().get(randomRouteIdx1).add(randomNodeIdx1+1, removedNode2);
+        }
     }
 
     void swapHubWithNode() {
@@ -188,5 +232,6 @@ class Operations {
     }
 
     void twoOptAlgorithm() {
+        
     }
 }

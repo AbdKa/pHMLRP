@@ -317,7 +317,7 @@ public class PHMLRP {
         //  shall we reselect another one or just abort the operation then randomly select a new operation.
         Random random = new Random();
 //        int randOpr = random.nextInt(7);
-        int randOpr = 5;
+        int randOpr = 6;
 
         Operations operations = new Operations(this);
 
