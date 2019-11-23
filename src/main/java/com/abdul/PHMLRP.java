@@ -40,6 +40,10 @@ public class PHMLRP {
         return maxCost;
     }
 
+    int getNumVehiclesPerHub() {
+        return numVehiclesPerHub;
+    }
+
     int[] getHubsArr() {
         return hubsArr;
     }
@@ -55,7 +59,7 @@ public class PHMLRP {
      * @param node2 to node2
      * @return the distance as maxCost
      */
-    private int getDistance(int node1, int node2) {
+    int getDistance(int node1, int node2) {
         return TurkishNetwork.distance[node1][node2];
     }
 

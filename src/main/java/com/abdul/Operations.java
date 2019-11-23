@@ -1,6 +1,6 @@
 package com.abdul;
 
-import java.util.Random;
+import java.util.*;
 
 class Operations {
 
@@ -232,6 +232,54 @@ class Operations {
     }
 
     void twoOptAlgorithm() {
+        // TODO: Ask?? Do we include the hub in the route for 2Opt algorithm?
+        //  Should we compare the best cost of the current route only or for the maxCost
+        Random random = new Random();
+        int randomRouteIdx = random.nextInt(phmlrp.getVehiclesList().size());
+        List<Integer> bestRoute = phmlrp.getVehiclesList().get(randomRouteIdx);
+        if (bestRoute.size() < 2) return;
+        int hubIdx = randomRouteIdx/phmlrp.getNumVehiclesPerHub();
+        int hub = phmlrp.getHubsArr()[hubIdx];
+        bestRoute.add(0, hub);
+        int n = bestRoute.size();
+
+        int bestCost = calculateRouteCost(bestRoute);
+        System.out.println("2Opt Hub: " + hub + " Route: " + randomRouteIdx + " First cost: " + bestCost);
+
+        for (int i = 0; i < n-1; i++) {
+            System.out.println(bestRoute.get(i));
+            for (int j = i+1; j < n; j++) {
+                List<Integer> newRoute = new ArrayList<Integer>(bestRoute);
+                Collections.reverse(newRoute.subList(i, j+1));
+                int newCost = calculateRouteCost(newRoute);
+
+                if (newCost < bestCost) {
+                    bestRoute.clear();
+                    bestRoute.addAll(newRoute);
+                    bestCost = newCost;
+                }
+            }
+        }
+
+        System.out.println("2Opt Best cost: " + bestCost);
+
+        phmlrp.getHubsArr()[hubIdx] = bestRoute.remove(0);
+        phmlrp.getVehiclesList().set(randomRouteIdx, bestRoute);
+
+        phmlrp.calculateCost(true);
+    }
+
+    void insertLocalSearch() {
         
+    }
+
+    private int calculateRouteCost(List<Integer> bestRoute) {
+        int cost = 0;
+        // loop on a vehicle's list and calculating the whole cost
+        for (int i = 0; i < bestRoute.size()-1; i++) {
+            cost += phmlrp.getDistance(bestRoute.get(i), bestRoute.get(i + 1));
+        }
+        cost += phmlrp.getDistance(bestRoute.get(bestRoute.size()-1), bestRoute.get(0));
+        return cost;
     }
 }
