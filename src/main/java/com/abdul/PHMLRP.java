@@ -5,14 +5,18 @@ import java.util.List;
 import java.util.Random;
 
 public class PHMLRP {
-    private int maxCost, maxNonMinEdgeCost, maxCostAfterOperation = 0;
+    private int maxCost, maxNonMinEdgeCost, maxCostAfterOperation, maxCostAfterInsertionSearch = 0;
     private final int numNodes, numHubs, numVehiclesPerHub;
     private int[] hubsArr;
     private final float collectionCostCFactor, distributionCostCFactor, hubToHubCFactor;
     private ArrayList<List<Integer>> vehiclesList;
     private boolean[] isVisitedCity;
 
-    public PHMLRP(int numNodes, int numHubs, int numVehicles,
+    enum CostType {
+        NORMAL, OPERATION, INSERTION
+    }
+
+    PHMLRP(int numNodes, int numHubs, int numVehicles,
                   float collectionCostCFactor, float distributionCostCFactor, float hubToHubCFactor) {
         this.numNodes = numNodes;
         this.numHubs = numHubs;
@@ -50,6 +54,15 @@ public class PHMLRP {
 
     ArrayList<List<Integer>> getVehiclesList() {
         return vehiclesList;
+    }
+
+    void setVehiclesList(ArrayList<List<Integer>> vehiclesList) {
+        this.vehiclesList = new ArrayList<List<Integer>>();
+        for (List<Integer> list : vehiclesList) {
+            List<Integer> innerList = new ArrayList<Integer>();
+            innerList.addAll(list);
+            this.vehiclesList.add(innerList);
+        }
     }
 
     /**
@@ -118,7 +131,7 @@ public class PHMLRP {
         }
     }
 
-    int calculateCost(boolean isFromOperation) {
+    int calculateCost(CostType costType) {
         int[] collectionCostArr = new int[numHubs * numVehiclesPerHub];
         int[] distributionCostArr = new int[numHubs * numVehiclesPerHub];
         fillInCollectionAndDistributionCostArrAndPrint(collectionCostArr, distributionCostArr);
@@ -139,15 +152,7 @@ public class PHMLRP {
                     int distributionCost = distributionCostArr[ii];
                     cost = collectionCost + distributionCost;
 
-                    if (isFromOperation) {
-                        if (cost > maxCostAfterOperation) {
-                            maxCostAfterOperation = cost;
-                        }
-                    } else {
-                        if (cost > maxCost) {
-                            maxCost = cost;
-                        }
-                    }
+                    resetMaxCostForEachType(costType, cost);
                 }
 
                 // loop through other hubs
@@ -169,28 +174,41 @@ public class PHMLRP {
                         int distributionCost = distributionCostArr[ii];
                         cost = collectionCost + betweenHubs + distributionCost;
 
-                        if (isFromOperation) {
-                            if (cost > maxCostAfterOperation) {
-                                maxCostAfterOperation = cost;
-                            }
-                        } else {
-                            if (cost > maxCost) {
-                                maxCost = cost;
-                            }
-                        }
+                        resetMaxCostForEachType(costType, cost);
                     }
                 }
             }
         }
 
-        System.out.println("maxCostAfterOperation: " + maxCostAfterOperation);
-        if (isFromOperation && maxCost > maxCostAfterOperation) {
+//        System.out.println("maxCostAfterOperation: " + maxCostAfterOperation);
+        if (costType == CostType.OPERATION && maxCost > maxCostAfterOperation) {
             maxCost = maxCostAfterOperation;
             maxCostAfterOperation = 0;
         }
 
+        if (costType == CostType.INSERTION) {
+            maxCost = maxCostAfterInsertionSearch;
+            maxCostAfterInsertionSearch = 0;
+        }
+
         System.out.println();
         return maxCost;
+    }
+
+    private void resetMaxCostForEachType(CostType costType, int cost) {
+        if (costType == CostType.NORMAL) {
+            if (cost > maxCost) {
+                maxCost = cost;
+            }
+        } else if (costType == CostType.OPERATION) {
+            if (cost > maxCostAfterOperation) {
+                maxCostAfterOperation = cost;
+            }
+        } else if (costType == CostType.INSERTION) {
+            if (cost > maxCostAfterInsertionSearch) {
+                maxCostAfterInsertionSearch = cost;
+            }
+        }
     }
 
     int costWithoutMinEdge() {
@@ -321,7 +339,7 @@ public class PHMLRP {
         //  shall we reselect another one or just abort the operation then randomly select a new operation.
         Random random = new Random();
 //        int randOpr = random.nextInt(7);
-        int randOpr = 6;
+        int randOpr = 7;
 
         Operations operations = new Operations(this);
 
@@ -346,6 +364,9 @@ public class PHMLRP {
                 break;
             case 6:
                 operations.twoOptAlgorithm();
+                break;
+            case 7:
+                operations.insertionLocalSearch();
                 break;
         }
 

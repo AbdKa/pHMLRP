@@ -22,7 +22,7 @@ public class Main {
                     params.getCollectionCostCFactor(), params.getDistributionCostCFactor(), params.getHubToHubCFactor());
             phmlrp.randomSolution();
 
-            final int cost = phmlrp.calculateCost(false);
+            final int cost = phmlrp.calculateCost(PHMLRP.CostType.NORMAL);
             final int costWithoutMinEdge = phmlrp.costWithoutMinEdge();
 
             if (cost > maxCost) {

@@ -4,7 +4,7 @@ import java.util.*;
 
 class Operations {
 
-    PHMLRP phmlrp;
+    private PHMLRP phmlrp;
 
     Operations(PHMLRP phmlrp) {
         this.phmlrp = phmlrp;
@@ -37,7 +37,7 @@ class Operations {
 //                " randomNewIdx: " + randomNewIdx);
 
         // get the new cost after the change
-        int newCost = phmlrp.calculateCost(true);
+        int newCost = phmlrp.calculateCost(PHMLRP.CostType.OPERATION);
         if (newCost >= currentCost) {
             // if the new cost is greater than or equal to the former cost,
             // remove the node from new index then to add it into its original index
@@ -77,7 +77,7 @@ class Operations {
 //                " vehicle2: " + randomRouteIdx2 + " newIndex: " + randomNewIdx);
 
         // get the new cost after the change
-        int newCost = phmlrp.calculateCost(true);
+        int newCost = phmlrp.calculateCost(PHMLRP.CostType.OPERATION);
         if (newCost >= currentCost) {
             // if the new cost is greater than or equal to the former cost,
             // remove the node from new index then to add it into its original index
@@ -113,7 +113,7 @@ class Operations {
 //                " randomNodeIdx2: " + randomNodeIdx2);
 
         // get the new cost after the change
-        int newCost = phmlrp.calculateCost(true);
+        int newCost = phmlrp.calculateCost(PHMLRP.CostType.OPERATION);
         if (newCost >= currentCost) {
             // if the new cost is greater than or equal to the former cost, re-swap the two nodes
             temp = phmlrp.getVehiclesList().get(randomRouteIdx).get(randomNodeIdx1);
@@ -150,7 +150,7 @@ class Operations {
                 " vehicle2: " + randomRouteIdx2 + " newIndex: " + randomNodeIdx2);
 
         // get the new cost after the change
-        int newCost = phmlrp.calculateCost(true);
+        int newCost = phmlrp.calculateCost(PHMLRP.CostType.OPERATION);
         if (newCost >= currentCost) {
             // if the new cost is greater than or equal to the former cost, re-swap the two nodes
             temp = phmlrp.getVehiclesList().get(randomRouteIdx1).get(randomNodeIdx1);
@@ -193,7 +193,7 @@ class Operations {
 //                " route2: " + randomRouteIdx2 + " newIndex: " + randomNewIdx);
 
         // get the new cost after the change
-        int newCost = phmlrp.calculateCost(true);
+        int newCost = phmlrp.calculateCost(PHMLRP.CostType.OPERATION);
         if (newCost >= currentCost) {
             // if the new cost is greater than or equal to the former cost,
             // remove the node from new index then to add it into its original index
@@ -222,7 +222,7 @@ class Operations {
 //        System.out.println(" hubIndex: " + randomHubIdx + " route: " + randomRouteIdx + " newIndex: " + randomNodeIdx);
 
         // get the new cost after the change
-        int newCost = phmlrp.calculateCost(true);
+        int newCost = phmlrp.calculateCost(PHMLRP.CostType.OPERATION);
         if (newCost >= currentCost) {
             // if the new cost is greater than or equal to the former cost, re-swap the hub with the node
             temp = phmlrp.getHubsArr()[randomHubIdx];
@@ -266,11 +266,51 @@ class Operations {
         phmlrp.getHubsArr()[hubIdx] = bestRoute.remove(0);
         phmlrp.getVehiclesList().set(randomRouteIdx, bestRoute);
 
-        phmlrp.calculateCost(true);
+        phmlrp.calculateCost(PHMLRP.CostType.OPERATION);
     }
 
-    void insertLocalSearch() {
-        
+    void insertionLocalSearch() {
+        // copy the original vehicles list
+        ArrayList<List<Integer>> originalVehiclesList = new ArrayList<List<Integer>>();
+        for (List<Integer> list : phmlrp.getVehiclesList()) {
+            List<Integer> innerList = new ArrayList<Integer>();
+            innerList.addAll(list);
+            originalVehiclesList.add(innerList);
+        }
+        // storing minimum cost and node
+        int minCost = Integer.MAX_VALUE;
+        int minNode = Integer.MAX_VALUE;
+
+        for (List<Integer> route : originalVehiclesList) {
+            for (int currentNode : route) {
+                // going through each node recursively, then rebuild the vehicles list
+                // by inserting the current node after each non-hub node in the routes
+                rebuildVehiclesListWithCurrentNode(currentNode, originalVehiclesList);
+                // calculating cost after current node insertion
+                int newCost = phmlrp.calculateCost(PHMLRP.CostType.INSERTION);
+                if (newCost < minCost) {
+                    // if less than the previous cost, change it
+                    minCost = newCost;
+                    minNode = currentNode;
+                }
+//                phmlrp.print(false);
+                // reset the vehicles list to the original one, to be used in the next iteration
+                phmlrp.setVehiclesList(originalVehiclesList);
+            }
+        }
+
+        System.out.println("The minimum insertion node is: " + minNode + " minCost of: " + minCost);
+    }
+
+    private void rebuildVehiclesListWithCurrentNode(int node, ArrayList<List<Integer>> originalVehiclesLists) {
+        for (int i = 0; i < originalVehiclesLists.size(); i++) {
+            for (int j = 0; j < originalVehiclesLists.get(i).size(); j++) {
+                // add the current node before each node
+                phmlrp.getVehiclesList().get(i).add(j*2, node);
+            }
+            // add the current node at the end of the route (after the last node)
+            phmlrp.getVehiclesList().get(i).add(node);
+        }
     }
 
     private int calculateRouteCost(List<Integer> bestRoute) {
