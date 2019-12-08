@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.Random;
 
 public class PHMLRP {
-    private int maxCost, maxNonMinEdgeCost, maxCostAfterOperation, maxCostAfterInsertionSearch = 0;
+    private int maxCost, maxNonMinEdgeCost, maxCostAfterOperation = 0;
     private final int numNodes, numHubs, numVehiclesPerHub;
     private int[] hubsArr;
     private final float collectionCostCFactor, distributionCostCFactor, hubToHubCFactor;
@@ -13,7 +13,7 @@ public class PHMLRP {
     private boolean[] isVisitedCity;
 
     enum CostType {
-        NORMAL, OPERATION, INSERTION
+        NORMAL, OPERATION
     }
 
     PHMLRP(int numNodes, int numHubs, int numVehicles,
@@ -56,14 +56,13 @@ public class PHMLRP {
         return vehiclesList;
     }
 
-    void setVehiclesList(ArrayList<List<Integer>> vehiclesList) {
+    /*void setVehiclesList(ArrayList<List<Integer>> vehiclesList) {
         this.vehiclesList = new ArrayList<List<Integer>>();
         for (List<Integer> list : vehiclesList) {
-            List<Integer> innerList = new ArrayList<Integer>();
-            innerList.addAll(list);
+            List<Integer> innerList = new ArrayList<Integer>(list);
             this.vehiclesList.add(innerList);
         }
-    }
+    }*/
 
     /**
      * Getting the distance
@@ -152,7 +151,7 @@ public class PHMLRP {
                     int distributionCost = distributionCostArr[ii];
                     cost = collectionCost + distributionCost;
 
-                    resetMaxCostForEachType(costType, cost);
+                    setMaxCostForEachType(costType, cost);
                 }
 
                 // loop through other hubs
@@ -165,7 +164,7 @@ public class PHMLRP {
 
                     if (h < hh && !tempStrArr.contains(h + "" + hh)) {
                         tempStrArr.add(h + "" + hh);
-                        System.out.println("betweenHubs " + h + " and " + hh + ": " + betweenHubs);
+//                        System.out.println("betweenHubs " + h + " and " + hh + ": " + betweenHubs);
                     }
 
                     // loop through other hub's vehicles
@@ -174,7 +173,7 @@ public class PHMLRP {
                         int distributionCost = distributionCostArr[ii];
                         cost = collectionCost + betweenHubs + distributionCost;
 
-                        resetMaxCostForEachType(costType, cost);
+                        setMaxCostForEachType(costType, cost);
                     }
                 }
             }
@@ -186,16 +185,11 @@ public class PHMLRP {
             maxCostAfterOperation = 0;
         }
 
-        if (costType == CostType.INSERTION) {
-            maxCost = maxCostAfterInsertionSearch;
-            maxCostAfterInsertionSearch = 0;
-        }
-
-        System.out.println();
+//        System.out.println();
         return maxCost;
     }
 
-    private void resetMaxCostForEachType(CostType costType, int cost) {
+    private void setMaxCostForEachType(CostType costType, int cost) {
         if (costType == CostType.NORMAL) {
             if (cost > maxCost) {
                 maxCost = cost;
@@ -203,10 +197,6 @@ public class PHMLRP {
         } else if (costType == CostType.OPERATION) {
             if (cost > maxCostAfterOperation) {
                 maxCostAfterOperation = cost;
-            }
-        } else if (costType == CostType.INSERTION) {
-            if (cost > maxCostAfterInsertionSearch) {
-                maxCostAfterInsertionSearch = cost;
             }
         }
     }
@@ -259,16 +249,16 @@ public class PHMLRP {
     private void fillInCollectionAndDistributionCostArrAndPrint(int[] collectionCostArr, int[] distributionCostArr) {
         // calculate collection and distribution costs for vehicles and print them
         for (int h = 0; h < numHubs; h++) {
-            System.out.printf("Hub %d:\n", h);
+//            System.out.printf("Hub %d:\n", h);
             for (int i = h * numVehiclesPerHub; i < ((h + 1) * numVehiclesPerHub); i++) {
                 collectionCostArr[i] = Math.round(calculateCollectionCost(h, i) * collectionCostCFactor);
                 distributionCostArr[i] = Math.round(calculateDistributionCost(h, i) * distributionCostCFactor);
-                System.out.printf("\tVehicle %d:\tCollection Cost: %d, Distribution Cost: %d\n",
-                        i, collectionCostArr[i], distributionCostArr[i]);
+//                System.out.printf("\tVehicle %d:\tCollection Cost: %d, Distribution Cost: %d\n",
+//                        i, collectionCostArr[i], distributionCostArr[i]);
             }
         }
 
-        System.out.println();
+//        System.out.println();
     }
 
     private int calculateDistributionCost(int h, int v) {
@@ -339,22 +329,22 @@ public class PHMLRP {
         //  shall we reselect another one or just abort the operation then randomly select a new operation.
         Random random = new Random();
 //        int randOpr = random.nextInt(7);
-        int randOpr = 7;
+        int randOpr = 9;
 
         Operations operations = new Operations(this);
 
         switch (randOpr) {
             case 0:
-                operations.insertNodeInRoute();
+                operations.insertNodeInRoute(-1, -1, -1);
                 break;
             case 1:
-                operations.insertNodeBetweenRoutes();
+                operations.insertNodeBetweenRoutes(-1, -1, -1, -1);
                 break;
             case 2:
-                operations.swapNodeInRoute();
+                operations.swapNodeInRoute(-1, -1, -1);
                 break;
             case 3:
-                operations.swapNodeWithinRoutes();
+                operations.swapNodeWithinRoutes(-1, -1, -1, -1);
                 break;
             case 4:
                 operations.edgeOpt();
@@ -367,6 +357,12 @@ public class PHMLRP {
                 break;
             case 7:
                 operations.insertionLocalSearch();
+                break;
+            case 8:
+                operations.swapLocalSearch();
+                break;
+            case 9:
+                operations.insertTwoNodes();
                 break;
         }
 
