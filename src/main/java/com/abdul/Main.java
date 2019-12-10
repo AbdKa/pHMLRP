@@ -19,7 +19,8 @@ public class Main {
 
         for (int i = 0; i < 1; i++) {
             PHMLRP phmlrp = new PHMLRP(params.getNumNodes(), params.getNumHubs(), params.getNumVehicles(),
-                    params.getCollectionCostCFactor(), params.getDistributionCostCFactor(), params.getHubToHubCFactor());
+                    params.getCollectionCostCFactor(), params.getDistributionCostCFactor(), params.getHubToHubCFactor(),
+                    params.getRemovalPercentage());
             phmlrp.randomSolution();
 
             final int cost = phmlrp.calculateCost(PHMLRP.CostType.NORMAL);

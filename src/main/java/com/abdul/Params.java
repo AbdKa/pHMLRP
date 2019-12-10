@@ -25,6 +25,10 @@ public interface Params {
             defaultValue = "1.0")
     float getHubToHubCFactor();
 
+    @Option(description = "percentage of nodes removal", shortName = "rp", longName = "removalPercentage",
+            defaultValue = "0.2")
+    float getRemovalPercentage();
+
     @Option(description = "use city names when displaying/printing", shortName = "ve", longName = "verbose")
     boolean getVerbose();
 }

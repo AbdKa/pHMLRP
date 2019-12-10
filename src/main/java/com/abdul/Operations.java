@@ -366,6 +366,40 @@ class Operations {
         }
     }
 
+    void nodesRemoveAndGreedyInsert(float removalPercentage) {
+        int allowedNumNodesToRemove = phmlrp.getNumNodes() -
+                phmlrp.getHubsArr().length - phmlrp.getVehiclesList().size();
+        int numNodesToRemove = Math.round(phmlrp.getNumNodes() * removalPercentage);
+//        System.out.println("allowedNumNodesToRemove: " + allowedNumNodesToRemove
+//                + " numNodesToRemove: " + numNodesToRemove);
+        if (numNodesToRemove > allowedNumNodesToRemove) numNodesToRemove = allowedNumNodesToRemove;
+
+        int[] removedNodes = new int[numNodesToRemove];
+        removeNodes(numNodesToRemove, removedNodes);
+
+        int maxCost = phmlrp.getMaxCost();
+
+        for (int i = 0; i < removedNodes.length; i++) {
+            insertRemovedNode(maxCost, removedNodes[i]);
+        }
+    }
+
+    private void removeNodes(int numNodesToRemove, int[] removedNodes) {
+        Random random = new Random();
+
+        for (int i = 0; i < numNodesToRemove; i++) {
+            int randomRoute = random.nextInt(phmlrp.getVehiclesList().size());
+            int routeSize = phmlrp.getVehiclesList().get(randomRoute).size();
+            if (routeSize < 2) {
+                i--;
+                continue;
+            }
+            int randomNode = random.nextInt(routeSize);
+            removedNodes[i] = phmlrp.getVehiclesList().get(randomRoute).remove(randomNode);
+            System.out.println("randomRoute: " + randomRoute + " randomNode: " + randomNode);
+        }
+    }
+
     private void insertAfterEachNode(int routeIdx, int nodeIdx) {
         int counter = 0;
         int bCounter = 0;
@@ -381,6 +415,53 @@ class Operations {
             }
         }
         System.out.println("Route: " + routeIdx + " Node: " + nodeIdx + " Counter: " + counter + " bCounter: " + bCounter);
+    }
+
+    private void insertRemovedNode(int originalMaxCost, int node) {
+        phmlrp.resetMaxCost(originalMaxCost);
+
+        int counter = 0;
+        int bestCost = originalMaxCost;
+        int routeIdx = 0;
+        int index = 0;
+
+        for (int i = 0; i < phmlrp.getVehiclesList().size(); i++) {
+            int newCost = insertNode(i, node, 0);
+            if (newCost < bestCost) {
+                bestCost = newCost;
+                routeIdx = i;
+                index = 0;
+                counter++;
+            }
+            for (int j = 0; j < phmlrp.getVehiclesList().get(i).size(); j++) {
+                // insert the current node before each node
+                newCost = insertNode(i, node, j+1);
+                if (newCost < bestCost) {
+                    bestCost = newCost;
+                    routeIdx = i;
+                    index = j+1;
+                    counter++;
+                }
+            }
+        }
+
+//        System.out.println("Node: " + node + " Counter: " + counter);
+        // adding the node at the index
+        phmlrp.getVehiclesList().get(routeIdx).add(index, node);
+    }
+
+    private int insertNode(int routeIdx, int node, int index) {
+        // adding the node at the index
+        phmlrp.getVehiclesList().get(routeIdx).add(index, node);
+        // get the new cost after the change
+        int newCost = phmlrp.calculateCost(PHMLRP.CostType.OPERATION);
+
+//        phmlrp.print(false);
+
+        // if the new cost is greater than or equal to the former cost,
+        // remove the node from the index
+        phmlrp.getVehiclesList().get(routeIdx).remove(index);
+        return newCost;
     }
 
     private void swapWithEachNode(int routeIdx, int nodeIdx) {

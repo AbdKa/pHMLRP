@@ -8,7 +8,7 @@ public class PHMLRP {
     private int maxCost, maxNonMinEdgeCost, maxCostAfterOperation = 0;
     private final int numNodes, numHubs, numVehiclesPerHub;
     private int[] hubsArr;
-    private final float collectionCostCFactor, distributionCostCFactor, hubToHubCFactor;
+    private final float collectionCostCFactor, distributionCostCFactor, hubToHubCFactor, removalPercentage;
     private ArrayList<List<Integer>> vehiclesList;
     private boolean[] isVisitedCity;
 
@@ -17,13 +17,15 @@ public class PHMLRP {
     }
 
     PHMLRP(int numNodes, int numHubs, int numVehicles,
-                  float collectionCostCFactor, float distributionCostCFactor, float hubToHubCFactor) {
+           float collectionCostCFactor, float distributionCostCFactor, float hubToHubCFactor,
+           float removalPercentage) {
         this.numNodes = numNodes;
         this.numHubs = numHubs;
         this.numVehiclesPerHub = numVehicles;
         this.collectionCostCFactor = collectionCostCFactor;
         this.distributionCostCFactor = distributionCostCFactor;
         this.hubToHubCFactor = hubToHubCFactor;
+        this.removalPercentage = removalPercentage;
         hubsArr = new int[numHubs];
         vehiclesList = new ArrayList<List<Integer>>();
         isVisitedCity = new boolean[numNodes];
@@ -40,8 +42,16 @@ public class PHMLRP {
         assignNonHubsToVehicles();
     }
 
+    int getNumNodes() {
+        return numNodes;
+    }
+
     int getMaxCost() {
         return maxCost;
+    }
+
+    void resetMaxCost(int originalMaxCost) {
+        this.maxCost = originalMaxCost;
     }
 
     int getNumVehiclesPerHub() {
@@ -329,7 +339,7 @@ public class PHMLRP {
         //  shall we reselect another one or just abort the operation then randomly select a new operation.
         Random random = new Random();
 //        int randOpr = random.nextInt(7);
-        int randOpr = 9;
+        int randOpr = 10;
 
         Operations operations = new Operations(this);
 
@@ -363,6 +373,9 @@ public class PHMLRP {
                 break;
             case 9:
                 operations.insertTwoNodes();
+                break;
+            case 10:
+                operations.nodesRemoveAndGreedyInsert(removalPercentage);
                 break;
         }
 
