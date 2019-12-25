@@ -1,16 +1,28 @@
 package com.abdul;
 
+import org.apache.poi.ss.usermodel.CellType;
+import org.apache.poi.ss.usermodel.Header;
+import org.apache.poi.xssf.usermodel.XSSFRow;
+import org.apache.poi.xssf.usermodel.XSSFSheet;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import java.util.stream.LongStream;
 
-public class PHMLRP {
+class PHMLRP {
     private int maxCost, maxNonMinEdgeCost, maxCostAfterOperation = 0;
     private final int numNodes, numHubs, numVehiclesPerHub;
     private int[] hubsArr;
     private final float collectionCostCFactor, distributionCostCFactor, hubToHubCFactor, removalPercentage;
     private ArrayList<List<Integer>> vehiclesList;
     private boolean[] isVisitedCity;
+    private boolean isSimulatedAnnealing = false;
+    private int saOperationCost;
 
     enum CostType {
         NORMAL, OPERATION
@@ -42,6 +54,10 @@ public class PHMLRP {
         assignNonHubsToVehicles();
     }
 
+    void setSimulatedAnnealing(boolean simulatedAnnealing) {
+        isSimulatedAnnealing = simulatedAnnealing;
+    }
+
     int getNumNodes() {
         return numNodes;
     }
@@ -52,6 +68,10 @@ public class PHMLRP {
 
     void resetMaxCost(int originalMaxCost) {
         this.maxCost = originalMaxCost;
+    }
+
+    int getSaOperationCost() {
+        return saOperationCost;
     }
 
     int getNumVehiclesPerHub() {
@@ -66,13 +86,13 @@ public class PHMLRP {
         return vehiclesList;
     }
 
-    /*void setVehiclesList(ArrayList<List<Integer>> vehiclesList) {
+    void resetVehiclesList(ArrayList<List<Integer>> vehiclesList) {
         this.vehiclesList = new ArrayList<List<Integer>>();
         for (List<Integer> list : vehiclesList) {
             List<Integer> innerList = new ArrayList<Integer>(list);
             this.vehiclesList.add(innerList);
         }
-    }*/
+    }
 
     /**
      * Getting the distance
@@ -192,10 +212,13 @@ public class PHMLRP {
 //        System.out.println("maxCostAfterOperation: " + maxCostAfterOperation);
         if (costType == CostType.OPERATION && maxCost > maxCostAfterOperation) {
             maxCost = maxCostAfterOperation;
-            maxCostAfterOperation = 0;
+        }
+        if (isSimulatedAnnealing) {
+            saOperationCost = maxCostAfterOperation;
         }
 
-//        System.out.println();
+        maxCostAfterOperation = 0;
+
         return maxCost;
     }
 
@@ -333,8 +356,6 @@ public class PHMLRP {
     }
 
     void randomOperation() {
-        // TODO: Ask?? the maxCost will change depending on the new construction of the routes,
-        //  so shall we change only the route that gives the maxCost or applying the operations on all the routes??
         // TODO: Ask?? In a specific operation, if the randomly selected route does not satisfy our criteria,
         //  shall we reselect another one or just abort the operation then randomly select a new operation.
         Random random = new Random();
@@ -345,22 +366,22 @@ public class PHMLRP {
 
         switch (randOpr) {
             case 0:
-                operations.insertNodeInRoute(-1, -1, -1);
+                operations.insertNodeInRoute(false, -1, -1, -1);
                 break;
             case 1:
-                operations.insertNodeBetweenRoutes(-1, -1, -1, -1);
+                operations.insertNodeBetweenRoutes(false, -1, -1, -1, -1);
                 break;
             case 2:
-                operations.swapNodeInRoute(-1, -1, -1);
+                operations.swapNodeInRoute(false, -1, -1, -1);
                 break;
             case 3:
-                operations.swapNodeWithinRoutes(-1, -1, -1, -1);
+                operations.swapNodeWithinRoutes(false, -1, -1, -1, -1);
                 break;
             case 4:
-                operations.edgeOpt();
+                operations.edgeOpt(false);
                 break;
             case 5:
-                operations.swapHubWithNode();
+                operations.swapHubWithNode(false);
                 break;
             case 6:
                 operations.twoOptAlgorithm();
@@ -372,7 +393,7 @@ public class PHMLRP {
                 operations.swapLocalSearch();
                 break;
             case 9:
-                operations.insertTwoNodes();
+                operations.insertTwoNodes(false);
                 break;
             case 10:
                 operations.nodesRemoveAndGreedyInsert(removalPercentage);
@@ -380,6 +401,128 @@ public class PHMLRP {
         }
 
         print(false);
+    }
+
+    void deterministicExplore() throws IOException {
+        ArrayList<List<Integer>> initVehiclesList = new ArrayList<List<Integer>>();
+        for (List<Integer> list : vehiclesList) {
+            List<Integer> innerList = new ArrayList<Integer>(list);
+            initVehiclesList.add(innerList);
+        }
+        int initMaxCost = this.maxCost;
+        //Create blank excel workbook
+        XSSFWorkbook workbook = new XSSFWorkbook();
+        //Create a blank sheet
+        XSSFSheet spreadsheet = workbook.createSheet(" PHMLRP Deterministic ");
+        //Create row object
+        XSSFRow row = spreadsheet.createRow(0);
+        createFirstRow(row);
+
+        int numberOfOperations = 9;
+        int numOfIterationForEachOne = 100;
+        for (int i = 0; i < numberOfOperations * numOfIterationForEachOne; i++) {
+            // reset the vehicles list
+            if (i % numOfIterationForEachOne == 0) {
+                resetVehiclesList(initVehiclesList);
+                resetMaxCost(initMaxCost);
+            }
+            // create a row for the excel sheet
+            row = spreadsheet.createRow(i + 1);
+            if (i < numOfIterationForEachOne) {
+                // operation 0
+                doOperation(0, "insertNodeInRoute", row, i);
+            } else if (i < numOfIterationForEachOne * 2) {
+                // operation 1
+                doOperation(1, "insertNodeBetweenRoutes", row, i);
+            } else if (i < numOfIterationForEachOne * 3) {
+                // operation 2
+                doOperation(2, "swapNodeInRoute", row, i);
+            } else if (i < numOfIterationForEachOne * 4) {
+                // operation 3
+                doOperation(3, "swapNodeWithinRoutes", row, i);
+            } else if (i < numOfIterationForEachOne * 5) {
+                // operation 4
+                doOperation(4, "edgeOpt", row, i);
+            } else if (i < numOfIterationForEachOne * 6) {
+                // operation 5
+                doOperation(5, "swapHubWithNode", row, i);
+            } else if (i < numOfIterationForEachOne * 7) {
+                // operation 6
+                doOperation(6, "twoOptAlgorithm", row, i);
+            } else if (i < numOfIterationForEachOne * 8) {
+                // operation 7
+                doOperation(7, "insertTwoNodes", row, i);
+            } else {
+                // operation 8
+                doOperation(8, "nodesRemoveAndGreedyInsert", row, i);
+            }
+        }
+
+        //Write the workbook in file system
+        FileOutputStream out = new FileOutputStream(
+                new File("deterministic_results.xlsx"));
+
+        workbook.write(out);
+        out.close();
+        System.out.println("results.xlsx written successfully");
+    }
+
+    private void createFirstRow(XSSFRow row) {
+        row.createCell(0, CellType.STRING).setCellValue("Operation Name");
+        row.createCell(1, CellType.STRING).setCellValue("Run#");
+        row.createCell(2, CellType.STRING).setCellValue("Difference");
+        row.createCell(3, CellType.STRING).setCellValue("Best Cost");
+        row.createCell(4, CellType.STRING).setCellValue("Elapsed Time (nano)");
+    }
+
+    private void doOperation(int operationNum, String operationName, XSSFRow row, int i) {
+        row.createCell(0, CellType.STRING).setCellValue(operationName);
+        row.createCell(1, CellType.NUMERIC).setCellValue(i + 1);
+        int priorCost = this.maxCost;
+        //operation start time in milliseconds
+        long startTime = System.nanoTime();
+        callOperation(operationNum);
+        //operation end time in milliseconds
+        long endTime = System.nanoTime();
+        //time elapsed
+        int costDifference = priorCost - this.maxCost;
+        row.createCell(2, CellType.NUMERIC).setCellValue(costDifference);
+        row.createCell(3, CellType.NUMERIC).setCellValue(this.maxCost);
+        long elapsed = endTime - startTime;
+        row.createCell(4, CellType.NUMERIC).setCellValue(elapsed);
+    }
+
+    void callOperation(int operationNumber) {
+        Operations operations = new Operations(this);
+        switch (operationNumber) {
+            case 0:
+                operations.insertNodeInRoute(false, -1, -1, -1);
+                break;
+            case 1:
+                operations.insertNodeBetweenRoutes(false, -1, -1, -1, -1);
+                break;
+            case 2:
+                operations.swapNodeInRoute(false, -1, -1, -1);
+                break;
+            case 3:
+                operations.swapNodeWithinRoutes(false, -1, -1, -1, -1);
+                break;
+            case 4:
+                operations.edgeOpt(false);
+                break;
+            case 5:
+                operations.swapHubWithNode(false);
+                break;
+            case 6:
+                operations.twoOptAlgorithm();
+                break;
+            case 7:
+                operations.insertTwoNodes(false);
+                break;
+            case 8:
+                operations.nodesRemoveAndGreedyInsert(removalPercentage);
+                break;
+        }
     }
 
     /**

@@ -3,8 +3,10 @@ package com.abdul;
 import com.lexicalscope.jewel.cli.ArgumentValidationException;
 import com.lexicalscope.jewel.cli.CliFactory;
 
+import java.io.IOException;
+
 public class Main {
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
         Params params;
         try {
             params = CliFactory.parseArguments(Params.class, args);
@@ -39,8 +41,13 @@ public class Main {
             bound.print(params.getVerbose());
         }
 
-        for (int i = 0; i < 1; i++) {
-            bound.randomOperation();
-        }
+        assert bound != null;
+//        SAOperations saOperations = new SAOperations(bound);
+        DeterministicPermutation deterministicOperation = new DeterministicPermutation(bound);
+        deterministicOperation.deterministicOperationOrder();
+
+//        for (int i = 0; i < 1; i++) {
+//            bound.randomOperation();
+//        }
     }
 }
