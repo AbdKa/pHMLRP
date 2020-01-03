@@ -1,7 +1,6 @@
 package com.abdul;
 
 import org.apache.poi.ss.usermodel.CellType;
-import org.apache.poi.ss.usermodel.Header;
 import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
@@ -10,9 +9,9 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
-import java.util.stream.LongStream;
 
 class PHMLRP {
     private int maxCost, maxNonMinEdgeCost, maxCostAfterOperation = 0;
@@ -403,7 +402,8 @@ class PHMLRP {
         print(false);
     }
 
-    void deterministicExplore() throws IOException {
+    void deterministicExplore(XSSFWorkbook workbook, XSSFSheet spreadsheet) throws IOException {
+        int[] initHubsArr = hubsArr.clone();
         ArrayList<List<Integer>> initVehiclesList = new ArrayList<List<Integer>>();
         for (List<Integer> list : vehiclesList) {
             List<Integer> innerList = new ArrayList<Integer>(list);
@@ -411,18 +411,20 @@ class PHMLRP {
         }
         int initMaxCost = this.maxCost;
         //Create blank excel workbook
-        XSSFWorkbook workbook = new XSSFWorkbook();
-        //Create a blank sheet
-        XSSFSheet spreadsheet = workbook.createSheet(" PHMLRP Deterministic ");
-        //Create row object
-        XSSFRow row = spreadsheet.createRow(0);
-        createFirstRow(row);
+//        XSSFWorkbook workbook = new XSSFWorkbook();
+//        //Create a blank sheet
+//        XSSFSheet spreadsheet = workbook.createSheet(" PHMLRP Deterministic ");
+//        //Create row object
+//        XSSFRow row = spreadsheet.createRow(0);
+//        createFirstRow(row);
 
+        XSSFRow row;
         int numberOfOperations = 9;
         int numOfIterationForEachOne = 100;
         for (int i = 0; i < numberOfOperations * numOfIterationForEachOne; i++) {
             // reset the vehicles list
             if (i % numOfIterationForEachOne == 0) {
+                hubsArr = initHubsArr.clone();
                 resetVehiclesList(initVehiclesList);
                 resetMaxCost(initMaxCost);
             }
@@ -456,6 +458,7 @@ class PHMLRP {
                 // operation 8
                 doOperation(8, "nodesRemoveAndGreedyInsert", row, i);
             }
+            printHubsAndRoutesToExcel(row);
         }
 
         //Write the workbook in file system
@@ -464,7 +467,7 @@ class PHMLRP {
 
         workbook.write(out);
         out.close();
-        System.out.println("results.xlsx written successfully");
+        System.out.println("deterministic_results.xlsx written successfully");
     }
 
     private void createFirstRow(XSSFRow row) {
@@ -473,6 +476,22 @@ class PHMLRP {
         row.createCell(2, CellType.STRING).setCellValue("Difference");
         row.createCell(3, CellType.STRING).setCellValue("Best Cost");
         row.createCell(4, CellType.STRING).setCellValue("Elapsed Time (nano)");
+    }
+
+    private void printHubsAndRoutesToExcel(XSSFRow row) {
+        StringBuilder hubs = new StringBuilder();
+        StringBuilder routes = new StringBuilder();
+        for (int hub : hubsArr) {
+            hubs.append(hub).append(", ");
+        }
+        for (List<Integer> route : vehiclesList) {
+            for (int node : route) {
+                routes.append(node).append(", ");
+            }
+            routes.append("; ");
+        }
+        row.createCell(5, CellType.STRING).setCellValue(hubs.toString());
+        row.createCell(6, CellType.STRING).setCellValue(routes.toString());
     }
 
     private void doOperation(int operationNum, String operationName, XSSFRow row, int i) {
