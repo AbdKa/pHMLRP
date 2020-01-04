@@ -24,21 +24,12 @@ class DeterministicPermutation {
         bestPermutationCost = phmlrp.getMaxCost();
     }
 
-    void deterministicOperationOrder() throws IOException {
+    void deterministicOperationOrder(XSSFWorkbook workbook, XSSFSheet spreadsheet) throws IOException {
         initVehiclesList = new ArrayList<List<Integer>>();
         for (List<Integer> list : phmlrp.getVehiclesList()) {
             List<Integer> innerList = new ArrayList<Integer>(list);
             initVehiclesList.add(innerList);
         }
-        //Create blank excel workbook
-        XSSFWorkbook workbook = new XSSFWorkbook();
-        //Create a blank sheet
-        XSSFSheet spreadsheet = workbook.createSheet(" PHMLRP D Order ");
-        //Create row object
-        XSSFRow row = spreadsheet.createRow(0);
-        row.createCell(0, CellType.STRING).setCellValue("Solution#");
-        row.createCell(1, CellType.STRING).setCellValue("Order");
-        row.createCell(2, CellType.STRING).setCellValue("Min Cost");
 
         int numOfSolutions = 30;
         bestPermutations = new Permutation[numOfSolutions];
@@ -49,18 +40,21 @@ class DeterministicPermutation {
             heapPermutation(operationsIndices, numberOfOperations, sol);
             bestPermutationCost = initMaxCost;
         }
+
+        XSSFRow row;
         System.out.println("counter : " + counter);
         for (int i = 0; i < bestPermutations.length; i++) {
-            row = spreadsheet.createRow(i+1);
+            row = spreadsheet.createRow(i + 1);
             row.createCell(0, CellType.NUMERIC).setCellValue(i + 1);
             String orderStr = buildOrderStr(bestPermutations[i].getOperationOrder());
             row.createCell(1, CellType.STRING).setCellValue(orderStr);
             row.createCell(2, CellType.NUMERIC).setCellValue(bestPermutations[i].getCost());
+            bestPermutations[i].printHubsAndRoutesToExcel(row);
         }
 
         //Write the workbook in file system
         FileOutputStream out = new FileOutputStream(
-                new File("deterministic_results.xlsx"));
+                new File("permutation_results.xlsx"));
 
         workbook.write(out);
         out.close();
@@ -130,6 +124,7 @@ class DeterministicPermutation {
     }
 
     private int counter = 0;
+
     private Permutation executePermutation(int[] arr) {
         counter++;
         int iterationsForEachPermutation = 1000;
@@ -144,19 +139,24 @@ class DeterministicPermutation {
                 bestOrder = arr;
             }
         }
+        Permutation permutation = new Permutation(bestOrder, bestCost, phmlrp.getHubsArr(), phmlrp.getVehiclesList());
         phmlrp.resetMaxCost(initMaxCost);
         phmlrp.resetVehiclesList(initVehiclesList);
-        return new Permutation(bestOrder, bestCost);
+        return permutation;
     }
 }
 
 class Permutation {
     private int[] operationOrder;
     private int cost;
+    private int[] hubsArr;
+    private ArrayList<List<Integer>> vehiclesList;
 
-    Permutation(int[] operationOrder, int cost) {
+    Permutation(int[] operationOrder, int cost, int[] hubsArr, ArrayList<List<Integer>> vehiclesList) {
         this.operationOrder = operationOrder;
         this.cost = cost;
+        this.hubsArr = hubsArr.clone();
+        setVehiclesList(vehiclesList);
     }
 
     int[] getOperationOrder() {
@@ -165,5 +165,29 @@ class Permutation {
 
     int getCost() {
         return cost;
+    }
+
+    private void setVehiclesList(ArrayList<List<Integer>> vehiclesList) {
+        this.vehiclesList = new ArrayList<List<Integer>>();
+        for (List<Integer> list : vehiclesList) {
+            List<Integer> innerList = new ArrayList<Integer>(list);
+            this.vehiclesList.add(innerList);
+        }
+    }
+
+    void printHubsAndRoutesToExcel(XSSFRow row) {
+        StringBuilder hubs = new StringBuilder();
+        StringBuilder routes = new StringBuilder();
+        for (int hub : this.hubsArr) {
+            hubs.append(hub).append(", ");
+        }
+        for (List<Integer> route : this.vehiclesList) {
+            for (int node : route) {
+                routes.append(node).append(", ");
+            }
+            routes.append("; ");
+        }
+        row.createCell(3, CellType.STRING).setCellValue(hubs.toString());
+        row.createCell(4, CellType.STRING).setCellValue(routes.toString());
     }
 }

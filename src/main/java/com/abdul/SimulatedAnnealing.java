@@ -6,7 +6,6 @@ import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -58,7 +57,7 @@ class SimulatedAnnealing {
         while (T > minT) {
             row = spreadsheet.createRow(counter);
             for (int i = 0; i < numIterations; i++) {
-                doRandomOperation();
+                int oprationNum = doRandomOperation();
                 newSol = phmlrp.getVehiclesList();
                 int newCost = phmlrp.getSaOperationCost();
                 int difference = min - newCost;
@@ -68,6 +67,7 @@ class SimulatedAnnealing {
                 row.createCell(2, CellType.NUMERIC).setCellValue(newCost);
                 row.createCell(3, CellType.NUMERIC).setCellValue(difference);
                 printHubsAndRoutesToExcel(row);
+                row.createCell(6, CellType.NUMERIC).setCellValue(oprationNum);
 
                 counter++;
 
@@ -119,7 +119,7 @@ class SimulatedAnnealing {
         row.createCell(5, CellType.STRING).setCellValue(routes.toString());
     }
 
-    private void doRandomOperation() {
+    private int doRandomOperation() {
         Random random = new Random();
         int randOpr = random.nextInt(5);
 
@@ -145,5 +145,6 @@ class SimulatedAnnealing {
                 operations.swapHubWithNode(true);
                 break;
         }
+        return randOpr;
     }
 }

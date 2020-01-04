@@ -47,50 +47,59 @@ public class Main {
 
         XSSFWorkbook workbook = new XSSFWorkbook();
         XSSFWorkbook saWorkbook = new XSSFWorkbook();
+        XSSFWorkbook dpWorkbook = new XSSFWorkbook();
 
-        applyAlgorithms(params, 2, 1, workbook, saWorkbook, "10.2.1");
-        applyAlgorithms(params, 2, 2, workbook, saWorkbook, "10.2.2");
-        applyAlgorithms(params, 3, 1, workbook, saWorkbook, "10.3.1");
-        applyAlgorithms(params, 3, 2, workbook, saWorkbook, "10.3.2");
-
-//        DeterministicPermutation deterministicOperation = new DeterministicPermutation(bound);
-//        deterministicOperation.deterministicOperationOrder();
+        applyAlgorithms(params, 2, 1, workbook, saWorkbook, dpWorkbook, "10.2.1");
+        applyAlgorithms(params, 2, 2, workbook, saWorkbook, dpWorkbook, "10.2.2");
+        applyAlgorithms(params, 3, 1, workbook, saWorkbook, dpWorkbook, "10.3.1");
+        applyAlgorithms(params, 3, 2, workbook, saWorkbook, dpWorkbook, "10.3.2");
 
 //        for (int i = 0; i < 1; i++) {
 //            bound.randomOperation();
 //        }
     }
 
-    private static void applyAlgorithms(Params params, int numHubs, int numVehicles, XSSFWorkbook workbook, XSSFWorkbook saWorkbook, String sheetName) throws IOException {
+    private static void applyAlgorithms(Params params, int numHubs, int numVehicles,
+                                        XSSFWorkbook workbook, XSSFWorkbook saWorkbook, XSSFWorkbook dpWorkbook, String sheetName) throws IOException {
         PHMLRP phmlrp = new PHMLRP(10, numHubs, numVehicles,
                 params.getCollectionCostCFactor(), params.getDistributionCostCFactor(), params.getHubToHubCFactor(),
                 params.getRemovalPercentage());
-        phmlrpSolutionAndCost(phmlrp);
+        randomSolutionAndCost(phmlrp);
 
         XSSFSheet spreadsheet = workbook.createSheet(sheetName);
-        XSSFRow row = spreadsheet.createRow(0);
-        createFirstRow(row);
+        createFirstRow(spreadsheet);
         phmlrp.deterministicExplore(workbook, spreadsheet);
 
         // Simulated Annealing
         PHMLRP saPhmlrp = new PHMLRP(10, numHubs, numVehicles,
                 params.getCollectionCostCFactor(), params.getDistributionCostCFactor(), params.getHubToHubCFactor(),
                 params.getRemovalPercentage());
-        phmlrpSolutionAndCost(saPhmlrp);
+        saPhmlrp.setSimulatedAnnealing(true);
+        randomSolutionAndCost(saPhmlrp);
 
         XSSFSheet saSpreadsheet = saWorkbook.createSheet(sheetName);
-        XSSFRow saRow = saSpreadsheet.createRow(0);
-        createSaFirstRow(saRow);
+        createSaFirstRow(saSpreadsheet);
         SimulatedAnnealing simulatedAnnealing = new SimulatedAnnealing(saPhmlrp);
         simulatedAnnealing.applySA(saWorkbook, saSpreadsheet);
+
+        PHMLRP dpPhmlrp = new PHMLRP(10, numHubs, numVehicles,
+                params.getCollectionCostCFactor(), params.getDistributionCostCFactor(), params.getHubToHubCFactor(),
+                params.getRemovalPercentage());
+        randomSolutionAndCost(dpPhmlrp);
+
+        XSSFSheet dpSpreadsheet = dpWorkbook.createSheet(sheetName);
+        createDpFirstRow(dpSpreadsheet);
+        DeterministicPermutation deterministicOperation = new DeterministicPermutation(dpPhmlrp);
+        deterministicOperation.deterministicOperationOrder(dpWorkbook, dpSpreadsheet);
     }
 
-    private static void phmlrpSolutionAndCost(PHMLRP phmlrp) {
+    private static void randomSolutionAndCost(PHMLRP phmlrp) {
         phmlrp.randomSolution();
         phmlrp.calculateCost(PHMLRP.CostType.NORMAL);
     }
 
-    private static void createFirstRow(XSSFRow row) {
+    private static void createFirstRow(XSSFSheet spreadsheet) {
+        XSSFRow row = spreadsheet.createRow(0);
         row.createCell(0, CellType.STRING).setCellValue("Operation Name");
         row.createCell(1, CellType.STRING).setCellValue("Run#");
         row.createCell(2, CellType.STRING).setCellValue("Difference");
@@ -100,12 +109,23 @@ public class Main {
         row.createCell(6, CellType.STRING).setCellValue("routes");
     }
 
-    private static void createSaFirstRow(XSSFRow row) {
+    private static void createSaFirstRow(XSSFSheet saSpreadsheet) {
+        XSSFRow row = saSpreadsheet.createRow(0);
         row.createCell(0, CellType.STRING).setCellValue("Temp");
         row.createCell(1, CellType.STRING).setCellValue("Iteration#");
         row.createCell(2, CellType.STRING).setCellValue("Solution Cost");
         row.createCell(3, CellType.STRING).setCellValue("Difference");
         row.createCell(4, CellType.STRING).setCellValue("hubs");
         row.createCell(5, CellType.STRING).setCellValue("routes");
+        row.createCell(6, CellType.STRING).setCellValue("Executed Operation");
+    }
+
+    private static void createDpFirstRow(XSSFSheet dpSpreadsheet) {
+        XSSFRow row = dpSpreadsheet.createRow(0);
+        row.createCell(0, CellType.STRING).setCellValue("Solution#");
+        row.createCell(1, CellType.STRING).setCellValue("Order");
+        row.createCell(2, CellType.STRING).setCellValue("Min Cost");
+        row.createCell(3, CellType.STRING).setCellValue("Hubs");
+        row.createCell(4, CellType.STRING).setCellValue("Nodes");
     }
 }

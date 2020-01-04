@@ -214,6 +214,7 @@ class PHMLRP {
         }
         if (isSimulatedAnnealing) {
             saOperationCost = maxCostAfterOperation;
+            if (maxCostAfterOperation <= 0) saOperationCost = maxCost;
         }
 
         maxCostAfterOperation = 0;

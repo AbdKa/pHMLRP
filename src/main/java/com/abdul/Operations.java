@@ -122,15 +122,28 @@ class Operations {
     }
 
     boolean swapNodeInRoute(boolean isSimulatedAnnealing, int randomRouteIdx, int randomNodeIdx1, int randomNodeIdx2) {
+        boolean thereIsValidRoute = false;
+        for (List<Integer> route :
+                phmlrp.getVehiclesList()) {
+            if (route.size() > 2) {
+                thereIsValidRoute = true;
+                break;
+            }
+        }
+        if (!thereIsValidRoute) return false;
+
         int currentCost = phmlrp.getMaxCost();
 
         Random random = new Random();
         if (randomRouteIdx == -1) {
             // picking a route randomly, if not called from swap local search operation
             randomRouteIdx = random.nextInt(phmlrp.getVehiclesList().size());
+            // if number of nodes in this random route is less than 3, re-pick.
+            while (phmlrp.getVehiclesList().get(randomRouteIdx).size() < 3) {
+                randomRouteIdx = random.nextInt(phmlrp.getVehiclesList().size());
+            }
         }
-        // if number of nodes in the route is less than 3, return.
-        if (phmlrp.getVehiclesList().get(randomRouteIdx).size() < 3) return false;
+
         if (randomNodeIdx1 == -1) {
             // the two random nodes indices from the random route, if not called from swap local search operation
             randomNodeIdx1 = random.nextInt(phmlrp.getVehiclesList().get(randomRouteIdx).size());
@@ -218,15 +231,27 @@ class Operations {
         // if we have less than 2 routes, return.
         if (phmlrp.getVehiclesList().size() < 2) return;
 
+        boolean thereIsValidRoute = false;
+        for (List<Integer> route :
+                phmlrp.getVehiclesList()) {
+            if (route.size() > 2) {
+                thereIsValidRoute = true;
+                break;
+            }
+        }
+        if (!thereIsValidRoute) return;
+
         int currentCost = phmlrp.getMaxCost();
 
         Random random = new Random();
         // picking two routes randomly
         int randomRouteIdx1 = random.nextInt(phmlrp.getVehiclesList().size());
-        int randomRouteIdx2 = random.nextInt(phmlrp.getVehiclesList().size());
+        // if number of nodes in this random route is less than 3, re-pick.
+        while (phmlrp.getVehiclesList().get(randomRouteIdx1).size() < 3) {
+            randomRouteIdx1 = random.nextInt(phmlrp.getVehiclesList().size());
+        }
 
-        // if number of nodes in the first route is less than 3, we cannot remove any edge.
-        if (phmlrp.getVehiclesList().get(randomRouteIdx1).size() < 3) return;
+        int randomRouteIdx2 = random.nextInt(phmlrp.getVehiclesList().size());
 
         while (randomRouteIdx1 == randomRouteIdx2) {
             // while the two randomly selected routes are the same, re-pick another one
