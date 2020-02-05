@@ -23,23 +23,23 @@ public class Main {
         int maxCost = 0;
         int maxCostWithoutMinEdge = 0;
 
-//        for (int i = 0; i < 1; i++) {
-//            PHMLRP phmlrp = new PHMLRP(params.getNumNodes(), params.getNumHubs(), params.getNumVehicles(),
-//                    params.getCollectionCostCFactor(), params.getDistributionCostCFactor(), params.getHubToHubCFactor(),
-//                    params.getRemovalPercentage());
-//            phmlrp.randomSolution();
-//
-//            final int cost = phmlrp.calculateCost(PHMLRP.CostType.NORMAL);
+        for (int i = 0; i < 1; i++) {
+            PHMLRP phmlrp = new PHMLRP(params.getNumNodes(), params.getNumHubs(), params.getNumVehicles(),
+                    params.getCollectionCostCFactor(), params.getDistributionCostCFactor(), params.getHubToHubCFactor(),
+                    params.getRemovalPercentage());
+            phmlrp.randomSolution();
+
+            final int cost = phmlrp.calculateCost(PHMLRP.CostType.NORMAL);
 //            final int costWithoutMinEdge = phmlrp.costWithoutMinEdge();
-//
-//            if (cost > maxCost) {
-//                bound = phmlrp;
-//                maxCost = cost;
-//            }
+
+            if (cost > maxCost) {
+                bound = phmlrp;
+                maxCost = cost;
+            }
 //            if (costWithoutMinEdge > maxCostWithoutMinEdge) {
 //                maxCostWithoutMinEdge = costWithoutMinEdge;
 //            }
-//        }
+        }
 //
 //        if (bound != null) {
 //            bound.print(params.getVerbose());
@@ -49,26 +49,35 @@ public class Main {
         XSSFWorkbook saWorkbook = new XSSFWorkbook();
         XSSFWorkbook dpWorkbook = new XSSFWorkbook();
 
-        applyAlgorithms(params, 2, 1, workbook, saWorkbook, dpWorkbook, "10.2.1");
-        applyAlgorithms(params, 2, 2, workbook, saWorkbook, dpWorkbook, "10.2.2");
-        applyAlgorithms(params, 3, 1, workbook, saWorkbook, dpWorkbook, "10.3.1");
-        applyAlgorithms(params, 3, 2, workbook, saWorkbook, dpWorkbook, "10.3.2");
+//        applyAlgorithms(params, 2, 1, workbook, saWorkbook, dpWorkbook, "10.2.1");
+//        applyAlgorithms(params, 2, 2, workbook, saWorkbook, dpWorkbook, "10.2.2");
+//        applyAlgorithms(params, 3, 1, workbook, saWorkbook, dpWorkbook, "10.3.1");
+//        applyAlgorithms(params, 3, 2, workbook, saWorkbook, dpWorkbook, "10.3.2");
 
-//        for (int i = 0; i < 1; i++) {
-//            bound.randomOperation();
-//        }
+        int counter = 0;
+        Operations operations = new Operations(bound);
+        for (int i = 0; i < 100000; i++) {
+            if (bound.getMaxCost() < 2220) break;
+            operations.insertionLocalSearch();
+            operations.swapLocalSearch();
+            operations.swapHubWithNodeLocalSearch();
+//            operations.twoOptAlgorithm();
+            counter++;
+        }
+        bound.print(false);
+        System.out.println("iterations: " + counter);
     }
 
     private static void applyAlgorithms(Params params, int numHubs, int numVehicles,
                                         XSSFWorkbook workbook, XSSFWorkbook saWorkbook, XSSFWorkbook dpWorkbook, String sheetName) throws IOException {
-        PHMLRP phmlrp = new PHMLRP(10, numHubs, numVehicles,
-                params.getCollectionCostCFactor(), params.getDistributionCostCFactor(), params.getHubToHubCFactor(),
-                params.getRemovalPercentage());
-        randomSolutionAndCost(phmlrp);
-
-        XSSFSheet spreadsheet = workbook.createSheet(sheetName);
-        createFirstRow(spreadsheet);
-        phmlrp.deterministicExplore(workbook, spreadsheet);
+//        PHMLRP phmlrp = new PHMLRP(10, numHubs, numVehicles,
+//                params.getCollectionCostCFactor(), params.getDistributionCostCFactor(), params.getHubToHubCFactor(),
+//                params.getRemovalPercentage());
+//        randomSolutionAndCost(phmlrp);
+//
+//        XSSFSheet spreadsheet = workbook.createSheet(sheetName);
+//        createFirstRow(spreadsheet);
+//        phmlrp.deterministicExplore(workbook, spreadsheet);
 
         // Simulated Annealing
         PHMLRP saPhmlrp = new PHMLRP(10, numHubs, numVehicles,
@@ -82,15 +91,15 @@ public class Main {
         SimulatedAnnealing simulatedAnnealing = new SimulatedAnnealing(saPhmlrp);
         simulatedAnnealing.applySA(saWorkbook, saSpreadsheet);
 
-        PHMLRP dpPhmlrp = new PHMLRP(10, numHubs, numVehicles,
-                params.getCollectionCostCFactor(), params.getDistributionCostCFactor(), params.getHubToHubCFactor(),
-                params.getRemovalPercentage());
-        randomSolutionAndCost(dpPhmlrp);
-
-        XSSFSheet dpSpreadsheet = dpWorkbook.createSheet(sheetName);
-        createDpFirstRow(dpSpreadsheet);
-        DeterministicPermutation deterministicOperation = new DeterministicPermutation(dpPhmlrp);
-        deterministicOperation.deterministicOperationOrder(dpWorkbook, dpSpreadsheet);
+//        PHMLRP dpPhmlrp = new PHMLRP(10, numHubs, numVehicles,
+//                params.getCollectionCostCFactor(), params.getDistributionCostCFactor(), params.getHubToHubCFactor(),
+//                params.getRemovalPercentage());
+//        randomSolutionAndCost(dpPhmlrp);
+//
+//        XSSFSheet dpSpreadsheet = dpWorkbook.createSheet(sheetName);
+//        createDpFirstRow(dpSpreadsheet);
+//        DeterministicPermutation deterministicOperation = new DeterministicPermutation(dpPhmlrp);
+//        deterministicOperation.deterministicOperationOrder(dpWorkbook, dpSpreadsheet);
     }
 
     private static void randomSolutionAndCost(PHMLRP phmlrp) {

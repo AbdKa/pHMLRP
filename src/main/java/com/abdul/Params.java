@@ -7,7 +7,7 @@ public interface Params {
     @Option(description = "number of nodes", shortName = "n", longName = "node", defaultValue = "10")
     int getNumNodes();
 
-    @Option(description = "number of hubs", shortName = "h", longName = "hubs", defaultValue = "2")
+    @Option(description = "number of hubs", shortName = "h", longName = "hubs", defaultValue = "3")
     int getNumHubs();
 
     @Option(description = "number of vehicles per hub", shortName = "v", longName = "vehicles", defaultValue = "1")

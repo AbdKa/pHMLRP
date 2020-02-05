@@ -9,7 +9,6 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 
@@ -65,8 +64,9 @@ class PHMLRP {
         return maxCost;
     }
 
-    void resetMaxCost(int originalMaxCost) {
+    void setMaxCost(int originalMaxCost) {
         this.maxCost = originalMaxCost;
+        saOperationCost = originalMaxCost;
     }
 
     int getSaOperationCost() {
@@ -212,10 +212,9 @@ class PHMLRP {
         if (costType == CostType.OPERATION && maxCost > maxCostAfterOperation) {
             maxCost = maxCostAfterOperation;
         }
-        if (isSimulatedAnnealing) {
-            saOperationCost = maxCostAfterOperation;
-            if (maxCostAfterOperation <= 0) saOperationCost = maxCost;
-        }
+
+        saOperationCost = maxCostAfterOperation;
+        if (maxCostAfterOperation <= 0) saOperationCost = maxCost;
 
         maxCostAfterOperation = 0;
 
@@ -360,7 +359,7 @@ class PHMLRP {
         //  shall we reselect another one or just abort the operation then randomly select a new operation.
         Random random = new Random();
 //        int randOpr = random.nextInt(7);
-        int randOpr = 10;
+        int randOpr = 7;
 
         Operations operations = new Operations(this);
 
@@ -381,7 +380,7 @@ class PHMLRP {
                 operations.edgeOpt(false);
                 break;
             case 5:
-                operations.swapHubWithNode(false);
+                operations.swapHubWithNode(false, -1, -1, -1);
                 break;
             case 6:
                 operations.twoOptAlgorithm();
@@ -427,7 +426,7 @@ class PHMLRP {
             if (i % numOfIterationForEachOne == 0) {
                 hubsArr = initHubsArr.clone();
                 resetVehiclesList(initVehiclesList);
-                resetMaxCost(initMaxCost);
+                setMaxCost(initMaxCost);
             }
             // create a row for the excel sheet
             row = spreadsheet.createRow(i + 1);
@@ -531,7 +530,7 @@ class PHMLRP {
                 operations.edgeOpt(false);
                 break;
             case 5:
-                operations.swapHubWithNode(false);
+                operations.swapHubWithNode(false, -1, -1, -1);
                 break;
             case 6:
                 operations.twoOptAlgorithm();
@@ -560,7 +559,7 @@ class PHMLRP {
             }
             // loop on vehicles in a hub
             for (int j = 0; j < numVehiclesPerHub; j++) {
-                System.out.printf("\tVehicle%d: ", j + 1);
+                System.out.printf("\tVehicle%d: ", j);
                 // loop on the vehicle's nodes
                 for (int node : vehiclesList.get(numVehiclesPerHub * i + j)) {
                     if (verbose) {
@@ -576,7 +575,7 @@ class PHMLRP {
 //        Bounds bounds = new Bounds();
 //        int bound = bounds.getBound(numNodes + "." + numHubs + "." + numVehiclesPerHub);
         System.out.println("**Total maxCost is " + this.maxCost);
-        System.out.println("**Total maxNonMinEdgeCost is " + this.maxNonMinEdgeCost);
+//        System.out.println("**Total maxNonMinEdgeCost is " + this.maxNonMinEdgeCost);
 //        System.out.println("**The bound is " + bound);
         System.out.println();
     }

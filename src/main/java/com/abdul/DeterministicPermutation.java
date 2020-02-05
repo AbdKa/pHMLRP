@@ -140,7 +140,7 @@ class DeterministicPermutation {
             }
         }
         Permutation permutation = new Permutation(bestOrder, bestCost, phmlrp.getHubsArr(), phmlrp.getVehiclesList());
-        phmlrp.resetMaxCost(initMaxCost);
+        phmlrp.setMaxCost(initMaxCost);
         phmlrp.resetVehiclesList(initVehiclesList);
         return permutation;
     }

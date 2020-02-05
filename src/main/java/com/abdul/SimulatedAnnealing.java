@@ -47,6 +47,8 @@ class SimulatedAnnealing {
         // new solution initialization
         ArrayList<List<Integer>> newSol;
 
+        phmlrp.print(false);
+
         int counter = 1;
         phmlrp.setSimulatedAnnealing(true);
 
@@ -80,7 +82,7 @@ class SimulatedAnnealing {
 
                 double probability = Math.pow(Math.E, difference / T);
                 if (probability > Math.random()) {
-                    System.out.println("temp: " + T + "\tdifference: " + difference);
+//                    System.out.println("temp: " + T + "\tdifference: " + difference);
                     setBestVehiclesList(newSol);
                 }
             }
@@ -142,9 +144,12 @@ class SimulatedAnnealing {
                 operations.edgeOpt(true);
                 break;
             case 5:
-                operations.swapHubWithNode(true);
+                operations.swapHubWithNode(true,-1,-1,-1);
                 break;
         }
+
+        operations.insertionLocalSearch();
+        operations.swapHubWithNodeLocalSearch();
         return randOpr;
     }
 }
