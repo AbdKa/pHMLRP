@@ -1,6 +1,9 @@
 package com.abdul;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Random;
 
 class Operations {
     private PHMLRP phmlrp;
@@ -315,7 +318,7 @@ class Operations {
             phmlrp.setMaxCost(currentCost);
             return;
         }
-        phmlrp.print(false);
+//        phmlrp.print(false);
     }
 
     void twoOptAlgorithm() {
@@ -358,7 +361,7 @@ class Operations {
 
     /**
      * insertionLocalSearch start
-     * */
+     */
     void insertionLocalSearch() {
         // create a list of all non-hub nodes
         List<Integer> initList = new ArrayList<Integer>();
@@ -419,7 +422,7 @@ class Operations {
                     bestCost = cost;
                     bestRoute = i;
                     bestIdx = j;
-                    phmlrp.print(false);
+//                    phmlrp.print(false);
                 }
             }
         }
@@ -444,7 +447,7 @@ class Operations {
 
     /**
      * swapLocalSearch start
-     * */
+     */
     void swapLocalSearch() {
         // create a list of all non-hub nodes
         List<Integer> initList = new ArrayList<Integer>();
@@ -458,6 +461,8 @@ class Operations {
             // then swapping the current node with every other node and calculating cost each time
             int[] routeAndNode = searchInMainList(initList.get(i));
             swapWithEachNode(routeAndNode[0], routeAndNode[1]);
+//            insertionLocalSearch();
+//            swapHubWithNodeLocalSearch();
         }
     }
 
@@ -469,19 +474,20 @@ class Operations {
                 if (routeIdx == i && nodeIdx == j) continue;
                 // insert the current node before each node
                 if (routeIdx == i) {
-                    if (swapNodeInRoute(false, routeIdx, nodeIdx, j))
-                        phmlrp.print(false);
+                    swapNodeInRoute(false, routeIdx, nodeIdx, j);
+//                        phmlrp.print(false);
                 } else {
-                    if (swapNodeWithinRoutes(false, routeIdx, i, nodeIdx, j))
-                        phmlrp.print(false);
+                    swapNodeWithinRoutes(false, routeIdx, i, nodeIdx, j);
+//                        phmlrp.print(false);
                 }
             }
         }
 //        System.out.println("Route: " + routeIdx + " Node: " + nodeIdx + " Counter: " + counter + " bCounter: " + bCounter);
     }
+
     /**
      * swapLocalSearch end
-     * */
+     */
 
     void swapHubWithNodeLocalSearch() {
         for (int h = 0; h < phmlrp.getHubsArr().length; h++) {
@@ -621,7 +627,7 @@ class Operations {
         // get the new cost after the change
         int newCost = phmlrp.calculateCost(PHMLRP.CostType.OPERATION);
 
-        phmlrp.print(false);
+//        phmlrp.print(false);
 
         // if the new cost is greater than or equal to the former cost,
         // remove the node from the index

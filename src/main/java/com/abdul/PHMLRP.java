@@ -8,9 +8,7 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 
 class PHMLRP {
     private int maxCost, maxNonMinEdgeCost, maxCostAfterOperation = 0;
@@ -52,6 +50,30 @@ class PHMLRP {
         assignNonHubsToVehicles();
     }
 
+    void semiGreedySolution() {
+        // 1- greedily pick hubs, after calculating the average distances for each node
+        greedyPickHubs();
+        // 2- greedily assign non-hub nodes to hubs
+        // 3- distribute non-hubs on the vehicles
+        assignNonHubsToVehicles();
+    }
+
+    void semiGreedySolution2() {
+        // 1- greedily pick hubs, after calculating the average distances for each node
+        pickHubs();
+        // 2- greedily assign non-hub nodes to hubs
+        // 3- distribute non-hubs on the vehicles
+        greedilyAssignNonHubsToVehicles();
+    }
+
+    void greedySolution() {
+        // 1- greedily pick hubs, after calculating the average distances for each node
+        greedyPickHubs();
+        // 2- greedily assign non-hub nodes to hubs
+        // 3- distribute non-hubs on the vehicles
+        greedilyAssignNonHubsToVehicles();
+    }
+
     void setSimulatedAnnealing(boolean simulatedAnnealing) {
         isSimulatedAnnealing = simulatedAnnealing;
     }
@@ -83,6 +105,14 @@ class PHMLRP {
 
     ArrayList<List<Integer>> getVehiclesList() {
         return vehiclesList;
+    }
+
+    void setHubsArr(int[] hubsArr) {
+        this.hubsArr = hubsArr;
+    }
+
+    void addRouteToVehiclesList(List<Integer> route) {
+        vehiclesList.add(route);
     }
 
     void resetVehiclesList(ArrayList<List<Integer>> vehiclesList) {
@@ -119,6 +149,39 @@ class PHMLRP {
         }
     }
 
+    private void greedyPickHubs() {
+        Map<Integer, Integer> nodesDistanceAvg = new LinkedHashMap<Integer, Integer>();
+        for (int i = 0; i < numNodes; i++) {
+            int sum = 0;
+            for (int j = 0; j < numNodes; j++) {
+                sum += getDistance(i, j);
+            }
+            nodesDistanceAvg.put(i, sum / numNodes);
+        }
+
+        nodesDistanceAvg = sortByValue(nodesDistanceAvg);
+
+        int h = 0;
+        for (Map.Entry node : nodesDistanceAvg.entrySet()) {
+            if (h >= numHubs) break;
+            hubsArr[h] = (int) node.getKey();
+            isVisitedCity[hubsArr[h]] = true;
+            h++;
+        }
+    }
+
+    private static <K, V extends Comparable<? super V>> Map<K, V> sortByValue(Map<K, V> map) {
+        List<Map.Entry<K, V>> list = new ArrayList<>(map.entrySet());
+        list.sort(Map.Entry.comparingByValue());
+
+        Map<K, V> result = new LinkedHashMap<>();
+        for (Map.Entry<K, V> entry : list) {
+            result.put(entry.getKey(), entry.getValue());
+        }
+
+        return result;
+    }
+
     private void assignNonHubsToVehicles() {
         /* Assigning non-hub nodes to vehicles */
         // min and max number of nodes in a vehicle
@@ -134,10 +197,12 @@ class PHMLRP {
 
             // this condition ensures that we do not run out of nodes
             if (remainingNodes - numOfNodesForVehicle >= remainingVehicles - 1) {
+                // if one vehicle left, fill it with the remaining nodes
                 if (remainingVehicles == 1) {
                     numOfNodesForVehicle = remainingNodes;
                 }
 
+                // subtract the number of nodes that will be added from the remaining nodes
                 remainingNodes -= numOfNodesForVehicle;
 
                 // filling in a vehicle's list with nodes
@@ -151,12 +216,79 @@ class PHMLRP {
                     vehiclesList.get(i).add(j, randomNode);
                     isVisitedCity[randomNode] = true;
                 }
-
-                System.out.println();
             } else {
                 i--;
             }
         }
+    }
+
+    private void greedilyAssignNonHubsToVehicles() {
+        /* Assigning non-hub nodes to vehicles */
+        // min and max number of nodes in a vehicle
+        int minNumOfNodesInVehicle = 1;
+        int maxNumOfNodesInVehicle = numNodes - (numHubs * (numVehiclesPerHub + 1)) + 1;
+        int remainingNodes = numNodes - numHubs;
+
+        // a hash map of the hub-to-node distances
+        Map<Integer, Integer> nodesToHubDistance = new LinkedHashMap<Integer, Integer>();
+        // loop through vehicles lists
+        for (int i = 0; i < vehiclesList.size(); i++) {
+            Random random = new Random();
+            int numOfNodesForVehicle = random.nextInt(maxNumOfNodesInVehicle) + minNumOfNodesInVehicle;
+            int remainingVehicles = vehiclesList.size() - i;
+
+            // if it's a new hub
+            if (i % numVehiclesPerHub == 0) {
+                // create a hash map of the hub-to-node distances
+                // current hub
+                int currentHub = i / numVehiclesPerHub;
+                for (int node = 0; node < numNodes; node++) {
+                    // loop through node and get distances to the current hub
+                    // only if the node is non-hub
+                    if (!isVisitedCity[node])
+                        nodesToHubDistance.put(node, getDistance(hubsArr[currentHub], node));
+                }
+                nodesToHubDistance = sortByValue(nodesToHubDistance);
+            }
+
+            // this condition ensures that we do not run out of nodes
+            if (remainingNodes - numOfNodesForVehicle >= remainingVehicles - 1) {
+                // if one vehicle left, fill it with the remaining nodes
+                if (remainingVehicles == 1) {
+                    numOfNodesForVehicle = remainingNodes;
+                }
+
+                // subtract the number of nodes that will be added from the remaining nodes
+                remainingNodes -= numOfNodesForVehicle;
+
+                // filling in a vehicle's list with nodes
+                for (int j = 0; j < numOfNodesForVehicle; j++) {
+                    Map.Entry<Integer,Integer> entry = nodesToHubDistance.entrySet().iterator().next();
+                    int closestNode = entry.getKey();
+                    if (isVisitedCity[closestNode]) {
+                        j--;
+                        continue;
+                    }
+
+                    vehiclesList.get(i).add(j, closestNode);
+                    isVisitedCity[closestNode] = true;
+                    // remove the visited node, because already added to a hub
+                    nodesToHubDistance.remove(closestNode);
+                }
+
+            } else {
+                i--;
+            }
+        }
+    }
+
+    private boolean isHub(int node) {
+        for (int hub :
+                hubsArr) {
+            if (node == hub)
+                return true;
+        }
+        return false;
     }
 
     int calculateCost(CostType costType) {
@@ -402,7 +534,10 @@ class PHMLRP {
         print(false);
     }
 
+    int successCount = 0;
+
     void deterministicExplore(XSSFWorkbook workbook, XSSFSheet spreadsheet) throws IOException {
+        // Clone hubs array, vehicles list and max cost for reset after numOfIterationForEachOperation
         int[] initHubsArr = hubsArr.clone();
         ArrayList<List<Integer>> initVehiclesList = new ArrayList<List<Integer>>();
         for (List<Integer> list : vehiclesList) {
@@ -420,45 +555,113 @@ class PHMLRP {
 
         XSSFRow row;
         int numberOfOperations = 9;
-        int numOfIterationForEachOne = 100;
-        for (int i = 0; i < numberOfOperations * numOfIterationForEachOne; i++) {
-            // reset the vehicles list
-            if (i % numOfIterationForEachOne == 0) {
+        int numOfIterationForEachOne = 10000;
+        String[] countsArr = new String[numberOfOperations];
+        int operNum = 0;
+        String operName = "";
+        // loop numOfIterations on each operation
+        for (int i = 0; i < numberOfOperations * numOfIterationForEachOne + 1; i++) {
+            // reset the hubsArr, vehicles list and maxCost
+            if (i % numOfIterationForEachOne == 0 && i > 0) {
                 hubsArr = initHubsArr.clone();
                 resetVehiclesList(initVehiclesList);
+                countsArr[operNum] = operName + "," + successCount + "," + maxCost;
                 setMaxCost(initMaxCost);
+                successCount = 0;
+                operNum++;
+                System.out.println("-------------------------------------------- " + operName);
             }
+
             // create a row for the excel sheet
             row = spreadsheet.createRow(i + 1);
-            if (i < numOfIterationForEachOne) {
-                // operation 0
-                doOperation(0, "insertNodeInRoute", row, i);
-            } else if (i < numOfIterationForEachOne * 2) {
-                // operation 1
-                doOperation(1, "insertNodeBetweenRoutes", row, i);
-            } else if (i < numOfIterationForEachOne * 3) {
-                // operation 2
-                doOperation(2, "swapNodeInRoute", row, i);
-            } else if (i < numOfIterationForEachOne * 4) {
-                // operation 3
-                doOperation(3, "swapNodeWithinRoutes", row, i);
-            } else if (i < numOfIterationForEachOne * 5) {
-                // operation 4
-                doOperation(4, "edgeOpt", row, i);
-            } else if (i < numOfIterationForEachOne * 6) {
-                // operation 5
-                doOperation(5, "swapHubWithNode", row, i);
-            } else if (i < numOfIterationForEachOne * 7) {
-                // operation 6
-                doOperation(6, "twoOptAlgorithm", row, i);
-            } else if (i < numOfIterationForEachOne * 8) {
-                // operation 7
-                doOperation(7, "insertTwoNodes", row, i);
-            } else {
-                // operation 8
-                doOperation(8, "nodesRemoveAndGreedyInsert", row, i);
+            switch (operNum) {
+                case 0:
+                    // operation 0
+                    doOperation(0, "insertNodeInRoute", row, i);
+                    operName = "insertNodeInRoute";
+                    break;
+                case 1:
+                    // operation 1
+                    doOperation(1, "insertNodeBetweenRoutes", row, i);
+                    operName = "insertNodeBetweenRoutes";
+                    break;
+                case 2:
+                    // operation 2
+                    doOperation(2, "swapNodeInRoute", row, i);
+                    operName = "swapNodeInRoute";
+                    break;
+                case 3:
+                    // operation 3
+                    doOperation(3, "swapNodeWithinRoutes", row, i);
+                    operName = "swapNodeWithinRoutes";
+                    break;
+                case 4:
+                    // operation 4
+                    doOperation(4, "edgeOpt", row, i);
+                    operName = "edgeOpt";
+                    break;
+                case 5:
+                    // operation 5
+                    doOperation(5, "swapHubWithNode", row, i);
+                    operName = "swapHubWithNode";
+                    break;
+                case 6:
+                    // operation 6
+                    doOperation(6, "twoOptAlgorithm", row, i);
+                    operName = "twoOptAlgorithm";
+                    break;
+                case 7:
+                    // operation 7
+                    doOperation(7, "insertTwoNodes", row, i);
+                    operName = "insertTwoNodes";
+                    break;
+                case 8:
+                    // operation 8
+                    doOperation(8, "nodesRemoveAndGreedyInsert", row, i);
+                    operName = "nodesRemoveAndGreedyInsert";
+                    break;
             }
+//            if (i < numOfIterationForEachOne) {
+//                // operation 0
+//                doOperation(0, "insertNodeInRoute", row, i);
+//            } else if (i < numOfIterationForEachOne * 2) {
+//                // operation 1
+//                doOperation(1, "insertNodeBetweenRoutes", row, i);
+//            } else if (i < numOfIterationForEachOne * 3) {
+//                // operation 2
+//                doOperation(2, "swapNodeInRoute", row, i);
+//            } else if (i < numOfIterationForEachOne * 4) {
+//                // operation 3
+//                doOperation(3, "swapNodeWithinRoutes", row, i);
+//            } else if (i < numOfIterationForEachOne * 5) {
+//                // operation 4
+//                doOperation(4, "edgeOpt", row, i);
+//            } else if (i < numOfIterationForEachOne * 6) {
+//                // operation 5
+//                doOperation(5, "swapHubWithNode", row, i);
+//            } else if (i < numOfIterationForEachOne * 7) {
+//                // operation 6
+//                doOperation(6, "twoOptAlgorithm", row, i);
+//            } else if (i < numOfIterationForEachOne * 8) {
+//                // operation 7
+//                doOperation(7, "insertTwoNodes", row, i);
+//            } else {
+//                // operation 8
+//                doOperation(8, "nodesRemoveAndGreedyInsert", row, i);
+//            }
             printHubsAndRoutesToExcel(row);
+        }
+
+        XSSFSheet secondSS = workbook.createSheet(spreadsheet.getSheetName() + " sum");
+        XSSFRow xssfRow = secondSS.createRow(0);
+        xssfRow.createCell(0, CellType.STRING).setCellValue("Operation");
+        xssfRow.createCell(1, CellType.STRING).setCellValue("Successful Count");
+        xssfRow.createCell(2, CellType.STRING).setCellValue("Best Cost");
+        for (int i = 0; i < countsArr.length; i++) {
+            xssfRow = secondSS.createRow(i + 1);
+            xssfRow.createCell(0, CellType.STRING).setCellValue(countsArr[i].split(",")[0]);
+            xssfRow.createCell(1, CellType.NUMERIC).setCellValue(Integer.valueOf(countsArr[i].split(",")[1]));
+            xssfRow.createCell(2, CellType.NUMERIC).setCellValue(Integer.valueOf(countsArr[i].split(",")[2]));
         }
 
         //Write the workbook in file system
@@ -468,14 +671,6 @@ class PHMLRP {
         workbook.write(out);
         out.close();
         System.out.println("deterministic_results.xlsx written successfully");
-    }
-
-    private void createFirstRow(XSSFRow row) {
-        row.createCell(0, CellType.STRING).setCellValue("Operation Name");
-        row.createCell(1, CellType.STRING).setCellValue("Run#");
-        row.createCell(2, CellType.STRING).setCellValue("Difference");
-        row.createCell(3, CellType.STRING).setCellValue("Best Cost");
-        row.createCell(4, CellType.STRING).setCellValue("Elapsed Time (nano)");
     }
 
     private void printHubsAndRoutesToExcel(XSSFRow row) {
@@ -505,6 +700,10 @@ class PHMLRP {
         long endTime = System.nanoTime();
         //time elapsed
         int costDifference = priorCost - this.maxCost;
+        if (costDifference > 0) {
+            successCount++;
+            print(false);
+        }
         row.createCell(2, CellType.NUMERIC).setCellValue(costDifference);
         row.createCell(3, CellType.NUMERIC).setCellValue(this.maxCost);
         long elapsed = endTime - startTime;

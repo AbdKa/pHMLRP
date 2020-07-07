@@ -19,27 +19,36 @@ public class Main {
             return;
         }
 
-        PHMLRP bound = null;
-        int maxCost = 0;
-        int maxCostWithoutMinEdge = 0;
-
-        for (int i = 0; i < 1; i++) {
-            PHMLRP phmlrp = new PHMLRP(params.getNumNodes(), params.getNumHubs(), params.getNumVehicles(),
+        PHMLRP phmlrpObj = new PHMLRP(params.getNumNodes(), params.getNumHubs(), params.getNumVehicles(),
                     params.getCollectionCostCFactor(), params.getDistributionCostCFactor(), params.getHubToHubCFactor(),
                     params.getRemovalPercentage());
-            phmlrp.randomSolution();
 
-            final int cost = phmlrp.calculateCost(PHMLRP.CostType.NORMAL);
+        Gorubi gurobi = new Gorubi(phmlrpObj, params.getNumNodes(), params.getNumHubs(), params.getNumVehicles());
+        gurobi.getInitSol();
+//        gurobi.optimizeRoute(new int[]{0,36,77,23,61,25,10,8,47});
+//        gurobi.getSolWithHubs(new int[]{0,1});
+
+//        PHMLRP bound = null;
+//        int maxCost = 0;
+//        int maxCostWithoutMinEdge = 0;
+//
+//        for (int i = 0; i < 1; i++) {
+//            PHMLRP phmlrp = new PHMLRP(params.getNumNodes(), params.getNumHubs(), params.getNumVehicles(),
+//                    params.getCollectionCostCFactor(), params.getDistributionCostCFactor(), params.getHubToHubCFactor(),
+//                    params.getRemovalPercentage());
+//            phmlrp.randomSolution();
+//
+//            final int cost = phmlrp.calculateCost(PHMLRP.CostType.NORMAL);
 //            final int costWithoutMinEdge = phmlrp.costWithoutMinEdge();
-
-            if (cost > maxCost) {
-                bound = phmlrp;
-                maxCost = cost;
-            }
+//
+//            if (cost > maxCost) {
+//                bound = phmlrp;
+//                maxCost = cost;
+//            }
 //            if (costWithoutMinEdge > maxCostWithoutMinEdge) {
 //                maxCostWithoutMinEdge = costWithoutMinEdge;
 //            }
-        }
+//        }
 //
 //        if (bound != null) {
 //            bound.print(params.getVerbose());
@@ -49,47 +58,100 @@ public class Main {
         XSSFWorkbook saWorkbook = new XSSFWorkbook();
         XSSFWorkbook dpWorkbook = new XSSFWorkbook();
 
-//        applyAlgorithms(params, 2, 1, workbook, saWorkbook, dpWorkbook, "10.2.1");
+//        applyAlgorithms(params, 2, 1, workbook, saWorkbook, dpWorkbook, "80.5.2");
 //        applyAlgorithms(params, 2, 2, workbook, saWorkbook, dpWorkbook, "10.2.2");
 //        applyAlgorithms(params, 3, 1, workbook, saWorkbook, dpWorkbook, "10.3.1");
 //        applyAlgorithms(params, 3, 2, workbook, saWorkbook, dpWorkbook, "10.3.2");
 
-        int counter = 0;
-        Operations operations = new Operations(bound);
-        for (int i = 0; i < 100000; i++) {
-            if (bound.getMaxCost() < 2220) break;
-            operations.insertionLocalSearch();
-            operations.swapLocalSearch();
-            operations.swapHubWithNodeLocalSearch();
-//            operations.twoOptAlgorithm();
-            counter++;
+        int counter = 10;
+        int sum = 0;
+        for (int n = 0; n < counter; n++) {
+            PHMLRP phmlrp = new PHMLRP(params.getNumNodes(), params.getNumHubs(), params.getNumVehicles(),
+                    params.getCollectionCostCFactor(), params.getDistributionCostCFactor(), params.getHubToHubCFactor(),
+                    params.getRemovalPercentage());
+            phmlrp.greedySolution();
+            phmlrp.calculateCost(PHMLRP.CostType.NORMAL);
+            sum += phmlrp.getMaxCost();
         }
-        bound.print(false);
-        System.out.println("iterations: " + counter);
+        System.out.println("greedySolution: " + sum / counter);
+
+        sum = 0;
+        for (int n = 0; n < counter; n++) {
+            PHMLRP phmlrp = new PHMLRP(params.getNumNodes(), params.getNumHubs(), params.getNumVehicles(),
+                    params.getCollectionCostCFactor(), params.getDistributionCostCFactor(), params.getHubToHubCFactor(),
+                    params.getRemovalPercentage());
+            phmlrp.semiGreedySolution();
+            phmlrp.calculateCost(PHMLRP.CostType.NORMAL);
+            sum += phmlrp.getMaxCost();
+        }
+        System.out.println("semiGreedySolution: " + sum / counter);
+
+        sum = 0;
+        for (int n = 0; n < counter; n++) {
+            PHMLRP phmlrp = new PHMLRP(params.getNumNodes(), params.getNumHubs(), params.getNumVehicles(),
+                    params.getCollectionCostCFactor(), params.getDistributionCostCFactor(), params.getHubToHubCFactor(),
+                    params.getRemovalPercentage());
+            phmlrp.semiGreedySolution2();
+            phmlrp.calculateCost(PHMLRP.CostType.NORMAL);
+            sum += phmlrp.getMaxCost();
+        }
+        System.out.println("semiGreedySolution2: " + sum / counter);
+
+        sum = 0;
+        for (int n = 0; n < counter; n++) {
+            PHMLRP phmlrp = new PHMLRP(params.getNumNodes(), params.getNumHubs(), params.getNumVehicles(),
+                    params.getCollectionCostCFactor(), params.getDistributionCostCFactor(), params.getHubToHubCFactor(),
+                    params.getRemovalPercentage());
+            phmlrp.randomSolution();
+            phmlrp.calculateCost(PHMLRP.CostType.NORMAL);
+            sum += phmlrp.getMaxCost();
+        }
+        System.out.println("randomSolution: " + sum / counter);
+//        int counter = 0;
+//        for (int n = 0; n < 100; n++) {
+//            PHMLRP phmlrp = new PHMLRP(params.getNumNodes(), params.getNumHubs(), params.getNumVehicles(),
+//                    params.getCollectionCostCFactor(), params.getDistributionCostCFactor(), params.getHubToHubCFactor(),
+//                    params.getRemovalPercentage());
+//            phmlrp.randomSolution();
+//            phmlrp.calculateCost(PHMLRP.CostType.NORMAL);
+//            Operations operations = new Operations(phmlrp);
+//
+//            for (int i = 0; i < 100000; i++) {
+//                if (phmlrp.getMaxCost() < 2652) {
+//                    counter++;
+//                    break;
+//                }
+//                operations.swapLocalSearch();
+////                operations.swapHubWithNodeLocalSearch();
+////                operations.insertionLocalSearch();
+//            }
+//            phmlrp.print(false);
+//        }
+//        System.out.println("successful count: " + counter);
     }
 
     private static void applyAlgorithms(Params params, int numHubs, int numVehicles,
                                         XSSFWorkbook workbook, XSSFWorkbook saWorkbook, XSSFWorkbook dpWorkbook, String sheetName) throws IOException {
-//        PHMLRP phmlrp = new PHMLRP(10, numHubs, numVehicles,
-//                params.getCollectionCostCFactor(), params.getDistributionCostCFactor(), params.getHubToHubCFactor(),
-//                params.getRemovalPercentage());
-//        randomSolutionAndCost(phmlrp);
-//
+        PHMLRP phmlrp = new PHMLRP(params.getNumNodes(), params.getNumHubs(), params.getNumVehicles(),
+                params.getCollectionCostCFactor(), params.getDistributionCostCFactor(), params.getHubToHubCFactor(),
+                params.getRemovalPercentage());
+        randomSolutionAndCost(phmlrp);
+
 //        XSSFSheet spreadsheet = workbook.createSheet(sheetName);
 //        createFirstRow(spreadsheet);
 //        phmlrp.deterministicExplore(workbook, spreadsheet);
 
         // Simulated Annealing
-        PHMLRP saPhmlrp = new PHMLRP(10, numHubs, numVehicles,
-                params.getCollectionCostCFactor(), params.getDistributionCostCFactor(), params.getHubToHubCFactor(),
-                params.getRemovalPercentage());
-        saPhmlrp.setSimulatedAnnealing(true);
-        randomSolutionAndCost(saPhmlrp);
-
-        XSSFSheet saSpreadsheet = saWorkbook.createSheet(sheetName);
-        createSaFirstRow(saSpreadsheet);
-        SimulatedAnnealing simulatedAnnealing = new SimulatedAnnealing(saPhmlrp);
-        simulatedAnnealing.applySA(saWorkbook, saSpreadsheet);
+//        PHMLRP saPhmlrp = new PHMLRP(10, numHubs, numVehicles,
+//                params.getCollectionCostCFactor(), params.getDistributionCostCFactor(), params.getHubToHubCFactor(),
+//                params.getRemovalPercentage());
+//        saPhmlrp.setSimulatedAnnealing(true);
+//        randomSolutionAndCost(saPhmlrp);
+//
+//        XSSFSheet saSpreadsheet = saWorkbook.createSheet(sheetName);
+//        createSaFirstRow(saSpreadsheet);
+//        SimulatedAnnealing simulatedAnnealing = new SimulatedAnnealing(saPhmlrp);
+//        simulatedAnnealing.applySA(saWorkbook, saSpreadsheet);
 
 //        PHMLRP dpPhmlrp = new PHMLRP(10, numHubs, numVehicles,
 //                params.getCollectionCostCFactor(), params.getDistributionCostCFactor(), params.getHubToHubCFactor(),
@@ -103,8 +165,9 @@ public class Main {
     }
 
     private static void randomSolutionAndCost(PHMLRP phmlrp) {
-        phmlrp.randomSolution();
+        phmlrp.greedySolution();
         phmlrp.calculateCost(PHMLRP.CostType.NORMAL);
+        phmlrp.print(false);
     }
 
     private static void createFirstRow(XSSFSheet spreadsheet) {
