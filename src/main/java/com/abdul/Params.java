@@ -4,13 +4,16 @@ import com.lexicalscope.jewel.cli.Option;
 
 public interface Params {
 
-    @Option(description = "number of nodes", shortName = "n", longName = "node", defaultValue = "10")
+    @Option(description = "Dataset", shortName = "ds", longName = "dataset", defaultValue = "AP200")
+    String getDataset();
+
+    @Option(description = "number of nodes", shortName = "n", longName = "node", defaultValue = "200")
     int getNumNodes();
 
-    @Option(description = "number of hubs", shortName = "h", longName = "hubs", defaultValue = "2")
+    @Option(description = "number of hubs", shortName = "h", longName = "hubs", defaultValue = "5")
     int getNumHubs();
 
-    @Option(description = "number of vehicles per hub", shortName = "v", longName = "vehicles", defaultValue = "1")
+    @Option(description = "number of vehicles per hub", shortName = "v", longName = "vehicles", defaultValue = "5")
     int getNumVehicles();
 
     @Option(description = "collection calculateCost coefficient factor", shortName = "cc", longName = "collectionCost",

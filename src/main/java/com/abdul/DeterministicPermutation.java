@@ -14,9 +14,9 @@ import java.util.List;
 class DeterministicPermutation {
     private PHMLRP phmlrp;
     private Permutation[] bestPermutations;
-    private int bestPermutationCost;
+    private double bestPermutationCost;
     private ArrayList<List<Integer>> initVehiclesList;
-    private int initMaxCost;
+    private double initMaxCost;
 
     DeterministicPermutation(PHMLRP phmlrp) {
         this.phmlrp = phmlrp;
@@ -128,7 +128,7 @@ class DeterministicPermutation {
     private Permutation executePermutation(int[] arr) {
         counter++;
         int iterationsForEachPermutation = 1000;
-        int bestCost = phmlrp.getMaxCost();
+        double bestCost = phmlrp.getMaxCost();
         int[] bestOrder = new int[arr.length];
         for (int iter = 0; iter < iterationsForEachPermutation; iter++) {
             for (int operationIdx : arr) {
@@ -148,11 +148,11 @@ class DeterministicPermutation {
 
 class Permutation {
     private int[] operationOrder;
-    private int cost;
+    private double cost;
     private int[] hubsArr;
     private ArrayList<List<Integer>> vehiclesList;
 
-    Permutation(int[] operationOrder, int cost, int[] hubsArr, ArrayList<List<Integer>> vehiclesList) {
+    Permutation(int[] operationOrder, double cost, int[] hubsArr, ArrayList<List<Integer>> vehiclesList) {
         this.operationOrder = operationOrder;
         this.cost = cost;
         this.hubsArr = hubsArr.clone();
@@ -163,7 +163,7 @@ class Permutation {
         return operationOrder;
     }
 
-    int getCost() {
+    double getCost() {
         return cost;
     }
 

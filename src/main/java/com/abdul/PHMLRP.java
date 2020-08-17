@@ -1,32 +1,31 @@
 package com.abdul;
 
-import org.apache.poi.ss.usermodel.CellType;
-import org.apache.poi.xssf.usermodel.XSSFRow;
-import org.apache.poi.xssf.usermodel.XSSFSheet;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import com.abdul.dbs.*;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
 import java.util.*;
 
 class PHMLRP {
-    private int maxCost, maxNonMinEdgeCost, maxCostAfterOperation = 0;
+    private double maxCost, maxNonMinEdgeCost, maxCostAfterOperation = 0;
+    private String dataset;
     private final int numNodes, numHubs, numVehiclesPerHub;
     private int[] hubsArr;
     private final float collectionCostCFactor, distributionCostCFactor, hubToHubCFactor, removalPercentage;
     private ArrayList<List<Integer>> vehiclesList;
     private boolean[] isVisitedCity;
     private boolean isSimulatedAnnealing = false;
-    private int saOperationCost;
+    private double saOperationCost;
 
     enum CostType {
         NORMAL, OPERATION
     }
 
-    PHMLRP(int numNodes, int numHubs, int numVehicles,
+    /**
+     * Constructor
+     * */
+    PHMLRP(String dataset, int numNodes, int numHubs, int numVehicles,
            float collectionCostCFactor, float distributionCostCFactor, float hubToHubCFactor,
            float removalPercentage) {
+        this.dataset = dataset;
         this.numNodes = numNodes;
         this.numHubs = numHubs;
         this.numVehiclesPerHub = numVehicles;
@@ -66,6 +65,9 @@ class PHMLRP {
         greedilyAssignNonHubsToVehicles();
     }
 
+    /**
+     * Getters and setters
+     * **/
     void greedySolution() {
         // 1- greedily pick hubs, after calculating the average distances for each node
         greedyPickHubs();
@@ -82,16 +84,20 @@ class PHMLRP {
         return numNodes;
     }
 
-    int getMaxCost() {
+    int getNumHubs() {
+        return numHubs;
+    }
+
+    double getMaxCost() {
         return maxCost;
     }
 
-    void setMaxCost(int originalMaxCost) {
+    void setMaxCost(double originalMaxCost) {
         this.maxCost = originalMaxCost;
         saOperationCost = originalMaxCost;
     }
 
-    int getSaOperationCost() {
+    double getSaOperationCost() {
         return saOperationCost;
     }
 
@@ -123,6 +129,10 @@ class PHMLRP {
         }
     }
 
+    void setIsVisitedCity(boolean[] isVisitedCity) {
+        this.isVisitedCity = isVisitedCity;
+    }
+
     /**
      * Getting the distance
      *
@@ -130,8 +140,8 @@ class PHMLRP {
      * @param node2 to node2
      * @return the distance as maxCost
      */
-    int getDistance(int node1, int node2) {
-        return TurkishNetwork.distance[node1][node2];
+    double getDistance(int node1, int node2) {
+        return new Dataset().getDistance(dataset, node1, node2);
     }
 
     private void pickHubs() {
@@ -159,7 +169,7 @@ class PHMLRP {
             nodesDistanceAvg.put(i, sum / numNodes);
         }
 
-        nodesDistanceAvg = sortByValue(nodesDistanceAvg);
+        nodesDistanceAvg = Utils.sortByValue(nodesDistanceAvg);
 
         int h = 0;
         for (Map.Entry node : nodesDistanceAvg.entrySet()) {
@@ -168,18 +178,6 @@ class PHMLRP {
             isVisitedCity[hubsArr[h]] = true;
             h++;
         }
-    }
-
-    private static <K, V extends Comparable<? super V>> Map<K, V> sortByValue(Map<K, V> map) {
-        List<Map.Entry<K, V>> list = new ArrayList<>(map.entrySet());
-        list.sort(Map.Entry.comparingByValue());
-
-        Map<K, V> result = new LinkedHashMap<>();
-        for (Map.Entry<K, V> entry : list) {
-            result.put(entry.getKey(), entry.getValue());
-        }
-
-        return result;
     }
 
     private void assignNonHubsToVehicles() {
@@ -230,7 +228,7 @@ class PHMLRP {
         int remainingNodes = numNodes - numHubs;
 
         // a hash map of the hub-to-node distances
-        Map<Integer, Integer> nodesToHubDistance = new LinkedHashMap<Integer, Integer>();
+        Map<Integer, Double> nodesToHubDistance = new LinkedHashMap<Integer, Double>();
         // loop through vehicles lists
         for (int i = 0; i < vehiclesList.size(); i++) {
             Random random = new Random();
@@ -248,7 +246,7 @@ class PHMLRP {
                     if (!isVisitedCity[node])
                         nodesToHubDistance.put(node, getDistance(hubsArr[currentHub], node));
                 }
-                nodesToHubDistance = sortByValue(nodesToHubDistance);
+                nodesToHubDistance = Utils.sortByValue(nodesToHubDistance);
             }
 
             // this condition ensures that we do not run out of nodes
@@ -263,7 +261,7 @@ class PHMLRP {
 
                 // filling in a vehicle's list with nodes
                 for (int j = 0; j < numOfNodesForVehicle; j++) {
-                    Map.Entry<Integer,Integer> entry = nodesToHubDistance.entrySet().iterator().next();
+                    Map.Entry<Integer, Double> entry = nodesToHubDistance.entrySet().iterator().next();
                     int closestNode = entry.getKey();
                     if (isVisitedCity[closestNode]) {
                         j--;
@@ -282,16 +280,7 @@ class PHMLRP {
         }
     }
 
-    private boolean isHub(int node) {
-        for (int hub :
-                hubsArr) {
-            if (node == hub)
-                return true;
-        }
-        return false;
-    }
-
-    int calculateCost(CostType costType) {
+    double calculateCost(CostType costType) {
         int[] collectionCostArr = new int[numHubs * numVehiclesPerHub];
         int[] distributionCostArr = new int[numHubs * numVehiclesPerHub];
         fillInCollectionAndDistributionCostArrAndPrint(collectionCostArr, distributionCostArr);
@@ -299,7 +288,7 @@ class PHMLRP {
         ArrayList<String> tempStrArr = new ArrayList<String>();
         // loop on the hubs
         for (int h = 0; h < numHubs; h++) {
-            int cost;
+            double cost;
             // loop through vehicles in a hub
             for (int i = h * numVehiclesPerHub; i < ((h + 1) * numVehiclesPerHub); i++) {
                 int collectionCost = collectionCostArr[i];
@@ -321,7 +310,7 @@ class PHMLRP {
                     if (h == hh) continue;
 
                     // calculateCost between hubs
-                    int betweenHubs = Math.round(getDistance(hubsArr[h], hubsArr[hh]) * hubToHubCFactor);
+                    double betweenHubs = Math.round(getDistance(hubsArr[h], hubsArr[hh]) * hubToHubCFactor);
 
                     if (h < hh && !tempStrArr.contains(h + "" + hh)) {
                         tempStrArr.add(h + "" + hh);
@@ -353,7 +342,7 @@ class PHMLRP {
         return maxCost;
     }
 
-    private void setMaxCostForEachType(CostType costType, int cost) {
+    private void setMaxCostForEachType(CostType costType, double cost) {
         if (costType == CostType.NORMAL) {
             if (cost > maxCost) {
                 maxCost = cost;
@@ -365,7 +354,7 @@ class PHMLRP {
         }
     }
 
-    int costWithoutMinEdge() {
+    double costWithoutMinEdge() {
         int cost;
 
         // loop on the hubs
@@ -390,10 +379,10 @@ class PHMLRP {
     private int getMinEdgeFirstNode(int h, int v) {
         // between a hub and first node in a vehicle list
         int minEdgeFirstNode = hubsArr[h];
-        int minEdge = getDistance(hubsArr[h], vehiclesList.get(v).get(0));
+        double minEdge = getDistance(hubsArr[h], vehiclesList.get(v).get(0));
         // loop on a vehicle's list and calculating the distribution calculateCost
         for (int j = 0; j < vehiclesList.get(v).size() - 1; j++) {
-            int edgeCost = getDistance(vehiclesList.get(v).get(j), vehiclesList.get(v).get(j + 1));
+            double edgeCost = getDistance(vehiclesList.get(v).get(j), vehiclesList.get(v).get(j + 1));
             if (edgeCost < minEdge) {
                 minEdge = edgeCost;
                 minEdgeFirstNode = vehiclesList.get(v).get(j);
@@ -402,7 +391,7 @@ class PHMLRP {
 
         int lastCityWithinVehicle = vehiclesList.get(v).get(vehiclesList.get(v).size() - 1);
         // the collection calculateCost between the last city in a route (vehicle's list) and its hub
-        int lastEdge = getDistance(lastCityWithinVehicle, hubsArr[h]);
+        double lastEdge = getDistance(lastCityWithinVehicle, hubsArr[h]);
         if (lastEdge < minEdge) {
             minEdgeFirstNode = lastCityWithinVehicle;
         }
@@ -534,213 +523,55 @@ class PHMLRP {
         print(false);
     }
 
-    int successCount = 0;
-
-    void deterministicExplore(XSSFWorkbook workbook, XSSFSheet spreadsheet) throws IOException {
-        // Clone hubs array, vehicles list and max cost for reset after numOfIterationForEachOperation
-        int[] initHubsArr = hubsArr.clone();
-        ArrayList<List<Integer>> initVehiclesList = new ArrayList<List<Integer>>();
-        for (List<Integer> list : vehiclesList) {
-            List<Integer> innerList = new ArrayList<Integer>(list);
-            initVehiclesList.add(innerList);
-        }
-        int initMaxCost = this.maxCost;
-        //Create blank excel workbook
-//        XSSFWorkbook workbook = new XSSFWorkbook();
-//        //Create a blank sheet
-//        XSSFSheet spreadsheet = workbook.createSheet(" PHMLRP Deterministic ");
-//        //Create row object
-//        XSSFRow row = spreadsheet.createRow(0);
-//        createFirstRow(row);
-
-        XSSFRow row;
-        int numberOfOperations = 9;
-        int numOfIterationForEachOne = 10000;
-        String[] countsArr = new String[numberOfOperations];
-        int operNum = 0;
-        String operName = "";
-        // loop numOfIterations on each operation
-        for (int i = 0; i < numberOfOperations * numOfIterationForEachOne + 1; i++) {
-            // reset the hubsArr, vehicles list and maxCost
-            if (i % numOfIterationForEachOne == 0 && i > 0) {
-                hubsArr = initHubsArr.clone();
-                resetVehiclesList(initVehiclesList);
-                countsArr[operNum] = operName + "," + successCount + "," + maxCost;
-                setMaxCost(initMaxCost);
-                successCount = 0;
-                operNum++;
-                System.out.println("-------------------------------------------- " + operName);
-            }
-
-            // create a row for the excel sheet
-            row = spreadsheet.createRow(i + 1);
-            switch (operNum) {
-                case 0:
-                    // operation 0
-                    doOperation(0, "insertNodeInRoute", row, i);
-                    operName = "insertNodeInRoute";
-                    break;
-                case 1:
-                    // operation 1
-                    doOperation(1, "insertNodeBetweenRoutes", row, i);
-                    operName = "insertNodeBetweenRoutes";
-                    break;
-                case 2:
-                    // operation 2
-                    doOperation(2, "swapNodeInRoute", row, i);
-                    operName = "swapNodeInRoute";
-                    break;
-                case 3:
-                    // operation 3
-                    doOperation(3, "swapNodeWithinRoutes", row, i);
-                    operName = "swapNodeWithinRoutes";
-                    break;
-                case 4:
-                    // operation 4
-                    doOperation(4, "edgeOpt", row, i);
-                    operName = "edgeOpt";
-                    break;
-                case 5:
-                    // operation 5
-                    doOperation(5, "swapHubWithNode", row, i);
-                    operName = "swapHubWithNode";
-                    break;
-                case 6:
-                    // operation 6
-                    doOperation(6, "twoOptAlgorithm", row, i);
-                    operName = "twoOptAlgorithm";
-                    break;
-                case 7:
-                    // operation 7
-                    doOperation(7, "insertTwoNodes", row, i);
-                    operName = "insertTwoNodes";
-                    break;
-                case 8:
-                    // operation 8
-                    doOperation(8, "nodesRemoveAndGreedyInsert", row, i);
-                    operName = "nodesRemoveAndGreedyInsert";
-                    break;
-            }
-//            if (i < numOfIterationForEachOne) {
-//                // operation 0
-//                doOperation(0, "insertNodeInRoute", row, i);
-//            } else if (i < numOfIterationForEachOne * 2) {
-//                // operation 1
-//                doOperation(1, "insertNodeBetweenRoutes", row, i);
-//            } else if (i < numOfIterationForEachOne * 3) {
-//                // operation 2
-//                doOperation(2, "swapNodeInRoute", row, i);
-//            } else if (i < numOfIterationForEachOne * 4) {
-//                // operation 3
-//                doOperation(3, "swapNodeWithinRoutes", row, i);
-//            } else if (i < numOfIterationForEachOne * 5) {
-//                // operation 4
-//                doOperation(4, "edgeOpt", row, i);
-//            } else if (i < numOfIterationForEachOne * 6) {
-//                // operation 5
-//                doOperation(5, "swapHubWithNode", row, i);
-//            } else if (i < numOfIterationForEachOne * 7) {
-//                // operation 6
-//                doOperation(6, "twoOptAlgorithm", row, i);
-//            } else if (i < numOfIterationForEachOne * 8) {
-//                // operation 7
-//                doOperation(7, "insertTwoNodes", row, i);
-//            } else {
-//                // operation 8
-//                doOperation(8, "nodesRemoveAndGreedyInsert", row, i);
-//            }
-            printHubsAndRoutesToExcel(row);
+    boolean callOperation(int operationNumber) {
+        if (operationNumber == 7) {
+            // called NodesRemoveAndGreedyInsert operation
+            return calledNodesRemoveAndGreedyInsert();
         }
 
-        XSSFSheet secondSS = workbook.createSheet(spreadsheet.getSheetName() + " sum");
-        XSSFRow xssfRow = secondSS.createRow(0);
-        xssfRow.createCell(0, CellType.STRING).setCellValue("Operation");
-        xssfRow.createCell(1, CellType.STRING).setCellValue("Successful Count");
-        xssfRow.createCell(2, CellType.STRING).setCellValue("Best Cost");
-        for (int i = 0; i < countsArr.length; i++) {
-            xssfRow = secondSS.createRow(i + 1);
-            xssfRow.createCell(0, CellType.STRING).setCellValue(countsArr[i].split(",")[0]);
-            xssfRow.createCell(1, CellType.NUMERIC).setCellValue(Integer.valueOf(countsArr[i].split(",")[1]));
-            xssfRow.createCell(2, CellType.NUMERIC).setCellValue(Integer.valueOf(countsArr[i].split(",")[2]));
-        }
-
-        //Write the workbook in file system
-        FileOutputStream out = new FileOutputStream(
-                new File("deterministic_results.xlsx"));
-
-        workbook.write(out);
-        out.close();
-        System.out.println("deterministic_results.xlsx written successfully");
-    }
-
-    private void printHubsAndRoutesToExcel(XSSFRow row) {
-        StringBuilder hubs = new StringBuilder();
-        StringBuilder routes = new StringBuilder();
-        for (int hub : hubsArr) {
-            hubs.append(hub).append(", ");
-        }
-        for (List<Integer> route : vehiclesList) {
-            for (int node : route) {
-                routes.append(node).append(", ");
-            }
-            routes.append("; ");
-        }
-        row.createCell(5, CellType.STRING).setCellValue(hubs.toString());
-        row.createCell(6, CellType.STRING).setCellValue(routes.toString());
-    }
-
-    private void doOperation(int operationNum, String operationName, XSSFRow row, int i) {
-        row.createCell(0, CellType.STRING).setCellValue(operationName);
-        row.createCell(1, CellType.NUMERIC).setCellValue(i + 1);
-        int priorCost = this.maxCost;
-        //operation start time in milliseconds
-        long startTime = System.nanoTime();
-        callOperation(operationNum);
-        //operation end time in milliseconds
-        long endTime = System.nanoTime();
-        //time elapsed
-        int costDifference = priorCost - this.maxCost;
-        if (costDifference > 0) {
-            successCount++;
-            print(false);
-        }
-        row.createCell(2, CellType.NUMERIC).setCellValue(costDifference);
-        row.createCell(3, CellType.NUMERIC).setCellValue(this.maxCost);
-        long elapsed = endTime - startTime;
-        row.createCell(4, CellType.NUMERIC).setCellValue(elapsed);
-    }
-
-    void callOperation(int operationNumber) {
         Operations operations = new Operations(this);
         switch (operationNumber) {
             case 0:
-                operations.insertNodeInRoute(false, -1, -1, -1);
-                break;
+                return operations.insertNodeBetweenRoutes(false, -1, -1, -1, -1);
             case 1:
-                operations.insertNodeBetweenRoutes(false, -1, -1, -1, -1);
-                break;
+                return operations.edgeOpt(false);
             case 2:
-                operations.swapNodeInRoute(false, -1, -1, -1);
-                break;
+                return operations.insertTwoNodes(false);
             case 3:
-                operations.swapNodeWithinRoutes(false, -1, -1, -1, -1);
-                break;
+                return operations.twoOptAlgorithm();
             case 4:
-                operations.edgeOpt(false);
-                break;
+                return operations.insertNodeInRoute(false, -1, -1, -1);
             case 5:
-                operations.swapHubWithNode(false, -1, -1, -1);
-                break;
+                return operations.swapNodeInRoute(false, -1, -1, -1);
             case 6:
-                operations.twoOptAlgorithm();
-                break;
-            case 7:
-                operations.insertTwoNodes(false);
-                break;
+                return operations.swapNodeWithinRoutes(false, -1, -1, -1, -1);
             case 8:
-                operations.nodesRemoveAndGreedyInsert(removalPercentage);
-                break;
+                return operations.swapHubWithNode(false, -1, -1, -1);
         }
+
+        return false;
+    }
+
+    private boolean calledNodesRemoveAndGreedyInsert() {
+        PHMLRP copyPHMLRP = new PHMLRP(dataset, numNodes, numHubs, numVehiclesPerHub,
+                collectionCostCFactor, distributionCostCFactor, hubToHubCFactor,
+                removalPercentage);
+        copyPHMLRP.setMaxCost(maxCost);
+        copyPHMLRP.setHubsArr(hubsArr);
+        copyPHMLRP.setIsVisitedCity(isVisitedCity);
+        copyPHMLRP.resetVehiclesList(vehiclesList);
+
+        Operations operations = new Operations(copyPHMLRP);
+        operations.nodesRemoveAndGreedyInsert(removalPercentage);
+
+        if (copyPHMLRP.getMaxCost() >= maxCost) {
+            return false;
+        }
+
+        setMaxCost(copyPHMLRP.getMaxCost());
+        setHubsArr(copyPHMLRP.getHubsArr());
+        resetVehiclesList(copyPHMLRP.getVehiclesList());
+        return true;
     }
 
     /**

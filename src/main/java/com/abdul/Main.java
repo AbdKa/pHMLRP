@@ -19,12 +19,20 @@ public class Main {
             return;
         }
 
-        PHMLRP phmlrpObj = new PHMLRP(params.getNumNodes(), params.getNumHubs(), params.getNumVehicles(),
-                    params.getCollectionCostCFactor(), params.getDistributionCostCFactor(), params.getHubToHubCFactor(),
-                    params.getRemovalPercentage());
+        PHMLRP phmlrpObj = new PHMLRP(params.getDataset(), params.getNumNodes(), params.getNumHubs(), params.getNumVehicles(),
+                params.getCollectionCostCFactor(), params.getDistributionCostCFactor(), params.getHubToHubCFactor(),
+                params.getRemovalPercentage());
 
-        Gorubi gurobi = new Gorubi(phmlrpObj, params.getNumNodes(), params.getNumHubs(), params.getNumVehicles());
-        gurobi.getInitSol();
+        VND vnd = new VND(params);
+
+//        InitialSolutions initialSolutions = new InitialSolutions(phmlrpObj, params.getNumNodes(), params.getNumHubs(), params.getNumVehicles());
+//        initialSolutions.probabilisticInitSol();
+//        phmlrpObj.calculateCost(PHMLRP.CostType.NORMAL);
+//        phmlrpObj.print(false);
+
+
+//        Gorubi gurobi = new Gorubi(phmlrpObj, params.getNumNodes(), params.getNumHubs(), params.getNumVehicles());
+//        gurobi.getInitSol();
 //        gurobi.optimizeRoute(new int[]{0,36,77,23,61,25,10,8,47});
 //        gurobi.getSolWithHubs(new int[]{0,1});
 
@@ -58,12 +66,12 @@ public class Main {
         XSSFWorkbook saWorkbook = new XSSFWorkbook();
         XSSFWorkbook dpWorkbook = new XSSFWorkbook();
 
-//        applyAlgorithms(params, 2, 1, workbook, saWorkbook, dpWorkbook, "80.5.2");
+        applyAlgorithms(params, 2, 1, workbook, saWorkbook, dpWorkbook);
 //        applyAlgorithms(params, 2, 2, workbook, saWorkbook, dpWorkbook, "10.2.2");
 //        applyAlgorithms(params, 3, 1, workbook, saWorkbook, dpWorkbook, "10.3.1");
 //        applyAlgorithms(params, 3, 2, workbook, saWorkbook, dpWorkbook, "10.3.2");
 
-        int counter = 10;
+        /*int counter = 10;
         int sum = 0;
         for (int n = 0; n < counter; n++) {
             PHMLRP phmlrp = new PHMLRP(params.getNumNodes(), params.getNumHubs(), params.getNumVehicles(),
@@ -106,7 +114,8 @@ public class Main {
             phmlrp.calculateCost(PHMLRP.CostType.NORMAL);
             sum += phmlrp.getMaxCost();
         }
-        System.out.println("randomSolution: " + sum / counter);
+        System.out.println("randomSolution: " + sum / counter);*/
+
 //        int counter = 0;
 //        for (int n = 0; n < 100; n++) {
 //            PHMLRP phmlrp = new PHMLRP(params.getNumNodes(), params.getNumHubs(), params.getNumVehicles(),
@@ -131,15 +140,17 @@ public class Main {
     }
 
     private static void applyAlgorithms(Params params, int numHubs, int numVehicles,
-                                        XSSFWorkbook workbook, XSSFWorkbook saWorkbook, XSSFWorkbook dpWorkbook, String sheetName) throws IOException {
-        PHMLRP phmlrp = new PHMLRP(params.getNumNodes(), params.getNumHubs(), params.getNumVehicles(),
+                                        XSSFWorkbook workbook, XSSFWorkbook saWorkbook, XSSFWorkbook dpWorkbook) throws IOException {
+        PHMLRP phmlrp = new PHMLRP(params.getDataset(), params.getNumNodes(), params.getNumHubs(), params.getNumVehicles(),
                 params.getCollectionCostCFactor(), params.getDistributionCostCFactor(), params.getHubToHubCFactor(),
                 params.getRemovalPercentage());
         randomSolutionAndCost(phmlrp);
 
-//        XSSFSheet spreadsheet = workbook.createSheet(sheetName);
-//        createFirstRow(spreadsheet);
-//        phmlrp.deterministicExplore(workbook, spreadsheet);
+        String sheetName = String.valueOf(params.getNumNodes()) + '.' + params.getNumHubs() + '.' + params.getNumVehicles();
+        XSSFSheet spreadsheet = workbook.createSheet(sheetName);
+        createFirstRow(spreadsheet);
+        DeterministicExplore de = new DeterministicExplore(phmlrp);
+        de.doDeterministicExplore(workbook, spreadsheet);
 
         // Simulated Annealing
 //        PHMLRP saPhmlrp = new PHMLRP(10, numHubs, numVehicles,

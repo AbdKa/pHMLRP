@@ -23,7 +23,7 @@ class Operations {
         }
         if (!thereIsValidRoute) return false;
 
-        int currentCost = phmlrp.getMaxCost();
+        double currentCost = phmlrp.getMaxCost();
 
         Random random = new Random();
         // picking a route randomly if the operation not called from insertion local search
@@ -54,7 +54,7 @@ class Operations {
 //                " randomNewIdx: " + randomNewIdx);
 
         // get the new cost after the change
-        int newCost = phmlrp.calculateCost(PHMLRP.CostType.OPERATION);
+        double newCost = phmlrp.calculateCost(PHMLRP.CostType.OPERATION);
         if (isSimulatedAnnealing) {
             return true;
         }
@@ -74,7 +74,7 @@ class Operations {
         // if we have less than 2 routes, return.
         if (phmlrp.getVehiclesList().size() < 2) return false;
 
-        int currentCost = phmlrp.getMaxCost();
+        double currentCost = phmlrp.getMaxCost();
 
         Random random = new Random();
         if (routeIdx1 == -1) {
@@ -105,7 +105,7 @@ class Operations {
 //                " vehicle2: " + randomRouteIdx2 + " newIndex: " + randomNewIdx);
 
         // get the new cost after the change
-        int newCost = phmlrp.calculateCost(PHMLRP.CostType.OPERATION);
+        double newCost = phmlrp.calculateCost(PHMLRP.CostType.OPERATION);
         if (isSimulatedAnnealing) {
             return true;
         }
@@ -132,7 +132,7 @@ class Operations {
             }
             if (!thereIsValidRoute) return false;
         }
-        int currentCost = phmlrp.getMaxCost();
+        double currentCost = phmlrp.getMaxCost();
 
         Random random = new Random();
         if (randomRouteIdx == -1) {
@@ -163,7 +163,7 @@ class Operations {
 //                " randomNodeIdx2: " + randomNodeIdx2);
 
         // get the new cost after the change
-        int newCost = phmlrp.calculateCost(PHMLRP.CostType.OPERATION);
+        double newCost = phmlrp.calculateCost(PHMLRP.CostType.OPERATION);
         if (isSimulatedAnnealing) {
             return true;
         }
@@ -185,7 +185,7 @@ class Operations {
         // if we have less than 2 routes, return.
         if (phmlrp.getVehiclesList().size() < 2) return false;
 
-        int currentCost = phmlrp.getMaxCost();
+        double currentCost = phmlrp.getMaxCost();
 
         Random random = new Random();
         if (randomRouteIdx1 == -1) {
@@ -211,7 +211,7 @@ class Operations {
 //                " vehicle2: " + randomRouteIdx2 + " newIndex: " + randomNodeIdx2);
 
         // get the new cost after the change
-        int newCost = phmlrp.calculateCost(PHMLRP.CostType.OPERATION);
+        double newCost = phmlrp.calculateCost(PHMLRP.CostType.OPERATION);
         if (isSimulatedAnnealing) {
             return true;
         }
@@ -228,9 +228,9 @@ class Operations {
         return true;
     }
 
-    void edgeOpt(boolean isSimulatedAnnealing) {
+    boolean edgeOpt(boolean isSimulatedAnnealing) {
         // if we have less than 2 routes, return.
-        if (phmlrp.getVehiclesList().size() < 2) return;
+        if (phmlrp.getVehiclesList().size() < 2) return false;
 
         boolean thereIsValidRoute = false;
         for (List<Integer> route :
@@ -240,9 +240,9 @@ class Operations {
                 break;
             }
         }
-        if (!thereIsValidRoute) return;
+        if (!thereIsValidRoute) return false;
 
-        int currentCost = phmlrp.getMaxCost();
+        double currentCost = phmlrp.getMaxCost();
 
         Random random = new Random();
         // picking two routes randomly
@@ -273,9 +273,9 @@ class Operations {
 //                " route2: " + randomRouteIdx2 + " newIndex: " + randomNewIdx);
 
         // get the new cost after the change
-        int newCost = phmlrp.calculateCost(PHMLRP.CostType.OPERATION);
+        double newCost = phmlrp.calculateCost(PHMLRP.CostType.OPERATION);
         if (isSimulatedAnnealing) {
-            return;
+            return true;
         }
         if (newCost >= currentCost) {
             // if the new cost is greater than or equal to the former cost,
@@ -284,11 +284,14 @@ class Operations {
             removedNode2 = phmlrp.getVehiclesList().get(randomRouteIdx2).remove(randomNewIdx);
             phmlrp.getVehiclesList().get(randomRouteIdx1).add(randomNodeIdx1, removedNode1);
             phmlrp.getVehiclesList().get(randomRouteIdx1).add(randomNodeIdx1 + 1, removedNode2);
+            return false;
         }
+
+        return true;
     }
 
-    void swapHubWithNode(boolean isSimulatedAnnealing, int hubIdx, int routeIdx, int nodeIdx) {
-        int currentCost = phmlrp.getMaxCost();
+    boolean swapHubWithNode(boolean isSimulatedAnnealing, int hubIdx, int routeIdx, int nodeIdx) {
+        double currentCost = phmlrp.getMaxCost();
 
         if (hubIdx == -1) {
             Random random = new Random();
@@ -306,9 +309,9 @@ class Operations {
 //        System.out.println("hubIndex: " + hubIdx + " route: " + routeIdx + " newIndex: " + nodeIdx);
 
         // get the new cost after the change
-        int newCost = phmlrp.calculateCost(PHMLRP.CostType.OPERATION);
+        double newCost = phmlrp.calculateCost(PHMLRP.CostType.OPERATION);
         if (isSimulatedAnnealing) {
-            return;
+            return true;
         }
         if (newCost >= currentCost) {
             // if the new cost is greater than or equal to the former cost, re-swap the hub with the node
@@ -316,20 +319,28 @@ class Operations {
             phmlrp.getHubsArr()[hubIdx] = phmlrp.getVehiclesList().get(routeIdx).get(nodeIdx);
             phmlrp.getVehiclesList().get(routeIdx).set(nodeIdx, temp);
             phmlrp.setMaxCost(currentCost);
-            return;
+            return false;
         }
+
+        return true;
 //        phmlrp.print(false);
     }
 
-    void twoOptAlgorithm() {
+    boolean twoOptAlgorithm() {
         // TODO: Ask?? Do we include the hub in the route for 2Opt algorithm?
         //  Should we compare the best cost of the current route only or for the maxCost
+        double currentCost = phmlrp.getMaxCost();
+
         Random random = new Random();
         int randomRouteIdx = random.nextInt(phmlrp.getVehiclesList().size());
         List<Integer> bestRoute = phmlrp.getVehiclesList().get(randomRouteIdx);
-        if (bestRoute.size() < 2) return;
+        while (bestRoute.size() < 2) {
+            randomRouteIdx = random.nextInt(phmlrp.getVehiclesList().size());
+            bestRoute = phmlrp.getVehiclesList().get(randomRouteIdx);
+        }
         int hubIdx = randomRouteIdx / phmlrp.getNumVehiclesPerHub();
         int hub = phmlrp.getHubsArr()[hubIdx];
+        List<Integer> oldRoute = new ArrayList<>(bestRoute);
         bestRoute.add(0, hub);
         int n = bestRoute.size();
 
@@ -356,7 +367,17 @@ class Operations {
         phmlrp.getHubsArr()[hubIdx] = bestRoute.remove(0);
         phmlrp.getVehiclesList().set(randomRouteIdx, bestRoute);
 
-        phmlrp.calculateCost(PHMLRP.CostType.OPERATION);
+        double newCost = phmlrp.calculateCost(PHMLRP.CostType.OPERATION);
+
+        if (newCost >= currentCost) {
+            // if the new cost is greater than or equal to the former cost, reset the hub and route
+            phmlrp.getHubsArr()[hubIdx] = hub;
+            phmlrp.getVehiclesList().set(randomRouteIdx, oldRoute);
+            phmlrp.setMaxCost(currentCost);
+            return false;
+        }
+
+        return true;
     }
 
     /**
@@ -412,11 +433,11 @@ class Operations {
         Random random = new Random();
         int bestRoute = random.nextInt(phmlrp.getVehiclesList().size());
         int bestIdx = random.nextInt(phmlrp.getVehiclesList().get(bestRoute).size());
-        int bestCost = phmlrp.getMaxCost();
+        double bestCost = phmlrp.getMaxCost();
         for (int i = 0; i < phmlrp.getVehiclesList().size(); i++) {
             for (int j = 0; j < phmlrp.getVehiclesList().get(i).size(); j++) {
                 // insert the current node before each node
-                int cost = localSearchInsertNode(i, node, j);
+                double cost = localSearchInsertNode(i, node, j);
 //                System.out.println(cost);
                 if (cost < bestCost) {
                     bestCost = cost;
@@ -432,11 +453,11 @@ class Operations {
 //        System.out.println("Node: " + node);
     }
 
-    private int localSearchInsertNode(int routeIdx, int node, int newIdx) {
+    private double localSearchInsertNode(int routeIdx, int node, int newIdx) {
         // add the node at the new one
         phmlrp.getVehiclesList().get(routeIdx).add(newIdx, node);
         // get the new cost after the change
-        int newCost = phmlrp.calculateCost(PHMLRP.CostType.NORMAL);
+        double newCost = phmlrp.calculateCost(PHMLRP.CostType.NORMAL);
         // remove the node again
         phmlrp.getVehiclesList().get(routeIdx).remove(newIdx);
         return newCost;
@@ -501,18 +522,18 @@ class Operations {
         }
     }
 
-    void insertTwoNodes(boolean isSimulatedAnnealing) {
+    boolean insertTwoNodes(boolean isSimulatedAnnealing) {
         // if we have less than 2 routes, return.
-        if (phmlrp.getVehiclesList().size() < 2) return;
+        if (phmlrp.getVehiclesList().size() < 2) return false;
 
-        int currentCost = phmlrp.getMaxCost();
+        double currentCost = phmlrp.getMaxCost();
 
         Random random = new Random();
         // picking two routes randomly
         int routeIdx1 = random.nextInt(phmlrp.getVehiclesList().size());
 
         // if number of nodes in the first route is less than 3, we cannot remove two nodes.
-        if (phmlrp.getVehiclesList().get(routeIdx1).size() < 3) return;
+        if (phmlrp.getVehiclesList().get(routeIdx1).size() < 3) return false;
 
         int routeIdx2 = random.nextInt(phmlrp.getVehiclesList().size());
         while (routeIdx1 == routeIdx2) {
@@ -538,9 +559,9 @@ class Operations {
 //                + "\nvehicle2: " + routeIdx2 + " newIndex1: " + newIdx1 + " newIdx2: " + newIdx2);
 
         // get the new cost after the change
-        int newCost = phmlrp.calculateCost(PHMLRP.CostType.OPERATION);
+        double newCost = phmlrp.calculateCost(PHMLRP.CostType.OPERATION);
         if (isSimulatedAnnealing) {
-            return;
+            return true;
         }
         if (newCost >= currentCost) {
             // if the new cost is greater than or equal to the former cost,
@@ -550,7 +571,10 @@ class Operations {
             phmlrp.getVehiclesList().get(routeIdx1).add(nodeIdx2, removedNode2);
             removedNode1 = phmlrp.getVehiclesList().get(routeIdx2).remove(newIdx1);
             phmlrp.getVehiclesList().get(routeIdx1).add(nodeIdx1, removedNode1);
+            return false;
         }
+
+        return true;
     }
 
     void nodesRemoveAndGreedyInsert(float removalPercentage) {
@@ -564,7 +588,7 @@ class Operations {
         int[] removedNodes = new int[numNodesToRemove];
         removeNodes(numNodesToRemove, removedNodes);
 
-        int maxCost = phmlrp.getMaxCost();
+        double maxCost = phmlrp.getMaxCost();
 
         for (int i = 0; i < removedNodes.length; i++) {
             insertRemovedNode(maxCost, removedNodes[i]);
@@ -587,16 +611,16 @@ class Operations {
         }
     }
 
-    private void insertRemovedNode(int originalMaxCost, int node) {
+    private void insertRemovedNode(double originalMaxCost, int node) {
         phmlrp.setMaxCost(originalMaxCost);
 
         int counter = 0;
-        int bestCost = originalMaxCost;
+        double bestCost = originalMaxCost;
         int routeIdx = 0;
         int index = 0;
 
         for (int i = 0; i < phmlrp.getVehiclesList().size(); i++) {
-            int newCost = insertNode(i, node, 0);
+            double newCost = insertNode(i, node, 0);
             if (newCost < bestCost) {
                 bestCost = newCost;
                 routeIdx = i;
@@ -621,11 +645,11 @@ class Operations {
         phmlrp.getVehiclesList().get(routeIdx).add(index, node);
     }
 
-    private int insertNode(int routeIdx, int node, int index) {
+    private double insertNode(int routeIdx, int node, int index) {
         // adding the node at the index
         phmlrp.getVehiclesList().get(routeIdx).add(index, node);
         // get the new cost after the change
-        int newCost = phmlrp.calculateCost(PHMLRP.CostType.OPERATION);
+        double newCost = phmlrp.calculateCost(PHMLRP.CostType.OPERATION);
 
 //        phmlrp.print(false);
 

@@ -43,7 +43,7 @@ class SimulatedAnnealing {
         // Number of iterations of annealing before decreasing temperature
         final int numIterations = 1;
         // Global minimum
-        int min = phmlrp.getMaxCost();
+        double min = phmlrp.getMaxCost();
         // new solution initialization
         ArrayList<List<Integer>> newSol;
 
@@ -61,8 +61,8 @@ class SimulatedAnnealing {
             for (int i = 0; i < numIterations; i++) {
                 int oprationNum = doRandomOperation();
                 newSol = phmlrp.getVehiclesList();
-                int newCost = phmlrp.getSaOperationCost();
-                int difference = min - newCost;
+                double newCost = phmlrp.getSaOperationCost();
+                double difference = min - newCost;
 
                 row.createCell(0, CellType.NUMERIC).setCellValue(T);
                 row.createCell(1, CellType.NUMERIC).setCellValue(counter);
