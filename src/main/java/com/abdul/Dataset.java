@@ -8,17 +8,6 @@ import java.util.Arrays;
 import java.util.List;
 
 class Dataset {
-    /*public static void main(String[] args) throws IOException {
-        BufferedReader CSVFile = new BufferedReader(new FileReader("db/APNetworkDist200.csv"));
-        String dataRow = CSVFile.readLine();
-        dataRow = CSVFile.readLine();
-        dataRow = CSVFile.readLine();
-        while (dataRow != null && !dataRow.equals("")) {
-            print(dataRow);
-            dataRow = CSVFile.readLine();
-        }
-    }*/
-
     private static List<List<Double>> TRdistances = new ArrayList<>();
     private static List<List<Double>> AP100distances = new ArrayList<>();
     private static List<List<Double>> AP200distances = new ArrayList<>();
@@ -79,7 +68,18 @@ class Dataset {
 
     double getDistance(String dataset, int node1, int node2) {
         loadCSV(dataset);
-        return distances.get(node1).get(node2);
+        switch (dataset) {
+            case "TR":
+                return TRdistances.get(node1).get(node2);
+            case "AP100":
+                return AP100distances.get(node1).get(node2);
+            case "AP200":
+                return AP200distances.get(node1).get(node2);
+            case "CAB":
+                return CABdistances.get(node1).get(node2);
+        }
+
+        return 0.0;
     }
 
     private static void print(String dataRow) {

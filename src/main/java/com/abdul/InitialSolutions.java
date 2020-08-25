@@ -21,12 +21,12 @@ class InitialSolutions {
         int[] nodesDistancesSum = new int[numNodes];
         int totalSum = 0;
         for (int i = 0; i < numNodes; i++) {
-            int sum = 0;
+            int timeSum = 0;
             for (int j = 0; j < numNodes; j++) {
-                sum += phmlrp.getDistance(i, j);
+                timeSum += phmlrp.getDistance(i, j);
             }
-            nodesDistancesSum[i] = sum;
-            totalSum += sum;
+            nodesDistancesSum[i] = timeSum;
+            totalSum += timeSum;
 
             for (int j = 0; j < numNodes; j++) {
                 if (i != j && nodesDistancesSum[i] == nodesDistancesSum[j]) {
@@ -43,7 +43,7 @@ class InitialSolutions {
     void probabilisticInitSol() {
         ArrayList<Integer> nodesDistancesSum = new ArrayList<Integer>(numNodes);
         int totalSum = 0;
-        // sum nodes distances and the total of all the summations
+        // timeSum nodes distances and the total of all the summations
         for (int i = 0; i < numNodes; i++) {
             int sum = 0;
             for (int j = 0; j < numNodes; j++) {
@@ -54,11 +54,11 @@ class InitialSolutions {
         }
 
         Map<Integer, Double> normalizedSums = new LinkedHashMap<Integer, Double>();
-        // normalize the summations to => sum/totalSum
+        // normalize the summations to => timeSum/totalSum
         for (int i = 0; i < numNodes; i++) {
             double normalizedSum = (double) nodesDistancesSum.get(i) / totalSum;
             normalizedSums.put(i, normalizedSum);
-            System.out.println(i + "\t" + normalizedSum);
+//            System.out.println(i + "\t" + normalizedSum);
         }
         normalizedSums = Utils.sortByValue(normalizedSums);
 
@@ -87,14 +87,14 @@ class InitialSolutions {
                         h--;
                         continue;
                     }
-                    System.out.println("randomProb " + randomProb + " nodeProb " + n.getValue() +
-                            " hub " + hub + " distanceSum " + nodesDistancesSum.get(hub) +
-                            " totalSum " + totalSum);
+//                    System.out.println("randomProb " + randomProb + " nodeProb " + n.getValue() +
+//                            " hub " + hub + " distanceSum " + nodesDistancesSum.get(hub) +
+//                            " totalSum " + totalSum);
                     hubsArr[h] = hub;
                     isVisitedCity[hub] = true;
                     totalSum -= nodesDistancesSum.get(hub);
                     n.setValue(-1.0);
-                    // reset probabilities after changing the totalSum => sum/new totalSum
+                    // reset probabilities after changing the totalSum => timeSum/new totalSum
                     int ii = -1;
                     for (Map.Entry<Integer, Double> nn : normalizedSums.entrySet()) {
                         ii++;
@@ -103,7 +103,7 @@ class InitialSolutions {
                         // change the normalized sums. After the total change
                         double normalizedSum = (double) nodesDistancesSum.get(ii) / totalSum;
                         nn.setValue(normalizedSum);
-                        System.out.println(nn.getKey() + "\t" + normalizedSum);
+//                        System.out.println(nn.getKey() + "\t" + normalizedSum);
                     }
                     break;
                 }
@@ -188,8 +188,8 @@ class InitialSolutions {
                                 j--;
                                 continue;
                             }
-                            System.out.println("randomProb " + randomProb + " nodeProb " + n.getValue() +
-                                    " node " + node + " totalSum " + distancesSum);
+//                            System.out.println("randomProb " + randomProb + " nodeProb " + n.getValue() +
+//                                    " node " + node + " totalSum " + distancesSum);
 
                             phmlrp.getVehiclesList().get(i).add(j, node);
                             isVisitedCity[node] = true;
@@ -208,7 +208,7 @@ class InitialSolutions {
                                 // change the normalized sums. After the total change
                                 double normalizedSum = (nn.getValue() * oldDistancesSum) / distancesSum;
                                 nn.setValue(normalizedSum);
-                                System.out.println(nn.getKey() + "\t" + normalizedSum);
+//                                System.out.println(nn.getKey() + "\t" + normalizedSum);
                             }
                             break;
                         }

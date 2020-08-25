@@ -12,13 +12,13 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 
-class Gorubi {
+class Gurobi {
 
     private final String pyGorubiBasePath = "D:\\Anadolu_uni\\Thesis\\Gurobi-Python\\";
     private PHMLRP phmlrp;
     private int numNodes, numHubs, numVehicles;
 
-    Gorubi(PHMLRP phmlrp, int numNodes, int numHubs, int numVehicles) {
+    Gurobi(PHMLRP phmlrp, int numNodes, int numHubs, int numVehicles) {
         this.numNodes = numNodes;
         this.numHubs = numHubs;
         this.numVehicles = numVehicles;

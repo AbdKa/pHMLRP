@@ -1,15 +1,51 @@
 package com.abdul;
 
-import java.io.BufferedReader;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import org.apache.poi.xssf.usermodel.XSSFSheet;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+
+import java.io.*;
+import java.util.*;
 
 class Utils {
+    static List<List<Integer>> getCombinations() {
+        List<List<Integer>> combinationsList = new ArrayList<>();
+        try {
+            BufferedReader CSVFile = new BufferedReader(new FileReader("Combinations.csv"));
+            String dataRow = CSVFile.readLine();
+            while (dataRow != null && !dataRow.equals("")) {
+                // converting comma separate String to array of neighborhoods
+                String[] combsStrArr = dataRow.split(",");
+                List<Integer> comb = new ArrayList<>();
+
+                for (String neighborhood : combsStrArr) {
+                    int nbhd = Consts.neighborhoods.getOrDefault(neighborhood, 0);
+                    comb.add(nbhd);
+                }
+
+                // add combination to the list
+                combinationsList.add(comb);
+                // read next line
+                dataRow = CSVFile.readLine();
+            }
+        } catch (IOException e) {
+            System.out.println(e.getMessage());
+        }
+
+        return combinationsList;
+    }
+
+    static XSSFSheet[] createSheets(XSSFWorkbook workbook, List<List<Integer>> combinations) {
+        XSSFSheet[] list = new XSSFSheet[combinations.size()];
+        for (List<Integer> comb : combinations){
+            StringBuilder sheetName = new StringBuilder();
+            for (Integer nbhd: comb) {
+                sheetName.append(Consts.neighborhoodsStr.getOrDefault(nbhd, ""));
+                sheetName.append(".");
+            }
+        }
+        return list;
+    }
+
     static <K, V extends Comparable<? super V>> Map<K, V> sortByValue(Map<K, V> map) {
         List<Map.Entry<K, V>> list = new ArrayList<>(map.entrySet());
         list.sort(Map.Entry.comparingByValue());
@@ -20,5 +56,15 @@ class Utils {
         }
 
         return result;
+    }
+
+    static void createExcelFile(XSSFWorkbook workbook, String fileName) throws IOException {
+        //Write the workbook in file system
+        FileOutputStream out = new FileOutputStream(
+                    new File(fileName + ".xlsx"));
+
+        workbook.write(out);
+        out.close();
+        System.out.println(fileName + ".xlsx written successfully");
     }
 }

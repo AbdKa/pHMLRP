@@ -139,7 +139,7 @@ class DeterministicExplore {
             if(i == 801000) break;
         }
 
-        XSSFSheet secondSS = workbook.createSheet(spreadsheet.getSheetName() + " sum");
+        XSSFSheet secondSS = workbook.createSheet(spreadsheet.getSheetName() + " timeSum");
         XSSFRow xssfRow = secondSS.createRow(0);
         xssfRow.createCell(0, CellType.STRING).setCellValue("Operation");
         xssfRow.createCell(1, CellType.STRING).setCellValue("Successful Count");
@@ -152,12 +152,7 @@ class DeterministicExplore {
         }
 
         //Write the workbook in file system
-        FileOutputStream out = new FileOutputStream(
-                new File("deterministic_results_" + spreadsheet.getSheetName() + ".xlsx"));
-
-        workbook.write(out);
-        out.close();
-        System.out.println("deterministic_results.xlsx written successfully");
+        Utils.createExcelFile(workbook, "deterministic_results_" + spreadsheet.getSheetName());
     }
 
     private void printHubsAndRoutesToExcel(XSSFRow row) {

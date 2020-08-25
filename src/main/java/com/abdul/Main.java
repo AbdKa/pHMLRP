@@ -8,6 +8,7 @@ import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
 
 public class Main {
     public static void main(String[] args) throws IOException {
@@ -19,11 +20,13 @@ public class Main {
             return;
         }
 
+        Dataset dataset = new Dataset();
         PHMLRP phmlrpObj = new PHMLRP(params.getDataset(), params.getNumNodes(), params.getNumHubs(), params.getNumVehicles(),
                 params.getCollectionCostCFactor(), params.getDistributionCostCFactor(), params.getHubToHubCFactor(),
                 params.getRemovalPercentage());
 
         VND vnd = new VND(params);
+        vnd.runVND();
 
 //        InitialSolutions initialSolutions = new InitialSolutions(phmlrpObj, params.getNumNodes(), params.getNumHubs(), params.getNumVehicles());
 //        initialSolutions.probabilisticInitSol();
@@ -31,7 +34,7 @@ public class Main {
 //        phmlrpObj.print(false);
 
 
-//        Gorubi gurobi = new Gorubi(phmlrpObj, params.getNumNodes(), params.getNumHubs(), params.getNumVehicles());
+//        Gurobi gurobi = new Gurobi(phmlrpObj, params.getNumNodes(), params.getNumHubs(), params.getNumVehicles());
 //        gurobi.getInitSol();
 //        gurobi.optimizeRoute(new int[]{0,36,77,23,61,25,10,8,47});
 //        gurobi.getSolWithHubs(new int[]{0,1});
@@ -66,55 +69,55 @@ public class Main {
         XSSFWorkbook saWorkbook = new XSSFWorkbook();
         XSSFWorkbook dpWorkbook = new XSSFWorkbook();
 
-        applyAlgorithms(params, 2, 1, workbook, saWorkbook, dpWorkbook);
+//        applyAlgorithms(params, 2, 1, workbook, saWorkbook, dpWorkbook);
 //        applyAlgorithms(params, 2, 2, workbook, saWorkbook, dpWorkbook, "10.2.2");
 //        applyAlgorithms(params, 3, 1, workbook, saWorkbook, dpWorkbook, "10.3.1");
 //        applyAlgorithms(params, 3, 2, workbook, saWorkbook, dpWorkbook, "10.3.2");
 
         /*int counter = 10;
-        int sum = 0;
+        int timeSum = 0;
         for (int n = 0; n < counter; n++) {
             PHMLRP phmlrp = new PHMLRP(params.getNumNodes(), params.getNumHubs(), params.getNumVehicles(),
                     params.getCollectionCostCFactor(), params.getDistributionCostCFactor(), params.getHubToHubCFactor(),
                     params.getRemovalPercentage());
             phmlrp.greedySolution();
             phmlrp.calculateCost(PHMLRP.CostType.NORMAL);
-            sum += phmlrp.getMaxCost();
+            timeSum += phmlrp.getMaxCost();
         }
-        System.out.println("greedySolution: " + sum / counter);
+        System.out.println("greedySolution: " + timeSum / counter);
 
-        sum = 0;
+        timeSum = 0;
         for (int n = 0; n < counter; n++) {
             PHMLRP phmlrp = new PHMLRP(params.getNumNodes(), params.getNumHubs(), params.getNumVehicles(),
                     params.getCollectionCostCFactor(), params.getDistributionCostCFactor(), params.getHubToHubCFactor(),
                     params.getRemovalPercentage());
             phmlrp.semiGreedySolution();
             phmlrp.calculateCost(PHMLRP.CostType.NORMAL);
-            sum += phmlrp.getMaxCost();
+            timeSum += phmlrp.getMaxCost();
         }
-        System.out.println("semiGreedySolution: " + sum / counter);
+        System.out.println("semiGreedySolution: " + timeSum / counter);
 
-        sum = 0;
+        timeSum = 0;
         for (int n = 0; n < counter; n++) {
             PHMLRP phmlrp = new PHMLRP(params.getNumNodes(), params.getNumHubs(), params.getNumVehicles(),
                     params.getCollectionCostCFactor(), params.getDistributionCostCFactor(), params.getHubToHubCFactor(),
                     params.getRemovalPercentage());
             phmlrp.semiGreedySolution2();
             phmlrp.calculateCost(PHMLRP.CostType.NORMAL);
-            sum += phmlrp.getMaxCost();
+            timeSum += phmlrp.getMaxCost();
         }
-        System.out.println("semiGreedySolution2: " + sum / counter);
+        System.out.println("semiGreedySolution2: " + timeSum / counter);
 
-        sum = 0;
+        timeSum = 0;
         for (int n = 0; n < counter; n++) {
             PHMLRP phmlrp = new PHMLRP(params.getNumNodes(), params.getNumHubs(), params.getNumVehicles(),
                     params.getCollectionCostCFactor(), params.getDistributionCostCFactor(), params.getHubToHubCFactor(),
                     params.getRemovalPercentage());
             phmlrp.randomSolution();
             phmlrp.calculateCost(PHMLRP.CostType.NORMAL);
-            sum += phmlrp.getMaxCost();
+            timeSum += phmlrp.getMaxCost();
         }
-        System.out.println("randomSolution: " + sum / counter);*/
+        System.out.println("randomSolution: " + timeSum / counter);*/
 
 //        int counter = 0;
 //        for (int n = 0; n < 100; n++) {
