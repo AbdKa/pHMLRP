@@ -6,7 +6,7 @@ import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import java.io.IOException;
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 class VND {
@@ -15,10 +15,10 @@ class VND {
     private int replicasPerProb = 10;
     private int replicasPerCombination = 30;
 
-    private XSSFWorkbook workbook = new XSSFWorkbook();
+    private XSSFWorkbook workbook;
     private XSSFSheet[] spreadsheets;
 
-//    private long[] timeSum;
+    private float[][] timeSum;
 //    private long[] timeSumProbs;
 
     private String[] problemInstances = {
@@ -45,22 +45,23 @@ class VND {
 
 //    private List<List<List<List<PHMLRP>>>> bestReplicas = new ArrayList<>(problemInstances.length);
 
+    private double[][] bestCosts;
+    private PHMLRP[][] bestSolutions;
+
     VND(Params params) {
         this.params = params;
         combinations = Utils.getCombinations();
-        // TODO: remove time sums
-//        timeSum = new long[runs];
+
+        bestSolutions = new PHMLRP[problemInstances.length][combinations.size()];
+        bestCosts = new double[problemInstances.length][combinations.size()];
+        for (double[] arr : bestCosts) {
+            Arrays.fill(arr, Integer.MAX_VALUE);
+        }
+
+        timeSum = new float[problemInstances.length][combinations.size()];
 //        timeSumProbs = new long[problemInstances.length];
         // excel operations
-        spreadsheets = new XSSFSheet[problemInstances.length];
-
-        for (int i = 0; i < problemInstances.length; i++) {
-            spreadsheets[i] = workbook.createSheet(problemInstances[i]);
-            XSSFRow row = spreadsheets[i].createRow(0);
-            for (int j = 0; j < combinations.size(); j++) {
-                row.createCell(j, CellType.NUMERIC).setCellValue(j);
-            }
-        }
+        resetWorkbook();
     }
 
     void runVND() {
@@ -73,16 +74,24 @@ class VND {
             long time = System.currentTimeMillis();
             doRun(i);
             sum += System.currentTimeMillis() - time;
+
+            /*if ((i + 1) % 50 == 0) {
+                try {
+                    Utils.createExcelFile(workbook,
+                            "results/VND_Best_combination" + (i - 49) + "_" + i);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
+                resetWorkbook();
+            }*/
         }
 
-        try {
-            Utils.createExcelFile(workbook,
-                    "VND_Best_combination");
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        applyLocalSearch();
 
-        System.out.println("A run average runtime: " + (sum/1000)/runs);
+        writeBCtoExcel();
+
+        System.out.println("A run average runtime: " + (sum / 1000) / runs);
 
 //        for (int i = 0; i < runs; i++) {
 //            System.out.println(i + " " + timeSum[i]/1000);
@@ -91,6 +100,19 @@ class VND {
 //        for (int i = 0; i < problemInstances.length; i++) {
 //            System.out.println(problemInstances[i] + " " + timeSumProbs[i]);
 //        }
+    }
+
+    private void resetWorkbook() {
+        workbook = new XSSFWorkbook();
+        spreadsheets = new XSSFSheet[problemInstances.length];
+
+        for (int i = 0; i < problemInstances.length; i++) {
+            spreadsheets[i] = workbook.createSheet(problemInstances[i]);
+            XSSFRow row = spreadsheets[i].createRow(0);
+            for (int j = 0; j < combinations.size(); j++) {
+                row.createCell(j, CellType.NUMERIC).setCellValue(j);
+            }
+        }
     }
 
     private void doRun(int i) {
@@ -114,18 +136,20 @@ class VND {
 //                    List<PHMLRP> repPerCombList = new ArrayList<>(replicasPerCombination);
                     for (int repPerCombinationIdx = 0; repPerCombinationIdx < replicasPerCombination; repPerCombinationIdx++) {
                         // run each problem instance n number of replicas
+
+                        long combStartTime = System.nanoTime();
+
                         PHMLRP phmlrp = newPHMLRPInstance(problemInstances[probIdx]);
                         createInitSol(phmlrp);
                         for (int k : combinations.get(combIdx)) {
                             // for each neighborhood
-                                System.out.println(i +
-                                        " " + problemInstances[probIdx] +
-                                        " " + replicaIdx +
-                                        " " + combIdx +
-                                        " " + repPerCombinationIdx +
-                                        " " + k);
+                            System.out.println(i +
+                                    " " + problemInstances[probIdx] +
+                                    " " + replicaIdx +
+                                    " " + combIdx +
+                                    " " + repPerCombinationIdx +
+                                    " " + k);
 
-//                            long time = System.nanoTime();
                             while (true) {
                                 // change neighborhood until no better solution, jump to next one
                                 if (!phmlrp.callOperation(k)) {
@@ -133,13 +157,18 @@ class VND {
                                     break;
                                 }
                             }
-
-//                            long diff = System.nanoTime() - time;
-//                            timeSum[k] += diff / 1000;
                         }
 
                         double bestCost = phmlrp.getMaxCost();
                         rows[repPerCombinationIdx].createCell(combIdx, CellType.NUMERIC).setCellValue(bestCost);
+
+                        if (bestCost < bestCosts[probIdx][combIdx]) {
+                            long diff = System.nanoTime() - combStartTime;
+                            timeSum[probIdx][combIdx] = diff / 1000;
+                            bestCosts[probIdx][combIdx] = bestCost;
+
+                            bestSolutions[probIdx][combIdx] = phmlrp;
+                        }
 
 //                        repPerCombList.add(phmlrp);
                     }
@@ -154,6 +183,85 @@ class VND {
 //            timeSumProbs[probIdx] += diffProb / 1000;
 
 //            bestReplicas.add(repPerProbList);
+        }
+    }
+
+    private void writeBCtoExcel() {
+        XSSFWorkbook bcWorkbook = new XSSFWorkbook();
+        XSSFSheet bcSheet = bcWorkbook.createSheet("Best Costs");
+
+        for (int j = 0; j < bestCosts.length; j++) {
+            XSSFRow row0 = null;
+            if (j == 0) {
+                row0 = bcSheet.createRow(j);
+            }
+            XSSFRow row = bcSheet.createRow(j + 1);
+            row.createCell(0, CellType.NUMERIC).setCellValue(problemInstances[j]);
+            for (int k = 0; k < bestCosts[j].length; k++) {
+                if (j == 0) {
+                    row0.createCell(k+1, CellType.NUMERIC).setCellValue(k);
+//                    row0.createCell((k * 2)+1, CellType.NUMERIC).setCellValue(k);
+//                    row0.createCell((k * 2)+2, CellType.STRING).setCellValue("T (Micro Sec)");
+                }
+                row.createCell(k+1, CellType.NUMERIC).setCellValue(bestCosts[j][k]);
+//                row.createCell((k * 2)+1, CellType.NUMERIC).setCellValue(bestCosts[j][k]);
+//                row.createCell((k * 2)+2, CellType.NUMERIC).setCellValue(timeSum[j][k]);
+            }
+        }
+
+        try {
+            Utils.createExcelFile(bcWorkbook,
+                    "results/VND_Best_Costs");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void applyLocalSearch() {
+        XSSFWorkbook bcWorkbook = new XSSFWorkbook();
+        XSSFSheet bcSheet = bcWorkbook.createSheet("Best Costs");
+
+        for (int i = 0; i < bestSolutions.length; i++) {
+            XSSFRow row0 = null;
+            if (i == 0) {
+                row0 = bcSheet.createRow(0);
+            }
+            XSSFRow row = bcSheet.createRow(i + 1);
+            row.createCell(0, CellType.STRING).setCellValue(problemInstances[i]);
+            for (int k = 0; k < bestSolutions[i].length; k++) {
+                if (i == 0) {
+                    row0.createCell((k*5)+1, CellType.STRING).setCellValue("Before LS");
+                    row0.createCell((k*5)+2, CellType.STRING).setCellValue("Insertion LS");
+                    row0.createCell((k*5)+3, CellType.STRING).setCellValue("Swap LS");
+                    row0.createCell((k*5)+4, CellType.STRING).setCellValue("SwapHub LS");
+                    row0.createCell((k*5)+5, CellType.BLANK);
+                }
+
+                row.createCell((k*5)+1, CellType.NUMERIC).setCellValue(bestCosts[i][k]);
+
+                Operations operations = new Operations(bestSolutions[i][k]);
+
+                System.out.println("Insertion LS");
+                operations.localSearchInsertion();
+                row.createCell((k*5)+2, CellType.NUMERIC).setCellValue(bestSolutions[i][k].getMaxCost());
+
+                System.out.println("Swap LS");
+                operations.localSearchSwap();
+                row.createCell((k*5)+3, CellType.NUMERIC).setCellValue(bestSolutions[i][k].getMaxCost());
+
+                System.out.println("SwapHub LS");
+                operations.localSearchSwapHubWithNode();
+                row.createCell((k*5)+4, CellType.NUMERIC).setCellValue(bestSolutions[i][k].getMaxCost());
+
+                row.createCell((k*5)+5, CellType.BLANK);
+            }
+        }
+
+        try {
+            Utils.createExcelFile(bcWorkbook,
+                    "results/VND_With_LS");
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 

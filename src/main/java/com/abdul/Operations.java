@@ -380,148 +380,6 @@ class Operations {
         return true;
     }
 
-    /**
-     * insertionLocalSearch start
-     */
-    void insertionLocalSearch() {
-        // create a list of all non-hub nodes
-        List<Integer> initList = new ArrayList<Integer>();
-        for (List<Integer> list : phmlrp.getVehiclesList()) {
-            List<Integer> innerList = new ArrayList<Integer>(list);
-            initList.addAll(innerList);
-        }
-
-        for (int i = 0; i < initList.size(); i++) {
-            // going through each node recursively,
-            // then inserting the current node in every possible index and calculating cost each time
-            int[] routeAndNode = searchInMainList(initList.get(i));
-            if (phmlrp.getVehiclesList().get(routeAndNode[0]).size() < 2) {
-                int singleNodeRouteCount = 0;
-                for (List<Integer> route : phmlrp.getVehiclesList()) {
-                    // at least one route with single node will be found
-                    if (route.size() < 2) singleNodeRouteCount++;
-                }
-                if (i < initList.size() - singleNodeRouteCount) {
-                    initList.add(initList.remove(i));
-                    i--;
-                }
-                continue;
-            }
-            phmlrp.getVehiclesList().get(routeAndNode[0]).remove(routeAndNode[1]);
-            insertAfterEachNode(initList.get(i));
-
-//            swapLocalSearch();
-//            swapHubWithNodeLocalSearch();
-//            phmlrp.print(false);
-        }
-    }
-
-    private int[] searchInMainList(int node) {
-        int route = 0, nodeIdx = 0;
-        for (int i = 0; i < phmlrp.getVehiclesList().size(); i++) {
-            for (int j = 0; j < phmlrp.getVehiclesList().get(i).size(); j++) {
-                if (phmlrp.getVehiclesList().get(i).get(j) == node) {
-                    route = i;
-                    nodeIdx = j;
-                }
-            }
-        }
-        return new int[]{route, nodeIdx};
-    }
-
-    private void insertAfterEachNode(int node) {
-        Random random = new Random();
-        int bestRoute = random.nextInt(phmlrp.getVehiclesList().size());
-        int bestIdx = random.nextInt(phmlrp.getVehiclesList().get(bestRoute).size());
-        double bestCost = phmlrp.getMaxCost();
-        for (int i = 0; i < phmlrp.getVehiclesList().size(); i++) {
-            for (int j = 0; j < phmlrp.getVehiclesList().get(i).size(); j++) {
-                // insert the current node before each node
-                double cost = localSearchInsertNode(i, node, j);
-//                System.out.println(cost);
-                if (cost < bestCost) {
-                    bestCost = cost;
-                    bestRoute = i;
-                    bestIdx = j;
-//                    phmlrp.print(false);
-                }
-            }
-        }
-        phmlrp.getVehiclesList().get(bestRoute).add(bestIdx, node);
-        phmlrp.setMaxCost(bestCost);
-
-//        System.out.println("Node: " + node);
-    }
-
-    private double localSearchInsertNode(int routeIdx, int node, int newIdx) {
-        // add the node at the new one
-        phmlrp.getVehiclesList().get(routeIdx).add(newIdx, node);
-        // get the new cost after the change
-        double newCost = phmlrp.calculateCost(PHMLRP.CostType.NORMAL);
-        // remove the node again
-        phmlrp.getVehiclesList().get(routeIdx).remove(newIdx);
-        return newCost;
-    }
-    /**
-     * insertionLocalSearch end
-     * */
-
-    /**
-     * swapLocalSearch start
-     */
-    void swapLocalSearch() {
-        // create a list of all non-hub nodes
-        List<Integer> initList = new ArrayList<Integer>();
-        for (List<Integer> list : phmlrp.getVehiclesList()) {
-            List<Integer> innerList = new ArrayList<Integer>(list);
-            initList.addAll(innerList);
-        }
-
-        for (int i = 0; i < initList.size(); i++) {
-            // going through each node recursively,
-            // then swapping the current node with every other node and calculating cost each time
-            int[] routeAndNode = searchInMainList(initList.get(i));
-            swapWithEachNode(routeAndNode[0], routeAndNode[1]);
-//            insertionLocalSearch();
-//            swapHubWithNodeLocalSearch();
-        }
-    }
-
-    private void swapWithEachNode(int routeIdx, int nodeIdx) {
-        int counter = 0;
-        int bCounter = 0;
-        for (int i = 0; i < phmlrp.getVehiclesList().size(); i++) {
-            for (int j = 0; j < phmlrp.getVehiclesList().get(i).size(); j++) {
-                if (routeIdx == i && nodeIdx == j) continue;
-                // insert the current node before each node
-                if (routeIdx == i) {
-                    swapNodeInRoute(false, routeIdx, nodeIdx, j);
-//                        phmlrp.print(false);
-                } else {
-                    swapNodeWithinRoutes(false, routeIdx, i, nodeIdx, j);
-//                        phmlrp.print(false);
-                }
-            }
-        }
-//        System.out.println("Route: " + routeIdx + " Node: " + nodeIdx + " Counter: " + counter + " bCounter: " + bCounter);
-    }
-
-    /**
-     * swapLocalSearch end
-     */
-
-    void swapHubWithNodeLocalSearch() {
-        for (int h = 0; h < phmlrp.getHubsArr().length; h++) {
-            for (int i = 0; i < phmlrp.getVehiclesList().size(); i++) {
-                for (int j = 0; j < phmlrp.getVehiclesList().get(i).size(); j++) {
-                    // going through each node recursively,
-                    // then swapping the current node with every other node and calculating cost each time
-                    swapHubWithNode(false, h, i, j);
-                }
-            }
-        }
-    }
-
     boolean insertTwoNodes(boolean isSimulatedAnnealing) {
         // if we have less than 2 routes, return.
         if (phmlrp.getVehiclesList().size() < 2) return false;
@@ -667,5 +525,147 @@ class Operations {
         }
         cost += phmlrp.getDistance(bestRoute.get(bestRoute.size() - 1), bestRoute.get(0));
         return cost;
+    }
+
+    /**
+     * localSearchInsertion start
+     */
+    void localSearchInsertion() {
+        // create a list of all non-hub nodes
+        List<Integer> initList = new ArrayList<Integer>();
+        for (List<Integer> list : phmlrp.getVehiclesList()) {
+            List<Integer> innerList = new ArrayList<Integer>(list);
+            initList.addAll(innerList);
+        }
+
+        for (int i = 0; i < initList.size(); i++) {
+            // going through each node recursively,
+            // then inserting the current node in every possible index and calculating cost each time
+            int[] routeAndNode = searchInMainList(initList.get(i));
+            if (phmlrp.getVehiclesList().get(routeAndNode[0]).size() < 2) {
+                int singleNodeRouteCount = 0;
+                for (List<Integer> route : phmlrp.getVehiclesList()) {
+                    // at least one route with single node will be found
+                    if (route.size() < 2) singleNodeRouteCount++;
+                }
+                if (i < initList.size() - singleNodeRouteCount) {
+                    initList.add(initList.remove(i));
+                    i--;
+                }
+                continue;
+            }
+            phmlrp.getVehiclesList().get(routeAndNode[0]).remove(routeAndNode[1]);
+            insertAfterEachNode(initList.get(i));
+
+//            localSearchSwap();
+//            localSearchSwapHubWithNode();
+//            phmlrp.print(false);
+        }
+    }
+
+    private int[] searchInMainList(int node) {
+        int route = 0, nodeIdx = 0;
+        for (int i = 0; i < phmlrp.getVehiclesList().size(); i++) {
+            for (int j = 0; j < phmlrp.getVehiclesList().get(i).size(); j++) {
+                if (phmlrp.getVehiclesList().get(i).get(j) == node) {
+                    route = i;
+                    nodeIdx = j;
+                }
+            }
+        }
+        return new int[]{route, nodeIdx};
+    }
+
+    private void insertAfterEachNode(int node) {
+        Random random = new Random();
+        int bestRoute = random.nextInt(phmlrp.getVehiclesList().size());
+        int bestIdx = random.nextInt(phmlrp.getVehiclesList().get(bestRoute).size());
+        double bestCost = phmlrp.getMaxCost();
+        for (int i = 0; i < phmlrp.getVehiclesList().size(); i++) {
+            for (int j = 0; j < phmlrp.getVehiclesList().get(i).size(); j++) {
+                // insert the current node before each node
+                double cost = insertNodeLocalSearch(i, node, j);
+//                System.out.println(cost);
+                if (cost < bestCost) {
+                    bestCost = cost;
+                    bestRoute = i;
+                    bestIdx = j;
+//                    phmlrp.print(false);
+                }
+            }
+        }
+        phmlrp.getVehiclesList().get(bestRoute).add(bestIdx, node);
+        phmlrp.setMaxCost(bestCost);
+
+//        System.out.println("Node: " + node);
+    }
+
+    private double insertNodeLocalSearch(int routeIdx, int node, int newIdx) {
+        // add the node at the new one
+        phmlrp.getVehiclesList().get(routeIdx).add(newIdx, node);
+        // get the new cost after the change
+        double newCost = phmlrp.calculateCost(PHMLRP.CostType.NORMAL);
+        // remove the node again
+        phmlrp.getVehiclesList().get(routeIdx).remove(newIdx);
+        return newCost;
+    }
+    /**
+     * localSearchInsertion end
+     * */
+
+    /**
+     * localSearchSwap start
+     */
+    void localSearchSwap() {
+        // create a list of all non-hub nodes
+        List<Integer> initList = new ArrayList<Integer>();
+        for (List<Integer> list : phmlrp.getVehiclesList()) {
+            List<Integer> innerList = new ArrayList<Integer>(list);
+            initList.addAll(innerList);
+        }
+
+        for (int i = 0; i < initList.size(); i++) {
+            // going through each node recursively,
+            // then swapping the current node with every other node and calculating cost each time
+            int[] routeAndNode = searchInMainList(initList.get(i));
+            swapWithEachNode(routeAndNode[0], routeAndNode[1]);
+//            localSearchInsertion();
+//            localSearchSwapHubWithNode();
+        }
+    }
+
+    private void swapWithEachNode(int routeIdx, int nodeIdx) {
+        int counter = 0;
+        int bCounter = 0;
+        for (int i = 0; i < phmlrp.getVehiclesList().size(); i++) {
+            for (int j = 0; j < phmlrp.getVehiclesList().get(i).size(); j++) {
+                if (routeIdx == i && nodeIdx == j) continue;
+                // insert the current node before each node
+                if (routeIdx == i) {
+                    swapNodeInRoute(false, routeIdx, nodeIdx, j);
+//                        phmlrp.print(false);
+                } else {
+                    swapNodeWithinRoutes(false, routeIdx, i, nodeIdx, j);
+//                        phmlrp.print(false);
+                }
+            }
+        }
+//        System.out.println("Route: " + routeIdx + " Node: " + nodeIdx + " Counter: " + counter + " bCounter: " + bCounter);
+    }
+
+    /**
+     * localSearchSwap end
+     */
+
+    void localSearchSwapHubWithNode() {
+        for (int h = 0; h < phmlrp.getHubsArr().length; h++) {
+            for (int i = 0; i < phmlrp.getVehiclesList().size(); i++) {
+                for (int j = 0; j < phmlrp.getVehiclesList().get(i).size(); j++) {
+                    // going through each node recursively,
+                    // then swapping the current node with every other node and calculating cost each time
+                    swapHubWithNode(false, h, i, j);
+                }
+            }
+        }
     }
 }

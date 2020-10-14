@@ -25,6 +25,7 @@ public class Main {
                 params.getCollectionCostCFactor(), params.getDistributionCostCFactor(), params.getHubToHubCFactor(),
                 params.getRemovalPercentage());
 
+        // VND
         VND vnd = new VND(params);
         vnd.runVND();
 
@@ -133,9 +134,9 @@ public class Main {
 //                    counter++;
 //                    break;
 //                }
-//                operations.swapLocalSearch();
-////                operations.swapHubWithNodeLocalSearch();
-////                operations.insertionLocalSearch();
+//                operations.localSearchSwap();
+////                operations.localSearchSwapHubWithNode();
+////                operations.localSearchInsertion();
 //            }
 //            phmlrp.print(false);
 //        }
@@ -144,28 +145,28 @@ public class Main {
 
     private static void applyAlgorithms(Params params, int numHubs, int numVehicles,
                                         XSSFWorkbook workbook, XSSFWorkbook saWorkbook, XSSFWorkbook dpWorkbook) throws IOException {
-        PHMLRP phmlrp = new PHMLRP(params.getDataset(), params.getNumNodes(), params.getNumHubs(), params.getNumVehicles(),
-                params.getCollectionCostCFactor(), params.getDistributionCostCFactor(), params.getHubToHubCFactor(),
-                params.getRemovalPercentage());
-        randomSolutionAndCost(phmlrp);
-
-        String sheetName = String.valueOf(params.getNumNodes()) + '.' + params.getNumHubs() + '.' + params.getNumVehicles();
-        XSSFSheet spreadsheet = workbook.createSheet(sheetName);
-        createFirstRow(spreadsheet);
-        DeterministicExplore de = new DeterministicExplore(phmlrp);
-        de.doDeterministicExplore(workbook, spreadsheet);
-
-        // Simulated Annealing
-//        PHMLRP saPhmlrp = new PHMLRP(10, numHubs, numVehicles,
+//        PHMLRP phmlrp = new PHMLRP(params.getDataset(), params.getNumNodes(), params.getNumHubs(), params.getNumVehicles(),
 //                params.getCollectionCostCFactor(), params.getDistributionCostCFactor(), params.getHubToHubCFactor(),
 //                params.getRemovalPercentage());
-//        saPhmlrp.setSimulatedAnnealing(true);
-//        randomSolutionAndCost(saPhmlrp);
+//        randomSolutionAndCost(phmlrp);
 //
-//        XSSFSheet saSpreadsheet = saWorkbook.createSheet(sheetName);
-//        createSaFirstRow(saSpreadsheet);
-//        SimulatedAnnealing simulatedAnnealing = new SimulatedAnnealing(saPhmlrp);
-//        simulatedAnnealing.applySA(saWorkbook, saSpreadsheet);
+        String sheetName = String.valueOf(params.getNumNodes()) + '.' + params.getNumHubs() + '.' + params.getNumVehicles();
+//        XSSFSheet spreadsheet = workbook.createSheet(sheetName);
+//        createFirstRow(spreadsheet);
+//        DeterministicExplore de = new DeterministicExplore(phmlrp);
+//        de.doDeterministicExplore(workbook, spreadsheet);
+
+        // Simulated Annealing
+        PHMLRP saPhmlrp = new PHMLRP(params.getDataset(), params.getNumNodes(), params.getNumHubs(), params.getNumVehicles(),
+                params.getCollectionCostCFactor(), params.getDistributionCostCFactor(), params.getHubToHubCFactor(),
+                params.getRemovalPercentage());
+        saPhmlrp.setSimulatedAnnealing(true);
+        randomSolutionAndCost(saPhmlrp);
+
+        XSSFSheet saSpreadsheet = saWorkbook.createSheet(sheetName);
+        createSaFirstRow(saSpreadsheet);
+        SimulatedAnnealing simulatedAnnealing = new SimulatedAnnealing(saPhmlrp);
+        simulatedAnnealing.applySA(saWorkbook, saSpreadsheet);
 
 //        PHMLRP dpPhmlrp = new PHMLRP(10, numHubs, numVehicles,
 //                params.getCollectionCostCFactor(), params.getDistributionCostCFactor(), params.getHubToHubCFactor(),

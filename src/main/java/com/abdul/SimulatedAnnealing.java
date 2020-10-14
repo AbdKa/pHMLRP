@@ -39,9 +39,9 @@ class SimulatedAnnealing {
         // Temperature at which iteration terminates
         final double minT = .0000001;
         // Decrease in temperature
-        final double alpha = 0.99;
+        final double alpha = 0.999;
         // Number of iterations of annealing before decreasing temperature
-        final int numIterations = 1;
+        final int numIterations = 10;
         // Global minimum
         double min = phmlrp.getMaxCost();
         // new solution initialization
@@ -148,8 +148,8 @@ class SimulatedAnnealing {
                 break;
         }
 
-        operations.insertionLocalSearch();
-        operations.swapHubWithNodeLocalSearch();
+        operations.localSearchInsertion();
+        operations.localSearchSwapHubWithNode();
         return randOpr;
     }
 }

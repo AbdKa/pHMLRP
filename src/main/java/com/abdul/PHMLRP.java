@@ -507,10 +507,10 @@ class PHMLRP {
                 operations.twoOptAlgorithm();
                 break;
             case 7:
-                operations.insertionLocalSearch();
+                operations.localSearchInsertion();
                 break;
             case 8:
-                operations.swapLocalSearch();
+                operations.localSearchSwap();
                 break;
             case 9:
                 operations.insertTwoNodes(false);
