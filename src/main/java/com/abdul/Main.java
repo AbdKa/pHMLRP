@@ -8,7 +8,6 @@ import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import java.io.IOException;
-import java.time.LocalDateTime;
 
 public class Main {
     public static void main(String[] args) throws IOException {
@@ -25,9 +24,22 @@ public class Main {
                 params.getCollectionCostCFactor(), params.getDistributionCostCFactor(), params.getHubToHubCFactor(),
                 params.getRemovalPercentage());
 
+        InitialSolutions initialSolutions = new InitialSolutions(phmlrpObj);
+        initialSolutions.greedySolution();
+//        phmlrpObj.setHubsArr(new int[]{0, 1});
+//        ArrayList<List<Integer>> vList = new ArrayList<>();
+//        vList.add(Arrays.asList(6, 8, 9, 2, 5, 4));
+//        vList.add(Arrays.asList(3, 7));
+//        phmlrpObj.resetVehiclesList(vList);
+        phmlrpObj.calculateCost(PHMLRP.CostType.NORMAL);
+        phmlrpObj.print(false);
+
+        IncompleteHubs incompleteHubs = new IncompleteHubs(phmlrpObj, "Greedy");
+        incompleteHubs.runIncomplete();
+
         // VND
-        VND vnd = new VND(params);
-        vnd.runVND();
+//        VND vnd = new VND(params);
+//        vnd.runVND();
 
 //        InitialSolutions initialSolutions = new InitialSolutions(phmlrpObj, params.getNumNodes(), params.getNumHubs(), params.getNumVehicles());
 //        initialSolutions.probabilisticInitSol();
@@ -180,7 +192,8 @@ public class Main {
     }
 
     private static void randomSolutionAndCost(PHMLRP phmlrp) {
-        phmlrp.greedySolution();
+        InitialSolutions initialSolutions = new InitialSolutions(phmlrp);
+        initialSolutions.randomSolution();
         phmlrp.calculateCost(PHMLRP.CostType.NORMAL);
         phmlrp.print(false);
     }

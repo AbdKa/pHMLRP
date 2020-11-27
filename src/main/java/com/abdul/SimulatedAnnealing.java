@@ -39,7 +39,7 @@ class SimulatedAnnealing {
         // Temperature at which iteration terminates
         final double minT = .0000001;
         // Decrease in temperature
-        final double alpha = 0.999;
+        final double alpha = 0.95;
         // Number of iterations of annealing before decreasing temperature
         final int numIterations = 10;
         // Global minimum

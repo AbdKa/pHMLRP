@@ -1,8 +1,10 @@
 package com.abdul;
 
-import com.abdul.dbs.*;
+import com.abdul.dbs.TurkishNetwork;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
 
 class PHMLRP {
     private double maxCost, maxNonMinEdgeCost, maxCostAfterOperation = 0;
@@ -15,13 +17,16 @@ class PHMLRP {
     private boolean isSimulatedAnnealing = false;
     private double saOperationCost;
 
+    private int[] collectionCostArr;
+    private int[] distributionCostArr;
+
     enum CostType {
         NORMAL, OPERATION
     }
 
     /**
      * Constructor
-     * */
+     */
     PHMLRP(String dataset, int numNodes, int numHubs, int numVehicles,
            float collectionCostCFactor, float distributionCostCFactor, float hubToHubCFactor,
            float removalPercentage) {
@@ -39,41 +44,6 @@ class PHMLRP {
         for (int i = 0; i < numHubs * numVehicles; i++) {
             vehiclesList.add(new ArrayList<Integer>());
         }
-    }
-
-    void randomSolution() {
-        // 1- pick hubs randomly
-        pickHubs();
-        // 2- assign non-hub nodes to hubs randomly
-        // 3- distribute non-hubs on the vehicles
-        assignNonHubsToVehicles();
-    }
-
-    void semiGreedySolution() {
-        // 1- greedily pick hubs, after calculating the average distances for each node
-        greedyPickHubs();
-        // 2- greedily assign non-hub nodes to hubs
-        // 3- distribute non-hubs on the vehicles
-        assignNonHubsToVehicles();
-    }
-
-    void semiGreedySolution2() {
-        // 1- greedily pick hubs, after calculating the average distances for each node
-        pickHubs();
-        // 2- greedily assign non-hub nodes to hubs
-        // 3- distribute non-hubs on the vehicles
-        greedilyAssignNonHubsToVehicles();
-    }
-
-    /**
-     * Getters and setters
-     * **/
-    void greedySolution() {
-        // 1- greedily pick hubs, after calculating the average distances for each node
-        greedyPickHubs();
-        // 2- greedily assign non-hub nodes to hubs
-        // 3- distribute non-hubs on the vehicles
-        greedilyAssignNonHubsToVehicles();
     }
 
     void setSimulatedAnnealing(boolean simulatedAnnealing) {
@@ -129,8 +99,32 @@ class PHMLRP {
         }
     }
 
+    public boolean[] getIsVisitedCity() {
+        return isVisitedCity;
+    }
+
     void setIsVisitedCity(boolean[] isVisitedCity) {
         this.isVisitedCity = isVisitedCity;
+    }
+
+    public float getCollectionCostCFactor() {
+        return collectionCostCFactor;
+    }
+
+    public float getDistributionCostCFactor() {
+        return distributionCostCFactor;
+    }
+
+    public float getHubToHubCFactor() {
+        return hubToHubCFactor;
+    }
+
+    public int[] getCollectionCostArr() {
+        return collectionCostArr;
+    }
+
+    public int[] getDistributionCostArr() {
+        return distributionCostArr;
     }
 
     /**
@@ -144,146 +138,10 @@ class PHMLRP {
         return new Dataset().getDistance(dataset, node1, node2);
     }
 
-    private void pickHubs() {
-        for (int i = 0; i < numHubs; i++) {
-            Random rand = new Random();
-            int randomNode = rand.nextInt(numNodes); // random node index
-
-            if (isVisitedCity[randomNode]) {
-                i--;
-                continue;
-            }
-
-            hubsArr[i] = randomNode;
-            isVisitedCity[randomNode] = true;
-        }
-    }
-
-    private void greedyPickHubs() {
-        Map<Integer, Integer> nodesDistanceAvg = new LinkedHashMap<Integer, Integer>();
-        for (int i = 0; i < numNodes; i++) {
-            int sum = 0;
-            for (int j = 0; j < numNodes; j++) {
-                sum += getDistance(i, j);
-            }
-            nodesDistanceAvg.put(i, sum / numNodes);
-        }
-
-        nodesDistanceAvg = Utils.sortByValue(nodesDistanceAvg);
-
-        int h = 0;
-        for (Map.Entry node : nodesDistanceAvg.entrySet()) {
-            if (h >= numHubs) break;
-            hubsArr[h] = (int) node.getKey();
-            isVisitedCity[hubsArr[h]] = true;
-            h++;
-        }
-    }
-
-    private void assignNonHubsToVehicles() {
-        /* Assigning non-hub nodes to vehicles */
-        // min and max number of nodes in a vehicle
-        int minNumOfNodesInVehicle = 1;
-        int maxNumOfNodesInVehicle = numNodes - (numHubs * (numVehiclesPerHub + 1)) + 1;
-        int remainingNodes = numNodes - numHubs;
-
-        // loop through vehicles lists
-        for (int i = 0; i < vehiclesList.size(); i++) {
-            Random random = new Random();
-            int numOfNodesForVehicle = random.nextInt(maxNumOfNodesInVehicle) + minNumOfNodesInVehicle;
-            int remainingVehicles = vehiclesList.size() - i;
-
-            // this condition ensures that we do not run out of nodes
-            if (remainingNodes - numOfNodesForVehicle >= remainingVehicles - 1) {
-                // if one vehicle left, fill it with the remaining nodes
-                if (remainingVehicles == 1) {
-                    numOfNodesForVehicle = remainingNodes;
-                }
-
-                // subtract the number of nodes that will be added from the remaining nodes
-                remainingNodes -= numOfNodesForVehicle;
-
-                // filling in a vehicle's list with nodes
-                for (int j = 0; j < numOfNodesForVehicle; j++) {
-                    int randomNode = random.nextInt(numNodes);
-                    if (isVisitedCity[randomNode]) {
-                        j--;
-                        continue;
-                    }
-
-                    vehiclesList.get(i).add(j, randomNode);
-                    isVisitedCity[randomNode] = true;
-                }
-            } else {
-                i--;
-            }
-        }
-    }
-
-    private void greedilyAssignNonHubsToVehicles() {
-        /* Assigning non-hub nodes to vehicles */
-        // min and max number of nodes in a vehicle
-        int minNumOfNodesInVehicle = 1;
-        int maxNumOfNodesInVehicle = numNodes - (numHubs * (numVehiclesPerHub + 1)) + 1;
-        int remainingNodes = numNodes - numHubs;
-
-        // a hash map of the hub-to-node distances
-        Map<Integer, Double> nodesToHubDistance = new LinkedHashMap<Integer, Double>();
-        // loop through vehicles lists
-        for (int i = 0; i < vehiclesList.size(); i++) {
-            Random random = new Random();
-            int numOfNodesForVehicle = random.nextInt(maxNumOfNodesInVehicle) + minNumOfNodesInVehicle;
-            int remainingVehicles = vehiclesList.size() - i;
-
-            // if it's a new hub
-            if (i % numVehiclesPerHub == 0) {
-                // create a hash map of the hub-to-node distances
-                // current hub
-                int currentHub = i / numVehiclesPerHub;
-                for (int node = 0; node < numNodes; node++) {
-                    // loop through node and get distances to the current hub
-                    // only if the node is non-hub
-                    if (!isVisitedCity[node])
-                        nodesToHubDistance.put(node, getDistance(hubsArr[currentHub], node));
-                }
-                nodesToHubDistance = Utils.sortByValue(nodesToHubDistance);
-            }
-
-            // this condition ensures that we do not run out of nodes
-            if (remainingNodes - numOfNodesForVehicle >= remainingVehicles - 1) {
-                // if one vehicle left, fill it with the remaining nodes
-                if (remainingVehicles == 1) {
-                    numOfNodesForVehicle = remainingNodes;
-                }
-
-                // subtract the number of nodes that will be added from the remaining nodes
-                remainingNodes -= numOfNodesForVehicle;
-
-                // filling in a vehicle's list with nodes
-                for (int j = 0; j < numOfNodesForVehicle; j++) {
-                    Map.Entry<Integer, Double> entry = nodesToHubDistance.entrySet().iterator().next();
-                    int closestNode = entry.getKey();
-                    if (isVisitedCity[closestNode]) {
-                        j--;
-                        continue;
-                    }
-
-                    vehiclesList.get(i).add(j, closestNode);
-                    isVisitedCity[closestNode] = true;
-                    // remove the visited node, because already added to a hub
-                    nodesToHubDistance.remove(closestNode);
-                }
-
-            } else {
-                i--;
-            }
-        }
-    }
-
     double calculateCost(CostType costType) {
-        int[] collectionCostArr = new int[numHubs * numVehiclesPerHub];
-        int[] distributionCostArr = new int[numHubs * numVehiclesPerHub];
-        fillInCollectionAndDistributionCostArrAndPrint(collectionCostArr, distributionCostArr);
+        collectionCostArr = new int[numHubs * numVehiclesPerHub];
+        distributionCostArr = new int[numHubs * numVehiclesPerHub];
+        fillCollectionDistributionCostsArr(collectionCostArr, distributionCostArr);
 
         ArrayList<String> tempStrArr = new ArrayList<String>();
         // loop on the hubs
@@ -399,7 +257,7 @@ class PHMLRP {
         return minEdgeFirstNode;
     }
 
-    private void fillInCollectionAndDistributionCostArrAndPrint(int[] collectionCostArr, int[] distributionCostArr) {
+    private void fillCollectionDistributionCostsArr(int[] collectionCostArr, int[] distributionCostArr) {
         // calculate collection and distribution costs for vehicles and print them
         for (int h = 0; h < numHubs; h++) {
 //            System.out.printf("Hub %d:\n", h);
@@ -456,7 +314,6 @@ class PHMLRP {
                 collectionCost += getDistance(vehiclesList.get(v).get(j), vehiclesList.get(v).get(j + 1));
             }
         }
-
 
         // loop on a vehicle's list and calculating the distribution calculateCost
         for (int j = distributionStartIndex; j < vehiclesList.get(v).size() - 1; j++) {

@@ -4,13 +4,13 @@ import com.lexicalscope.jewel.cli.Option;
 
 public interface Params {
 
-    @Option(description = "Dataset", shortName = "ds", longName = "dataset", defaultValue = "TR")
+    @Option(description = "Dataset", shortName = "ds", longName = "dataset", defaultValue = "TR16")
     String getDataset();
 
-    @Option(description = "number of nodes", shortName = "n", longName = "node", defaultValue = "10")
+    @Option(description = "number of nodes", shortName = "n", longName = "node", defaultValue = "16")
     int getNumNodes();
 
-    @Option(description = "number of hubs", shortName = "h", longName = "hubs", defaultValue = "2")
+    @Option(description = "number of hubs", shortName = "h", longName = "hubs", defaultValue = "5")
     int getNumHubs();
 
     @Option(description = "number of vehicles per hub", shortName = "v", longName = "vehicles", defaultValue = "1")

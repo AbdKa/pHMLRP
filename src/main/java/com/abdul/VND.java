@@ -266,13 +266,8 @@ class VND {
     }
 
     private void createInitSol(PHMLRP phmlrp) {
-//        InitialSolutions initialSolutions = new InitialSolutions(
-//                phmlrp,
-//                phmlrp.getNumNodes(),
-//                phmlrp.getNumHubs(),
-//                phmlrp.getNumVehiclesPerHub());
-//        initialSolutions.probabilisticInitSol();
-        phmlrp.randomSolution();
+        InitialSolutions initialSolutions = new InitialSolutions(phmlrp);
+        initialSolutions.randomSolution();
         phmlrp.calculateCost(PHMLRP.CostType.NORMAL);
     }
 

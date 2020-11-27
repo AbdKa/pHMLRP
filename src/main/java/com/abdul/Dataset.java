@@ -8,6 +8,7 @@ import java.util.Arrays;
 import java.util.List;
 
 class Dataset {
+    private static List<List<Double>> TR16distances = new ArrayList<>();
     private static List<List<Double>> TRdistances = new ArrayList<>();
     private static List<List<Double>> AP100distances = new ArrayList<>();
     private static List<List<Double>> AP200distances = new ArrayList<>();
@@ -18,6 +19,10 @@ class Dataset {
 
     private void loadCSV(String dataset) {
         switch (dataset) {
+            case "TR16":
+                dataset = "Turkish16NetworkDist";
+                distances = TR16distances;
+                break;
             case "TR":
                 dataset = "TurkishNetworkDist";
                 distances = TRdistances;
@@ -41,15 +46,13 @@ class Dataset {
         try {
             BufferedReader CSVFile = new BufferedReader(new FileReader("db/" + dataset + ".csv"));
             String dataRow = CSVFile.readLine();
-            if (!dataset.equals("CABNetworkDist")) {
-                dataRow = CSVFile.readLine();
-                dataRow = CSVFile.readLine();
-            }
+            // TODO: edit AP10 and AP15 (add two rows and cols)
+            dataRow = CSVFile.readLine();
+            dataRow = CSVFile.readLine();
             while (dataRow != null && !dataRow.equals("")) {
                 // step 1 : converting comma separate String to array of nodes
                 String[] nodesStrArr = dataRow.split(",");
-                if (!dataset.equals("CABNetworkDist")) // if the dataset is not CAB remove first two strings
-                    nodesStrArr = Arrays.copyOfRange(nodesStrArr, 2, nodesStrArr.length);
+                nodesStrArr = Arrays.copyOfRange(nodesStrArr, 2, nodesStrArr.length);
                 // step 2 : convert String array to array of Doubles
                 Double[] doubleValues = Arrays.stream(nodesStrArr)
                         .map(Double::valueOf)
@@ -69,6 +72,8 @@ class Dataset {
     double getDistance(String dataset, int node1, int node2) {
         loadCSV(dataset);
         switch (dataset) {
+            case "TR16":
+                return TR16distances.get(node1).get(node2);
             case "TR":
                 return TRdistances.get(node1).get(node2);
             case "AP100":
