@@ -58,6 +58,7 @@ class VndWithIncompleteHubs {
         getProblemInstancesFromJson();
         this.params = params;
         combinations = Utils.getCombinations();
+        runs = params.getNumRuns();
 
         iterationCounts = new int[problemInstances.length];
         Arrays.fill(iterationCounts, 0);

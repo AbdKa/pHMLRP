@@ -43,4 +43,7 @@ public interface Params {
 
     @Option(description = "InitSol", shortName = "i", longName = "InitSol", defaultValue = "random")
     String getInitSol();
+
+    @Option(description = "number of runs", shortName = "r", longName = "runs", defaultValue = "10000")
+    int getNumRuns();
 }
