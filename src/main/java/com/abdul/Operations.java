@@ -329,6 +329,9 @@ class Operations {
     boolean twoOptAlgorithm() {
         // TODO: Ask?? Do we include the hub in the route for 2Opt algorithm?
         //  Should we compare the best cost of the current route only or for the maxCost
+        if (phmlrp.getNumNodes() <= (phmlrp.getNumHubs() * phmlrp.getNumVehiclesPerHub()) + phmlrp.getNumHubs()) {
+            return false;
+        }
         double currentCost = phmlrp.getMaxCost();
 
         Random random = new Random();

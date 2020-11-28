@@ -381,6 +381,7 @@ class PHMLRP {
     }
 
     boolean callOperation(int operationNumber) {
+        System.out.println("operation number " + operationNumber);
         if (operationNumber == 7) {
             // called NodesRemoveAndGreedyInsert operation
             return calledNodesRemoveAndGreedyInsert();
@@ -465,5 +466,23 @@ class PHMLRP {
 //        System.out.println("**Total maxNonMinEdgeCost is " + this.maxNonMinEdgeCost);
 //        System.out.println("**The bound is " + bound);
         System.out.println();
+    }
+
+    String getRoutes() {
+        StringBuilder routes = new StringBuilder();
+        // loop on hubs
+        for (int i = 0; i < hubsArr.length; i++) {
+            routes.append(hubsArr[i]+1).append("-");
+            // loop on vehicles in a hub
+            for (int j = 0; j < numVehiclesPerHub; j++) {
+                // loop on the vehicle's nodes
+                for (int node : vehiclesList.get(numVehiclesPerHub * i + j)) {
+                    routes.append(node+1).append("-");
+                }
+            }
+            routes.append(hubsArr[i]+1).append("; ");
+        }
+
+        return routes.toString();
     }
 }

@@ -8,6 +8,8 @@ import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 
 public class Main {
     public static void main(String[] args) throws IOException {
@@ -19,27 +21,46 @@ public class Main {
             return;
         }
 
+        // creating results paths
+        String currentPath = System.getProperty("user.dir");
+//        String greedyPath = currentPath + "/incompleteHubResults_Greedy";
+//        String randomPath = currentPath + "/incompleteHubResults_Random";
+//        Files.createDirectories(Paths.get(greedyPath));
+//        Files.createDirectories(Paths.get(randomPath));
+        String path = currentPath + "/" + params.getResultPath();
+        Files.createDirectories(Paths.get(path));
+
         Dataset dataset = new Dataset();
-        PHMLRP phmlrpObj = new PHMLRP(params.getDataset(), params.getNumNodes(), params.getNumHubs(), params.getNumVehicles(),
-                params.getCollectionCostCFactor(), params.getDistributionCostCFactor(), params.getHubToHubCFactor(),
-                params.getRemovalPercentage());
-
-        InitialSolutions initialSolutions = new InitialSolutions(phmlrpObj);
-        initialSolutions.greedySolution();
-//        phmlrpObj.setHubsArr(new int[]{0, 1});
-//        ArrayList<List<Integer>> vList = new ArrayList<>();
-//        vList.add(Arrays.asList(6, 8, 9, 2, 5, 4));
-//        vList.add(Arrays.asList(3, 7));
-//        phmlrpObj.resetVehiclesList(vList);
-        phmlrpObj.calculateCost(PHMLRP.CostType.NORMAL);
-        phmlrpObj.print(false);
-
-        IncompleteHubs incompleteHubs = new IncompleteHubs(phmlrpObj, "Greedy");
-        incompleteHubs.runIncomplete();
 
         // VND
-//        VND vnd = new VND(params);
-//        vnd.runVND();
+        VndWithIncompleteHubs vnd = new VndWithIncompleteHubs(params, path);
+        vnd.runVND();
+
+        // random
+//        PHMLRP randomObj = new PHMLRP(params.getDataset(), params.getNumNodes(), params.getNumHubs(), params.getNumVehicles(),
+//                params.getCollectionCostCFactor(), params.getDistributionCostCFactor(), params.getHubToHubCFactor(),
+//                params.getRemovalPercentage());
+//
+//        InitialSolutions randomSolutions = new InitialSolutions(randomObj);
+//        randomSolutions.randomSolution();
+//        randomObj.calculateCost(PHMLRP.CostType.NORMAL);
+//        randomObj.print(false);
+//
+//        IncompleteHubs randomIncompleteHubs = new IncompleteHubs(randomObj, randomPath, params.getNumLinks());
+//        randomIncompleteHubs.runIncomplete();
+
+        // greedy
+//        PHMLRP greedyObj = new PHMLRP(params.getDataset(), params.getNumNodes(), params.getNumHubs(), params.getNumVehicles(),
+//                params.getCollectionCostCFactor(), params.getDistributionCostCFactor(), params.getHubToHubCFactor(),
+//                params.getRemovalPercentage());
+//
+//        InitialSolutions greedySolutions = new InitialSolutions(greedyObj);
+//        greedySolutions.greedySolution();
+//        greedyObj.calculateCost(PHMLRP.CostType.NORMAL);
+//        greedyObj.print(false);
+//
+//        IncompleteHubs greedyIncompleteHubs = new IncompleteHubs(greedyObj, greedyPath, params.getNumLinks());
+//        greedyIncompleteHubs.runIncomplete();
 
 //        InitialSolutions initialSolutions = new InitialSolutions(phmlrpObj, params.getNumNodes(), params.getNumHubs(), params.getNumVehicles());
 //        initialSolutions.probabilisticInitSol();

@@ -11,9 +11,9 @@ import java.util.List;
 
 class VND {
     private Params params;
-    private int runs = 1000;
+    private int runs = 10;
     private int replicasPerProb = 10;
-    private int replicasPerCombination = 30;
+    private int replicasPerCombination = 1;
 
     private XSSFWorkbook workbook;
     private XSSFSheet[] spreadsheets;
@@ -23,9 +23,10 @@ class VND {
 
     private String[] problemInstances = {
             "TR.10.2.1", "TR.10.2.2", "TR.10.3.1",
-            "TR.15.2.1", "TR.15.2.2",
-            "TR.25.2.1", "TR.25.2.5", "TR.25.5.1", "TR.25.5.2",
-            "TR.50.2.1", "TR.50.2.5", "TR.50.5.1", "TR.50.5.2",
+
+//            "TR.15.2.1", "TR.15.2.2",
+//            "TR.25.2.1", "TR.25.2.5", "TR.25.5.1", "TR.25.5.2",
+//            "TR.50.2.1", "TR.50.2.5", "TR.50.5.1", "TR.50.5.2",
 //            "TR.81.2.1", "TR.81.2.5", "TR.81.5.1", "TR.81.5.2",
 //            "TR.81.9.1", "TR.81.9.2", "TR.81.9.3", "TR.81.9.4", "TR.81.9.5",
 //            "AP100.100.5.1", "AP100.100.5.2", "AP100.100.5.5",

@@ -4,6 +4,9 @@ import com.lexicalscope.jewel.cli.Option;
 
 public interface Params {
 
+    @Option(description = "Path", shortName = "d", longName = "path", defaultValue = "results")
+    String getResultPath();
+
     @Option(description = "Dataset", shortName = "ds", longName = "dataset", defaultValue = "TR16")
     String getDataset();
 
@@ -13,8 +16,11 @@ public interface Params {
     @Option(description = "number of hubs", shortName = "h", longName = "hubs", defaultValue = "5")
     int getNumHubs();
 
-    @Option(description = "number of vehicles per hub", shortName = "v", longName = "vehicles", defaultValue = "1")
+    @Option(description = "number of vehicles per hub", shortName = "v", longName = "vehicles", defaultValue = "2")
     int getNumVehicles();
+
+    @Option(description = "number of links", shortName = "q", longName = "links", defaultValue = "8")
+    int getNumLinks();
 
     @Option(description = "collection calculateCost coefficient factor", shortName = "cc", longName = "collectionCost",
             defaultValue = "1.0")
@@ -34,4 +40,7 @@ public interface Params {
 
     @Option(description = "use city names when displaying/printing", shortName = "ve", longName = "verbose")
     boolean getVerbose();
+
+    @Option(description = "InitSol", shortName = "i", longName = "InitSol", defaultValue = "random")
+    String getInitSol();
 }
