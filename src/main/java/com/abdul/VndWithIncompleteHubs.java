@@ -17,7 +17,7 @@ import java.util.List;
 class VndWithIncompleteHubs {
     private Params params;
     private final String resultPath;
-    private int runs = 10_000;
+    private int runs;
     private int replicasPerProb = 1;
     private int replicasPerCombination = 1;
 
@@ -130,7 +130,10 @@ class VndWithIncompleteHubs {
                             }
                         }
 
-                        double bestCost = phmlrp.getMaxCost();
+                        int numLinks = Integer.parseInt(problemInstances[probIdx].split("\\.")[4]);
+                        IncompleteHubs incompleteHubs = new IncompleteHubs(phmlrp, "", numLinks);
+                        incompleteHubs.runIncomplete();
+                        double bestCost = incompleteHubs.getMaxCost();
 
                         if (bestCost < bestCosts[probIdx]) {
                             long diff = System.nanoTime() - combStartTime;
@@ -139,9 +142,6 @@ class VndWithIncompleteHubs {
                             bestIterationNumber[probIdx] = iterationCounts[probIdx];
                             bestRoutes[probIdx] = phmlrp.getRoutes();
 
-                            int numLinks = Integer.parseInt(problemInstances[probIdx].split("\\.")[4]);
-                            IncompleteHubs incompleteHubs = new IncompleteHubs(phmlrp, "", numLinks);
-                            incompleteHubs.runIncomplete();
                             bestLinks[probIdx] = String.join("; ", incompleteHubs.getLinks());
                         }
                     }

@@ -23,6 +23,7 @@ class IncompleteHubs {
     private int linksCount = 0;
 
     private List<Double> hubsMaxCosts;
+    private double maxCost = 0;
 
 //    private XSSFWorkbook workbook;
 //    private XSSFSheet spreadsheet;
@@ -45,7 +46,11 @@ class IncompleteHubs {
 //        prepareExcel();
     }
 
-    public String[] getLinks() {
+    public double getMaxCost() {
+        return maxCost;
+    }
+
+    String[] getLinks() {
         return links;
     }
 
@@ -153,7 +158,10 @@ class IncompleteHubs {
             // skipping middle hub
             if (first == mid) continue;
 
-            addLink(m, mid, f, first, -1, -1);
+            double linkCost = addLink(m, mid, f, first, -1, -1);
+            if (linkCost > maxCost) {
+                maxCost = linkCost;
+            }
             sheetRowCount++;
             linksCount++;
 

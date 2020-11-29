@@ -381,7 +381,6 @@ class PHMLRP {
     }
 
     boolean callOperation(int operationNumber) {
-        System.out.println("operation number " + operationNumber);
         if (operationNumber == 7) {
             // called NodesRemoveAndGreedyInsert operation
             return calledNodesRemoveAndGreedyInsert();
