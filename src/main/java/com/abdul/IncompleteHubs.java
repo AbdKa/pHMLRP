@@ -99,9 +99,9 @@ class IncompleteHubs {
         // loop on the hubs (first hub in link)
         for (int m = 0; m < numHubs; m++) {
             int mid = hubsList.get(m);
-            System.out.println("Hub " + mid);
+            System.out.print("Hub " + mid);
 
-            double maxCost = 0;
+            double hubMaxCost = 0;
 
             // loop on the hubs (first hub in link)
             for (int f = 0; f < numHubs; f++) {
@@ -113,8 +113,8 @@ class IncompleteHubs {
                 double linkCost = addLink(m, mid, f, first, -1, -1);
                 sheetRowCount++;
 
-                if (linkCost > maxCost) {
-                    maxCost = linkCost;
+                if (linkCost > hubMaxCost) {
+                    hubMaxCost = linkCost;
                 }
 
                 // loop on the hubs (last hub in link)
@@ -127,14 +127,14 @@ class IncompleteHubs {
                     linkCost = addLink(m, mid, f, first, l, last);
                     sheetRowCount++;
 
-                    if (linkCost > maxCost) {
-                        maxCost = linkCost;
+                    if (linkCost > hubMaxCost) {
+                        hubMaxCost = linkCost;
                     }
                 }
             }
 
-            System.out.println(" Max = " + maxCost);
-            hubsMaxCosts.add(maxCost);
+            System.out.println(" Max = " + hubMaxCost);
+            hubsMaxCosts.add(hubMaxCost);
         }
 
         sheetRowCount += 2;
@@ -172,7 +172,10 @@ class IncompleteHubs {
                 // skipping current hub and middle hub
                 if (first == last || mid == last) continue;
 
-                addLink(m, mid, f, first, l, last);
+                linkCost = addLink(m, mid, f, first, l, last);
+                if (linkCost > maxCost) {
+                    maxCost = linkCost;
+                }
                 sheetRowCount++;
             }
 
@@ -201,22 +204,6 @@ class IncompleteHubs {
 //            e.printStackTrace();
 //        }
     }
-
-    /*private int getMinimumMaxIdx() {
-        int m = -1;
-        double min = Integer.MAX_VALUE;
-        Iterator it = hubsMaxCosts.entrySet().iterator();
-        while (it.hasNext()) {
-            Map.Entry pair = (Map.Entry) it.next();
-            System.out.println(pair.getKey() + " = " + pair.getValue());
-            if ((Double) pair.getValue() < min) {
-                min = (Double) pair.getValue();
-                m = (Integer) pair.getKey();
-            }
-            it.remove(); // avoids a ConcurrentModificationException
-        }
-        return m;
-    }*/
 
     private double addLink(int m, int mid, int f, int first, int l, int last) {
         // First hub collection cost

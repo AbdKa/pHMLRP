@@ -131,9 +131,14 @@ class VndWithIncompleteHubs {
                         }
 
                         int numLinks = Integer.parseInt(problemInstances[probIdx].split("\\.")[4]);
-                        IncompleteHubs incompleteHubs = new IncompleteHubs(phmlrp, "", numLinks);
-                        incompleteHubs.runIncomplete();
-                        double bestCost = incompleteHubs.getMaxCost();
+                        IncompleteHubs incompleteHubs = new IncompleteHubs(phmlrp, resultPath, numLinks);
+                        double bestCost;
+                        if (Integer.parseInt(problemInstances[probIdx].split("\\.")[2]) > 2) {
+                            incompleteHubs.runIncomplete();
+                            bestCost = incompleteHubs.getMaxCost();
+                        } else {
+                            bestCost = phmlrp.getMaxCost();
+                        }
 
                         if (bestCost < bestCosts[probIdx]) {
                             long diff = System.nanoTime() - combStartTime;
@@ -142,7 +147,9 @@ class VndWithIncompleteHubs {
                             bestIterationNumber[probIdx] = iterationCounts[probIdx];
                             bestRoutes[probIdx] = phmlrp.getRoutes();
 
-                            bestLinks[probIdx] = String.join("; ", incompleteHubs.getLinks());
+                            if (Integer.parseInt(problemInstances[probIdx].split("\\.")[2]) > 2) {
+                                bestLinks[probIdx] = String.join("; ", incompleteHubs.getLinks());
+                            }
                         }
                     }
                 }
