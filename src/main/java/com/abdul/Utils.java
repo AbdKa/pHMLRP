@@ -7,6 +7,8 @@ import java.io.*;
 import java.util.*;
 
 class Utils {
+
+
     static List<List<Integer>> getCombinations() {
         List<List<Integer>> combinationsList = new ArrayList<>();
         try {
@@ -66,5 +68,30 @@ class Utils {
         workbook.write(out);
         out.close();
         System.out.println(fileName + ".xlsx written successfully");
+    }
+
+    static void createTextFile() {
+        try {
+            File myObj = new File("filename.txt");
+            if (myObj.createNewFile()) {
+                System.out.println("File created: " + myObj.getName());
+            } else {
+                System.out.println("File already exists.");
+            }
+
+        } catch (IOException e) {
+            System.out.println("An error occurred.");
+            e.printStackTrace();
+        }
+    }
+
+    static void writeToTextFile(FileWriter myWriter, String line) {
+        try {
+            myWriter.write(line + "\n");
+
+        } catch (IOException e) {
+            System.out.println("An error occurred.");
+            e.printStackTrace();
+        }
     }
 }

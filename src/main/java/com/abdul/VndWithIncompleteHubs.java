@@ -9,6 +9,7 @@ import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -54,6 +55,8 @@ class VndWithIncompleteHubs {
     private String[] bestLinks;
     private String[] bestRoutes;
 
+    FileWriter myWriter;
+
     VndWithIncompleteHubs(Params params, String resultPath) {
         getProblemInstancesFromJson();
         this.params = params;
@@ -70,6 +73,8 @@ class VndWithIncompleteHubs {
         bestRoutes = new String[problemInstances.length];
 
         this.resultPath = resultPath;
+
+        Utils.createTextFile();
     }
 
     private void getProblemInstancesFromJson() {
@@ -92,10 +97,21 @@ class VndWithIncompleteHubs {
     }
 
     void runVND() {
+        try {
+            myWriter = new FileWriter("filename.txt");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
         for (int i = 0; i < runs; i++) {
             doRun(i);
         }
 
+        try {
+            myWriter.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         writeBCtoExcel();
     }
 
@@ -114,12 +130,12 @@ class VndWithIncompleteHubs {
                         createInitSol(phmlrp);
                         for (int k : combinations.get(combIdx)) {
                             // for each neighborhood
-                            System.out.println(i +
-                                    " " + problemInstances[probIdx] +
-                                    " " + replicaIdx +
-                                    " " + combIdx +
-                                    " " + repPerCombinationIdx +
-                                    " " + k);
+//                            System.out.println(i +
+//                                    " " + problemInstances[probIdx] +
+//                                    " " + replicaIdx +
+//                                    " " + combIdx +
+//                                    " " + repPerCombinationIdx +
+//                                    " " + k);
 
                             while (true) {
                                 // change neighborhood until no better solution, jump to next one
@@ -131,11 +147,12 @@ class VndWithIncompleteHubs {
                         }
 
                         int numLinks = Integer.parseInt(problemInstances[probIdx].split("\\.")[4]);
-                        IncompleteHubs incompleteHubs = new IncompleteHubs(phmlrp, resultPath, numLinks);
+                        IncompleteHubs incompleteHubs = new IncompleteHubs(phmlrp, resultPath, numLinks, myWriter);
                         double bestCost;
                         if (Integer.parseInt(problemInstances[probIdx].split("\\.")[2]) > 2) {
                             incompleteHubs.runIncomplete();
                             bestCost = incompleteHubs.getMaxCost();
+                            System.out.println("bestCost "+ bestCost);
                         } else {
                             bestCost = phmlrp.getMaxCost();
                         }

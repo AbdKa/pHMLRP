@@ -13,10 +13,10 @@ public interface Params {
     @Option(description = "number of nodes", shortName = "n", longName = "node", defaultValue = "16")
     int getNumNodes();
 
-    @Option(description = "number of hubs", shortName = "h", longName = "hubs", defaultValue = "5")
+    @Option(description = "number of hubs", shortName = "h", longName = "hubs", defaultValue = "4")
     int getNumHubs();
 
-    @Option(description = "number of vehicles per hub", shortName = "v", longName = "vehicles", defaultValue = "2")
+    @Option(description = "number of vehicles per hub", shortName = "v", longName = "vehicles", defaultValue = "3")
     int getNumVehicles();
 
     @Option(description = "number of links", shortName = "q", longName = "links", defaultValue = "8")
@@ -44,6 +44,6 @@ public interface Params {
     @Option(description = "InitSol", shortName = "i", longName = "InitSol", defaultValue = "random")
     String getInitSol();
 
-    @Option(description = "number of runs", shortName = "r", longName = "runs", defaultValue = "100")
+    @Option(description = "number of runs", shortName = "r", longName = "runs", defaultValue = "10000")
     int getNumRuns();
 }

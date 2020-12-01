@@ -10,6 +10,9 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 public class Main {
     public static void main(String[] args) throws IOException {
@@ -36,10 +39,27 @@ public class Main {
         VndWithIncompleteHubs vnd = new VndWithIncompleteHubs(params, path);
         vnd.runVND();
 
+//        randomObj.setHubsArr(new int[]{1, 10, 0, 13});
+//        ArrayList<List<Integer>> vehicles = new ArrayList<>();
+//        vehicles.add(new ArrayList<Integer>(Arrays.asList(3)));
+//        vehicles.add(new ArrayList<Integer>(Arrays.asList(12)));
+//        vehicles.add(new ArrayList<Integer>(Arrays.asList(8)));
+//        vehicles.add(new ArrayList<Integer>(Arrays.asList(2)));
+//        vehicles.add(new ArrayList<Integer>(Arrays.asList(9)));
+//        vehicles.add(new ArrayList<Integer>(Arrays.asList(11)));
+//        vehicles.add(new ArrayList<Integer>(Arrays.asList(7)));
+//        vehicles.add(new ArrayList<Integer>(Arrays.asList(15)));
+//        vehicles.add(new ArrayList<Integer>(Arrays.asList(4)));
+//        vehicles.add(new ArrayList<Integer>(Arrays.asList(14)));
+//        vehicles.add(new ArrayList<Integer>(Arrays.asList(5)));
+//        vehicles.add(new ArrayList<Integer>(Arrays.asList(6)));
+//        randomObj.resetVehiclesList(vehicles);
+
         // random
 //        PHMLRP randomObj = new PHMLRP(params.getDataset(), params.getNumNodes(), params.getNumHubs(), params.getNumVehicles(),
 //                params.getCollectionCostCFactor(), params.getDistributionCostCFactor(), params.getHubToHubCFactor(),
 //                params.getRemovalPercentage());
+
 //
 //        InitialSolutions randomSolutions = new InitialSolutions(randomObj);
 //        randomSolutions.randomSolution();
@@ -72,32 +92,6 @@ public class Main {
 //        gurobi.getInitSol();
 //        gurobi.optimizeRoute(new int[]{0,36,77,23,61,25,10,8,47});
 //        gurobi.getSolWithHubs(new int[]{0,1});
-
-//        PHMLRP bound = null;
-//        int maxCost = 0;
-//        int maxCostWithoutMinEdge = 0;
-//
-//        for (int i = 0; i < 1; i++) {
-//            PHMLRP phmlrp = new PHMLRP(params.getNumNodes(), params.getNumHubs(), params.getNumVehicles(),
-//                    params.getCollectionCostCFactor(), params.getDistributionCostCFactor(), params.getHubToHubCFactor(),
-//                    params.getRemovalPercentage());
-//            phmlrp.randomSolution();
-//
-//            final int cost = phmlrp.calculateCost(PHMLRP.CostType.NORMAL);
-//            final int costWithoutMinEdge = phmlrp.costWithoutMinEdge();
-//
-//            if (cost > maxCost) {
-//                bound = phmlrp;
-//                maxCost = cost;
-//            }
-//            if (costWithoutMinEdge > maxCostWithoutMinEdge) {
-//                maxCostWithoutMinEdge = costWithoutMinEdge;
-//            }
-//        }
-//
-//        if (bound != null) {
-//            bound.print(params.getVerbose());
-//        }
 
         XSSFWorkbook workbook = new XSSFWorkbook();
         XSSFWorkbook saWorkbook = new XSSFWorkbook();

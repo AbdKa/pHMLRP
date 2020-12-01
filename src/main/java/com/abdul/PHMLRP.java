@@ -17,8 +17,8 @@ class PHMLRP {
     private boolean isSimulatedAnnealing = false;
     private double saOperationCost;
 
-    private int[] collectionCostArr;
-    private int[] distributionCostArr;
+    private double[] collectionCostArr;
+    private double[] distributionCostArr;
 
     enum CostType {
         NORMAL, OPERATION
@@ -119,11 +119,11 @@ class PHMLRP {
         return hubToHubCFactor;
     }
 
-    public int[] getCollectionCostArr() {
+    public double[] getCollectionCostArr() {
         return collectionCostArr;
     }
 
-    public int[] getDistributionCostArr() {
+    public double[] getDistributionCostArr() {
         return distributionCostArr;
     }
 
@@ -139,8 +139,8 @@ class PHMLRP {
     }
 
     double calculateCost(CostType costType) {
-        collectionCostArr = new int[numHubs * numVehiclesPerHub];
-        distributionCostArr = new int[numHubs * numVehiclesPerHub];
+        collectionCostArr = new double[numHubs * numVehiclesPerHub];
+        distributionCostArr = new double[numHubs * numVehiclesPerHub];
         fillCollectionDistributionCostsArr(collectionCostArr, distributionCostArr);
 
         ArrayList<String> tempStrArr = new ArrayList<String>();
@@ -149,14 +149,14 @@ class PHMLRP {
             double cost;
             // loop through vehicles in a hub
             for (int i = h * numVehiclesPerHub; i < ((h + 1) * numVehiclesPerHub); i++) {
-                int collectionCost = collectionCostArr[i];
+                double collectionCost = collectionCostArr[i];
 
                 // loop on other vehicles in the same hub
                 for (int ii = h * numVehiclesPerHub; ii < ((h + 1) * numVehiclesPerHub); ii++) {
                     // skipping current vehicle
                     if (i == ii) continue;
 
-                    int distributionCost = distributionCostArr[ii];
+                    double distributionCost = distributionCostArr[ii];
                     cost = collectionCost + distributionCost;
 
                     setMaxCostForEachType(costType, cost);
@@ -178,7 +178,7 @@ class PHMLRP {
                     // loop through other hub's vehicles
                     for (int ii = hh * numVehiclesPerHub; ii < ((hh + 1) * numVehiclesPerHub); ii++) {
 
-                        int distributionCost = distributionCostArr[ii];
+                        double distributionCost = distributionCostArr[ii];
                         cost = collectionCost + betweenHubs + distributionCost;
 
                         setMaxCostForEachType(costType, cost);
@@ -257,13 +257,13 @@ class PHMLRP {
         return minEdgeFirstNode;
     }
 
-    private void fillCollectionDistributionCostsArr(int[] collectionCostArr, int[] distributionCostArr) {
+    private void fillCollectionDistributionCostsArr(double[] collectionCostArr, double[] distributionCostArr) {
         // calculate collection and distribution costs for vehicles and print them
         for (int h = 0; h < numHubs; h++) {
 //            System.out.printf("Hub %d:\n", h);
             for (int i = h * numVehiclesPerHub; i < ((h + 1) * numVehiclesPerHub); i++) {
-                collectionCostArr[i] = Math.round(calculateCollectionCost(h, i) * collectionCostCFactor);
-                distributionCostArr[i] = Math.round(calculateDistributionCost(h, i) * distributionCostCFactor);
+                collectionCostArr[i] = calculateCollectionCost(h, i) * collectionCostCFactor;
+                distributionCostArr[i] = calculateDistributionCost(h, i) * distributionCostCFactor;
 //                System.out.printf("\tVehicle %d:\tCollection Cost: %d, Distribution Cost: %d\n",
 //                        i, collectionCostArr[i], distributionCostArr[i]);
             }
@@ -471,15 +471,15 @@ class PHMLRP {
         StringBuilder routes = new StringBuilder();
         // loop on hubs
         for (int i = 0; i < hubsArr.length; i++) {
-            routes.append(hubsArr[i]+1).append("-");
             // loop on vehicles in a hub
             for (int j = 0; j < numVehiclesPerHub; j++) {
+                routes.append(hubsArr[i]+1).append("-");
                 // loop on the vehicle's nodes
                 for (int node : vehiclesList.get(numVehiclesPerHub * i + j)) {
                     routes.append(node+1).append("-");
                 }
+                routes.append(hubsArr[i]+1).append("; ");
             }
-            routes.append(hubsArr[i]+1).append("; ");
         }
 
         return routes.toString();
