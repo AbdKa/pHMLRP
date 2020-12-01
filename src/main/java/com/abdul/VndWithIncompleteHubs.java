@@ -55,7 +55,7 @@ class VndWithIncompleteHubs {
     private String[] bestLinks;
     private String[] bestRoutes;
 
-    FileWriter myWriter;
+//    FileWriter myWriter;
 
     VndWithIncompleteHubs(Params params, String resultPath) {
         getProblemInstancesFromJson();
@@ -97,21 +97,21 @@ class VndWithIncompleteHubs {
     }
 
     void runVND() {
-        try {
-            myWriter = new FileWriter("filename.txt");
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+//        try {
+//            myWriter = new FileWriter("filename.txt");
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
 
         for (int i = 0; i < runs; i++) {
             doRun(i);
         }
 
-        try {
-            myWriter.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+//        try {
+//            myWriter.close();
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
         writeBCtoExcel();
     }
 
@@ -130,12 +130,12 @@ class VndWithIncompleteHubs {
                         createInitSol(phmlrp);
                         for (int k : combinations.get(combIdx)) {
                             // for each neighborhood
-//                            System.out.println(i +
-//                                    " " + problemInstances[probIdx] +
-//                                    " " + replicaIdx +
-//                                    " " + combIdx +
-//                                    " " + repPerCombinationIdx +
-//                                    " " + k);
+                            System.out.println(i +
+                                    " " + problemInstances[probIdx] +
+                                    " " + replicaIdx +
+                                    " " + combIdx +
+                                    " " + repPerCombinationIdx +
+                                    " " + k);
 
                             while (true) {
                                 // change neighborhood until no better solution, jump to next one
@@ -147,7 +147,7 @@ class VndWithIncompleteHubs {
                         }
 
                         int numLinks = Integer.parseInt(problemInstances[probIdx].split("\\.")[4]);
-                        IncompleteHubs incompleteHubs = new IncompleteHubs(phmlrp, resultPath, numLinks, myWriter);
+                        IncompleteHubs incompleteHubs = new IncompleteHubs(phmlrp, resultPath, numLinks, null);
                         double bestCost;
                         if (Integer.parseInt(problemInstances[probIdx].split("\\.")[2]) > 2) {
                             incompleteHubs.runIncomplete();

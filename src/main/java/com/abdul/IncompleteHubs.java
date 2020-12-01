@@ -28,7 +28,7 @@ class IncompleteHubs {
 
     private String[] links;
 
-    FileWriter myWriter;
+//    FileWriter myWriter;
     private String tempStr = "";
     private int numVehiclesPerHub;
 
@@ -53,23 +53,23 @@ class IncompleteHubs {
 //        hubsMaxCosts.add(1.0);
 //        hubsMaxCosts.add(2.0);
 
-        this.myWriter = myWriter;
+//        this.myWriter = myWriter;
 //        prepareExcel();
     }
 
     void sort() {
-        System.out.println("Before sorting");
-        for (Integer i : hubsList) {
-            System.out.print(i + " ");
-        }
-        System.out.println();
-        for (double i : collectionCostArr) {
-            System.out.print(i + " ");
-        }
-        System.out.println();
-        for (double i : distributionCostArr) {
-            System.out.print(i + " ");
-        }
+//        System.out.println("Before sorting");
+//        for (Integer i : hubsList) {
+//            System.out.print(i + " ");
+//        }
+//        System.out.println();
+//        for (double i : collectionCostArr) {
+//            System.out.print(i + " ");
+//        }
+//        System.out.println();
+//        for (double i : distributionCostArr) {
+//            System.out.print(i + " ");
+//        }
 
         int n = hubsList.size();
 
@@ -86,29 +86,29 @@ class IncompleteHubs {
             hubsList.set(min_idx, hubsList.get(i));
             hubsList.set(i, temp);
 
-            System.out.println(min_idx);
+//            System.out.println(min_idx);
             int count = 0;
             for (int v = min_idx * numVehiclesPerHub; v < ((min_idx + 1) * numVehiclesPerHub); v++) {
-                System.out.print(i * numVehiclesPerHub + count + " ");
+//                System.out.print(i * numVehiclesPerHub + count + " ");
                 Collections.swap(collectionCostArr, i * numVehiclesPerHub + count, v);
                 Collections.swap(distributionCostArr, i * numVehiclesPerHub + count, v);
                 count++;
             }
-            System.out.println();
+//            System.out.println();
         }
 
-        System.out.println("After sorting");
-        for (Integer i : hubsList) {
-            System.out.print(i + " ");
-        }
-        System.out.println();
-        for (double i : collectionCostArr) {
-            System.out.print(i + " ");
-        }
-        System.out.println();
-        for (double i : distributionCostArr) {
-            System.out.print(i + " ");
-        }
+//        System.out.println("After sorting");
+//        for (Integer i : hubsList) {
+//            System.out.print(i + " ");
+//        }
+//        System.out.println();
+//        for (double i : collectionCostArr) {
+//            System.out.print(i + " ");
+//        }
+//        System.out.println();
+//        for (double i : distributionCostArr) {
+//            System.out.print(i + " ");
+//        }
     }
 
     public double getMaxCost() {
@@ -123,7 +123,7 @@ class IncompleteHubs {
 //        Arrays.sort(phmlrp.getHubsArr());
         double[] betweenHubs = new double[numHubs];
         double bestHubCost = Integer.MAX_VALUE;
-        System.out.println("Hubs Enumeration:");
+//        System.out.println("Hubs Enumeration:");
         // loop on the hubs
         for (int h = 0; h < numHubs; h++) {
 //            System.out.println("Hub " + phmlrp.getHubsArr()[h]);
@@ -159,7 +159,7 @@ class IncompleteHubs {
     }
 
     private void calculateMaxHubsLinks() {
-        System.out.println("Calculating the Max link cost for each hub:");
+//        System.out.println("Calculating the Max link cost for each hub:");
         // the minimum max hubs cost
 //        double minHubCost = Integer.MAX_VALUE;
         // loop on the hubs (mid hub in link)
@@ -272,12 +272,12 @@ class IncompleteHubs {
 
     private void createLinks() {
 //        System.out.println("Links Creation:");
-        Utils.writeToTextFile(myWriter, "Links Creation:");
+//        Utils.writeToTextFile(myWriter, "Links Creation:");
         int m = hubsMaxCosts.indexOf(Collections.min(hubsMaxCosts));
-        System.out.println(m);
+//        System.out.println(m);
         int mid = hubsList.get(m);
-        System.out.println("Hub " + mid);
-        Utils.writeToTextFile(myWriter, "Hub " + mid);
+//        System.out.println("Hub " + mid);
+//        Utils.writeToTextFile(myWriter, "Hub " + mid);
 //        XSSFRow hRow = spreadsheet.createRow(sheetRowCount);
 //        hRow.createCell(0, CellType.STRING).setCellValue("Mid-Hub " + mid);
         sheetRowCount++;
@@ -299,7 +299,7 @@ class IncompleteHubs {
                     double linkCost = addLink(vm, mid, vf, first, -1, -1);
                     if (linkCost > maxCost) {
                         maxCost = linkCost;
-                        Utils.writeToTextFile(myWriter, "direct maxCost: " + tempStr);
+//                        Utils.writeToTextFile(myWriter, "direct maxCost: " + tempStr);
                     }
                 }
 
@@ -316,7 +316,7 @@ class IncompleteHubs {
 
                         if (linkCost > maxCost) {
                             maxCost = linkCost;
-                            Utils.writeToTextFile(myWriter, "indirect maxCost: " + tempStr);
+//                            Utils.writeToTextFile(myWriter, "indirect maxCost: " + tempStr);
                         }
                         sheetRowCount++;
                     }
@@ -327,7 +327,7 @@ class IncompleteHubs {
                 break;
         }
 
-        System.out.println("links count " + linksCount);
+//        System.out.println("links count " + linksCount);
         if (linksCount < numLinks && numHubs > 2) {
             // we did not reach q: required number of links
             // remove middleHub from the hubs array by replacing it with the last hub
