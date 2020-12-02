@@ -36,7 +36,7 @@ public class Main {
         Dataset dataset = new Dataset();
 
         // VND
-        VndWithIncompleteHubs vnd = new VndWithIncompleteHubs(params, path);
+        VndWithIncompleteHubs vnd = new VndWithIncompleteHubs(params, path, false);
         vnd.runVND();
 
 //        randomObj.setHubsArr(new int[]{1, 10, 0, 13});

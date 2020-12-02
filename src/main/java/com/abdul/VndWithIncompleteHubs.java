@@ -9,7 +9,6 @@ import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
 import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -55,9 +54,13 @@ class VndWithIncompleteHubs {
     private String[] bestLinks;
     private String[] bestRoutes;
 
+    private boolean localSource;
+    private double[] mtspCosts;
+    private double[] phcMtspTimes;
+
 //    FileWriter myWriter;
 
-    VndWithIncompleteHubs(Params params, String resultPath) {
+    VndWithIncompleteHubs(Params params, String resultPath, boolean initSource) {
         getProblemInstancesFromJson();
         this.params = params;
         combinations = Utils.getCombinations();
@@ -74,20 +77,35 @@ class VndWithIncompleteHubs {
 
         this.resultPath = resultPath;
 
+        this.localSource = initSource;
+        mtspCosts = new double[problemInstances.length];
+        phcMtspTimes = new double[problemInstances.length];
+
         Utils.createTextFile();
     }
 
     private void getProblemInstancesFromJson() {
         JSONParser parser = new JSONParser();
         try {
-            JSONArray arr = (JSONArray) parser.parse(new FileReader("problem_instances.json"));
-            List<String> list = new ArrayList<>();
-            for (Object probInstance : arr) {
-                list.add((String)probInstance);
-            }
+            if (localSource) {
+                JSONArray arr = (JSONArray) parser.parse(new FileReader("problem_instances.json"));
+                List<String> list = new ArrayList<>();
+                for (Object probInstance : arr) {
+                    list.add((String) probInstance);
+                }
 
-            problemInstances = new String[list.size()];
-            list.toArray(problemInstances);
+                problemInstances = new String[list.size()];
+                list.toArray(problemInstances);
+            } else {
+                JSONArray arr = (JSONArray) parser.parse(new FileReader("problem_instances_phc_mtsp.json"));
+                List<String> list = new ArrayList<>();
+                for (Object probInstance : arr) {
+                    list.add((String) probInstance);
+                }
+
+                problemInstances = new String[list.size()];
+                list.toArray(problemInstances);
+            }
 
         } catch (IOException e) {
             System.out.println("Exception: " + e);
@@ -112,7 +130,12 @@ class VndWithIncompleteHubs {
 //        } catch (IOException e) {
 //            e.printStackTrace();
 //        }
-        writeBCtoExcel();
+
+        if (localSource) {
+            writeBCtoExcel();
+        } else {
+            writeMTSPtoExcel();
+        }
     }
 
     private void doRun(int i) {
@@ -126,8 +149,17 @@ class VndWithIncompleteHubs {
                         // run each problem instance n number of replicas
                         long combStartTime = System.nanoTime();
                         iterationCounts[probIdx]++;
-                        PHMLRP phmlrp = newPHMLRPInstance(problemInstances[probIdx]);
-                        createInitSol(phmlrp);
+                        PHMLRP phmlrp;
+                        double mtspCost = 0;
+                        if (localSource) {
+                            phmlrp = newPHMLRPInstance(problemInstances[probIdx]);
+                            createInitSol(phmlrp);
+                        } else {
+                            phmlrp = Utils.getJsonInitSol(problemInstances[probIdx].split("\\.")[1] +
+                                    "_" + problemInstances[probIdx].split("\\.")[2]);
+                            phmlrp.calculateCost(PHMLRP.CostType.NORMAL);
+                            mtspCost = phmlrp.getMaxCost();
+                        }
                         for (int k : combinations.get(combIdx)) {
                             // for each neighborhood
                             System.out.println(i +
@@ -152,7 +184,7 @@ class VndWithIncompleteHubs {
                         if (Integer.parseInt(problemInstances[probIdx].split("\\.")[2]) > 2) {
                             incompleteHubs.runIncomplete();
                             bestCost = incompleteHubs.getMaxCost();
-                            System.out.println("bestCost "+ bestCost);
+                            System.out.println("bestCost " + bestCost);
                         } else {
                             bestCost = phmlrp.getMaxCost();
                         }
@@ -166,6 +198,11 @@ class VndWithIncompleteHubs {
 
                             if (Integer.parseInt(problemInstances[probIdx].split("\\.")[2]) > 2) {
                                 bestLinks[probIdx] = String.join("; ", incompleteHubs.getLinks());
+                            }
+
+                            if (!localSource) {
+                                mtspCosts[probIdx] = mtspCost;
+                                phcMtspTimes[probIdx] = Utils.CPU;
                             }
                         }
                     }
@@ -181,7 +218,7 @@ class VndWithIncompleteHubs {
         XSSFRow row = bcSheet.createRow(0);
         row.createCell(0, CellType.STRING).setCellValue("problemInstance");
         row.createCell(1, CellType.STRING).setCellValue("bestCost");
-        row.createCell(2, CellType.STRING).setCellValue("CPUTime");
+        row.createCell(2, CellType.STRING).setCellValue("CPUTime (micro)");
         row.createCell(3, CellType.STRING).setCellValue("IterationNumber");
         row.createCell(4, CellType.STRING).setCellValue("Links");
         row.createCell(5, CellType.STRING).setCellValue("Routes");
@@ -198,6 +235,39 @@ class VndWithIncompleteHubs {
 
         try {
             Utils.createExcelFile(bcWorkbook, resultPath + "/results");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void writeMTSPtoExcel() {
+        XSSFWorkbook bcWorkbook = new XSSFWorkbook();
+        XSSFSheet bcSheet = bcWorkbook.createSheet("Best Iterations");
+
+        XSSFRow row = bcSheet.createRow(0);
+        row.createCell(0, CellType.STRING).setCellValue("problemInstance");
+        row.createCell(1, CellType.STRING).setCellValue("MTSP Cost");
+        row.createCell(2, CellType.STRING).setCellValue("CPU pHC+MTSP (milli)");
+        row.createCell(3, CellType.STRING).setCellValue("bestCost");
+        row.createCell(4, CellType.STRING).setCellValue("CPUTime (micro)");
+        row.createCell(5, CellType.STRING).setCellValue("IterationNumber");
+        row.createCell(6, CellType.STRING).setCellValue("Links");
+        row.createCell(7, CellType.STRING).setCellValue("Routes");
+
+        for (int i = 0; i < problemInstances.length; i++) {
+            row = bcSheet.createRow(i + 1);
+            row.createCell(0, CellType.STRING).setCellValue(problemInstances[i]);
+            row.createCell(1, CellType.NUMERIC).setCellValue(mtspCosts[i]);
+            row.createCell(2, CellType.NUMERIC).setCellValue(phcMtspTimes[i]);
+            row.createCell(3, CellType.NUMERIC).setCellValue(bestCosts[i]);
+            row.createCell(4, CellType.NUMERIC).setCellValue(bestTimes[i]);
+            row.createCell(5, CellType.NUMERIC).setCellValue(bestIterationNumber[i]);
+            row.createCell(6, CellType.STRING).setCellValue(bestLinks[i]);
+            row.createCell(7, CellType.STRING).setCellValue(bestRoutes[i]);
+        }
+
+        try {
+            Utils.createExcelFile(bcWorkbook, resultPath + "/phc_mtsp_vns_inc_results");
         } catch (IOException e) {
             e.printStackTrace();
         }

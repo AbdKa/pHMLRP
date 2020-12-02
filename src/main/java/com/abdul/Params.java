@@ -10,10 +10,10 @@ public interface Params {
     @Option(description = "Dataset", shortName = "ds", longName = "dataset", defaultValue = "TR16")
     String getDataset();
 
-    @Option(description = "number of nodes", shortName = "n", longName = "node", defaultValue = "16")
+    @Option(description = "number of nodes", shortName = "n", longName = "node", defaultValue = "10")
     int getNumNodes();
 
-    @Option(description = "number of hubs", shortName = "h", longName = "hubs", defaultValue = "4")
+    @Option(description = "number of hubs", shortName = "h", longName = "hubs", defaultValue = "2")
     int getNumHubs();
 
     @Option(description = "number of vehicles per hub", shortName = "v", longName = "vehicles", defaultValue = "3")
@@ -44,6 +44,6 @@ public interface Params {
     @Option(description = "InitSol", shortName = "i", longName = "InitSol", defaultValue = "random")
     String getInitSol();
 
-    @Option(description = "number of runs", shortName = "r", longName = "runs", defaultValue = "1")
+    @Option(description = "number of runs", shortName = "r", longName = "runs", defaultValue = "100")
     int getNumRuns();
 }
