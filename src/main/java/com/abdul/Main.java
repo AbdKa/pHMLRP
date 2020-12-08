@@ -36,8 +36,15 @@ public class Main {
         Dataset dataset = new Dataset();
 
         // VND
-        VndWithIncompleteHubs vnd = new VndWithIncompleteHubs(params, path, false);
+        PHMLRP phmlrp = new PHMLRP(params.getDataset(), params.getNumNodes(), params.getNumHubs(), params.getNumVehicles(),
+                params.getCollectionCostCFactor(), params.getDistributionCostCFactor(), params.getHubToHubCFactor(),
+                params.getRemovalPercentage());
+        VND vnd = new VND(params);
         vnd.runVND();
+
+
+//        VndWithIncompleteHubs vnd = new VndWithIncompleteHubs(params, path, false);
+//        vnd.runVND();
 
 //        randomObj.setHubsArr(new int[]{1, 10, 0, 13});
 //        ArrayList<List<Integer>> vehicles = new ArrayList<>();
