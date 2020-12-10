@@ -38,10 +38,10 @@ class InitialSolutions {
 
     void randomSolution() {
         // 1- pick hubs randomly
-        pickHubs();
+        randomlyPickHubs();
         // 2- assign non-hub nodes to hubs randomly
         // 3- distribute non-hubs on the vehicles
-        assignNonHubsToVehicles();
+        randomlyAssignNonHubsToVehicles();
     }
 
     void semiGreedySolution() {
@@ -49,12 +49,12 @@ class InitialSolutions {
         greedyPickHubs();
         // 2- greedily assign non-hub nodes to hubs
         // 3- distribute non-hubs on the vehicles
-        assignNonHubsToVehicles();
+        randomlyAssignNonHubsToVehicles();
     }
 
     void semiGreedySolution2() {
         // 1- greedily pick hubs, after calculating the average distances for each node
-        pickHubs();
+        randomlyPickHubs();
         // 2- greedily assign non-hub nodes to hubs
         // 3- distribute non-hubs on the vehicles
         greedilyAssignNonHubsToVehicles();
@@ -71,7 +71,7 @@ class InitialSolutions {
         greedilyAssignNonHubsToVehicles();
     }
 
-    private void pickHubs() {
+    private void randomlyPickHubs() {
         for (int i = 0; i < numHubs; i++) {
             Random rand = new Random();
             int randomNode = rand.nextInt(numNodes); // random node index
@@ -107,7 +107,7 @@ class InitialSolutions {
         }
     }
 
-    private void assignNonHubsToVehicles() {
+    private void randomlyAssignNonHubsToVehicles() {
         /* Assigning non-hub nodes to vehicles */
         // min and max number of nodes in a vehicle
         int minNumOfNodesInVehicle = 1;

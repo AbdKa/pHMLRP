@@ -141,9 +141,12 @@ class SimulatedAnnealing {
                 operations.swapNodeWithinRoutes(true, -1, -1, -1, -1);
                 break;
             case 4:
-                operations.edgeOpt(true);
+                operations.edgeOptInRoute(true, -1, -1, -1);
                 break;
             case 5:
+                operations.edgeOptWithinRoutes(true, -1, -1, -1, -1);
+                break;
+            case 6:
                 operations.swapHubWithNode(true,-1,-1,-1);
                 break;
         }

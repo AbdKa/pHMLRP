@@ -125,12 +125,12 @@ class Utils {
                 for (int k = 0; k < route.length; k++) {
                     int node = Integer.parseInt(route[k]);
                     if (k == 0) {
-                        if (hubsList.contains(node))
+                        if (hubsList.contains(node-1))
                             continue;
-                        hubsList.add(node);
+                        hubsList.add(node-1);
                         continue;
                     }
-                    r.add(node);
+                    r.add(node-1);
                 }
 
                 vehiclesList.add(r);
@@ -149,7 +149,7 @@ class Utils {
                 1,
                 1,
                 1,
-                1);
+                0.2f);
 
         int[] hubsArr = hubsList.stream().mapToInt(i -> i).toArray();
         phmlrp.setHubsArr(hubsArr);

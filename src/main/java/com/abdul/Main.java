@@ -10,9 +10,6 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 
 public class Main {
     public static void main(String[] args) throws IOException {
@@ -33,12 +30,17 @@ public class Main {
         String path = currentPath + "/" + params.getResultPath();
         Files.createDirectories(Paths.get(path));
 
-        Dataset dataset = new Dataset();
+//        Dataset dataset = new Dataset();
 
         // VND
-        PHMLRP phmlrp = new PHMLRP(params.getDataset(), params.getNumNodes(), params.getNumHubs(), params.getNumVehicles(),
-                params.getCollectionCostCFactor(), params.getDistributionCostCFactor(), params.getHubToHubCFactor(),
-                params.getRemovalPercentage());
+//        PHMLRP phmlrp = new PHMLRP(params.getDataset(), params.getNumNodes(), params.getNumHubs(), params.getNumVehicles(),
+//                params.getCollectionCostCFactor(), params.getDistributionCostCFactor(), params.getHubToHubCFactor(),
+//                params.getRemovalPercentage());
+//        InitialSolutions initialSolutions = new InitialSolutions(phmlrp);
+//        initialSolutions.randomSolution();
+//        phmlrp.calculateCost(PHMLRP.CostType.NORMAL);
+//        phmlrp.print(false);
+
         VND vnd = new VND(params);
         vnd.runVND();
 

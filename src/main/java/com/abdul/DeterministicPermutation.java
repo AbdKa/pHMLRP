@@ -81,7 +81,7 @@ class DeterministicPermutation {
             case 3:
                 return "swapNodeWithinRoutes";
             case 4:
-                return "edgeOpt";
+                return "edgeOptWithinRoutes";
             case 5:
                 return "swapHubWithNode";
             case 6:

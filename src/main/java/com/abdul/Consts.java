@@ -8,7 +8,7 @@ class Consts {
     static Map<String, Integer> neighborhoods = new HashMap<String, Integer>() {
         {
             put("insertNodeBetweenRoutes", 0);
-            put("edgeOpt", 1);
+            put("edgeOptWithinRoutes", 1);
             put("insertTwoNodes", 2);
             put("twoOptAlgorithm", 3);
             put("insertNodeInRoute", 4);
@@ -22,7 +22,7 @@ class Consts {
     static Map<Integer, String> neighborhoodsStr = new HashMap<Integer, String>() {
         {
             put(0, "insertNodeBetweenRoutes");
-            put(1, "edgeOpt");
+            put(1, "edgeOptWithinRoutes");
             put(2, "insertTwoNodes");
             put(3, "twoOptAlgorithm");
             put(4, "insertNodeInRoute");

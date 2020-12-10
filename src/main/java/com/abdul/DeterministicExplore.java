@@ -81,8 +81,8 @@ class DeterministicExplore {
                     break;
                 case 4:
                     // operation 4
-                    doOperation(4, "edgeOpt", row, i);
-                    operName = "edgeOpt";
+                    doOperation(4, "edgeOptWithinRoutes", row, i);
+                    operName = "edgeOptWithinRoutes";
                     break;
                 case 5:
                     // operation 5
@@ -120,7 +120,7 @@ class DeterministicExplore {
 //                doOperation(3, "swapNodeWithinRoutes", row, i);
 //            } else if (i < numOfIterationForEachOne * 5) {
 //                // operation 4
-//                doOperation(4, "edgeOpt", row, i);
+//                doOperation(4, "edgeOptWithinRoutes", row, i);
 //            } else if (i < numOfIterationForEachOne * 6) {
 //                // operation 5
 //                doOperation(5, "swapHubWithNode", row, i);

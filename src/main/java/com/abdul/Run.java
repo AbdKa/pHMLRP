@@ -21,7 +21,7 @@ public class Run extends Thread {
     private String[] problemInstances;
 
     //    0, insertNodeBetweenRoutes
-    //    1, edgeOpt
+    //    1, edgeOptWithinRoutes
     //    2, insertTwoNodes
     //    3, twoOptAlgorithm
     //    4, insertNodeInRoute

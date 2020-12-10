@@ -336,8 +336,8 @@ class PHMLRP {
         // TODO: Ask?? In a specific operation, if the randomly selected route does not satisfy our criteria,
         //  shall we reselect another one or just abort the operation then randomly select a new operation.
         Random random = new Random();
-//        int randOpr = random.nextInt(7);
-        int randOpr = 7;
+        int randOpr = random.nextInt(12);
+//        int randOpr = 7;
 
         Operations operations = new Operations(this);
 
@@ -355,24 +355,27 @@ class PHMLRP {
                 operations.swapNodeWithinRoutes(false, -1, -1, -1, -1);
                 break;
             case 4:
-                operations.edgeOpt(false);
+                operations.edgeOptWithinRoutes(false, -1, -1, -1, -1);
                 break;
             case 5:
-                operations.swapHubWithNode(false, -1, -1, -1);
+                operations.edgeOptInRoute(false, -1, -1, -1);
                 break;
             case 6:
-                operations.twoOptAlgorithm();
+                operations.swapHubWithNode(false, -1, -1, -1);
                 break;
             case 7:
-                operations.localSearchInsertion();
+                operations.twoOptAlgorithm();
                 break;
             case 8:
-                operations.localSearchSwap();
+                operations.localSearchInsertion();
                 break;
             case 9:
-                operations.insertTwoNodes(false);
+                operations.localSearchSwap();
                 break;
             case 10:
+                operations.insertTwoNodes(false);
+                break;
+            case 11:
                 operations.nodesRemoveAndGreedyInsert(removalPercentage);
                 break;
         }
@@ -391,7 +394,7 @@ class PHMLRP {
             case 0:
                 return operations.insertNodeBetweenRoutes(false, -1, -1, -1, -1);
             case 1:
-                return operations.edgeOpt(false);
+                return operations.edgeOptWithinRoutes(false, -1, -1, -1, -1);
             case 2:
                 return operations.insertTwoNodes(false);
             case 3:
@@ -473,12 +476,12 @@ class PHMLRP {
         for (int i = 0; i < hubsArr.length; i++) {
             // loop on vehicles in a hub
             for (int j = 0; j < numVehiclesPerHub; j++) {
-                routes.append(hubsArr[i]+1).append("-");
+                routes.append(hubsArr[i] + 1).append("-");
                 // loop on the vehicle's nodes
                 for (int node : vehiclesList.get(numVehiclesPerHub * i + j)) {
-                    routes.append(node+1).append("-");
+                    routes.append(node + 1).append("-");
                 }
-                routes.append(hubsArr[i]+1).append("; ");
+                routes.append(hubsArr[i] + 1).append("; ");
             }
         }
 

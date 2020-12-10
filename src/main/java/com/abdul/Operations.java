@@ -125,7 +125,7 @@ class Operations {
             boolean thereIsValidRoute = false;
             for (List<Integer> route :
                     phmlrp.getVehiclesList()) {
-                if (route.size() > 2) {
+                if (route.size() > 1) {
                     thereIsValidRoute = true;
                     break;
                 }
@@ -139,7 +139,7 @@ class Operations {
             // picking a route randomly, if not called from swap local search operation
             randomRouteIdx = random.nextInt(phmlrp.getVehiclesList().size());
             // if number of nodes in this random route is less than 3, re-pick.
-            while (phmlrp.getVehiclesList().get(randomRouteIdx).size() < 3) {
+            while (phmlrp.getVehiclesList().get(randomRouteIdx).size() < 2) {
                 randomRouteIdx = random.nextInt(phmlrp.getVehiclesList().size());
             }
 
@@ -158,9 +158,9 @@ class Operations {
                 phmlrp.getVehiclesList().get(randomRouteIdx).get(randomNodeIdx2));
         phmlrp.getVehiclesList().get(randomRouteIdx).set(randomNodeIdx2, temp);
 
-//        System.out.println("randomRouteIdx: " + randomRouteIdx +
-//                " randomNodeIdx1: " + randomNodeIdx1 +
-//                " randomNodeIdx2: " + randomNodeIdx2);
+        System.out.println("randomRouteIdx: " + randomRouteIdx +
+                " randomNodeIdx1: " + randomNodeIdx1 +
+                " randomNodeIdx2: " + randomNodeIdx2);
 
         // get the new cost after the change
         double newCost = phmlrp.calculateCost(PHMLRP.CostType.OPERATION);
@@ -187,9 +187,9 @@ class Operations {
 
         double currentCost = phmlrp.getMaxCost();
 
-        Random random = new Random();
         if (randomRouteIdx1 == -1) {
             // picking two route randomly, if not called from swap local search operation
+            Random random = new Random();
             randomRouteIdx1 = random.nextInt(phmlrp.getVehiclesList().size());
             randomRouteIdx2 = random.nextInt(phmlrp.getVehiclesList().size());
             while (randomRouteIdx1 == randomRouteIdx2) {
@@ -228,49 +228,126 @@ class Operations {
         return true;
     }
 
-    boolean edgeOpt(boolean isSimulatedAnnealing) {
-        // if we have less than 2 routes, return.
-        if (phmlrp.getVehiclesList().size() < 2) return false;
-
-        boolean thereIsValidRoute = false;
-        for (List<Integer> route :
-                phmlrp.getVehiclesList()) {
-            if (route.size() > 2) {
-                thereIsValidRoute = true;
-                break;
+    boolean edgeOptInRoute(boolean isSimulatedAnnealing, int randomRouteIdx, int randomNodeIdx1, int randomNodeIdx2) {
+        if (randomRouteIdx == -1) {
+            boolean thereIsValidRoute = false;
+            for (List<Integer> route :
+                    phmlrp.getVehiclesList()) {
+                if (route.size() > 3) {
+                    thereIsValidRoute = true;
+                    break;
+                }
             }
+            if (!thereIsValidRoute) return false;
         }
-        if (!thereIsValidRoute) return false;
-
         double currentCost = phmlrp.getMaxCost();
 
         Random random = new Random();
-        // picking two routes randomly
-        int randomRouteIdx1 = random.nextInt(phmlrp.getVehiclesList().size());
-        // if number of nodes in this random route is less than 3, re-pick.
-        while (phmlrp.getVehiclesList().get(randomRouteIdx1).size() < 3) {
+        if (randomRouteIdx == -1) {
+            // picking a route randomly, if not passed from edgeOpt local search operation
+            randomRouteIdx = random.nextInt(phmlrp.getVehiclesList().size());
+            // if number of nodes in this random route is less than 3, re-pick.
+            while (phmlrp.getVehiclesList().get(randomRouteIdx).size() < 4) {
+                randomRouteIdx = random.nextInt(phmlrp.getVehiclesList().size());
+            }
+
+            // the two random nodes indices from the random route, if not passed from edgeOpt local search operation
+            randomNodeIdx1 = random.nextInt(phmlrp.getVehiclesList().get(randomRouteIdx).size()-1);
+            randomNodeIdx2 = random.nextInt(phmlrp.getVehiclesList().get(randomRouteIdx).size()-1);
+
+            while (Math.abs(randomNodeIdx1 - randomNodeIdx2) < 2) {
+                // while the two randomly selected indices are the same, regenerate another one
+                randomNodeIdx2 = random.nextInt(phmlrp.getVehiclesList().get(randomRouteIdx).size());
+            }
+        }
+        // swapping the two edges
+        int temp1 = phmlrp.getVehiclesList().get(randomRouteIdx).get(randomNodeIdx1);
+        int temp2 = phmlrp.getVehiclesList().get(randomRouteIdx).get(randomNodeIdx1+1);
+        phmlrp.getVehiclesList().get(randomRouteIdx).set(randomNodeIdx1,
+                phmlrp.getVehiclesList().get(randomRouteIdx).get(randomNodeIdx2));
+        phmlrp.getVehiclesList().get(randomRouteIdx).set(randomNodeIdx2, temp1);
+        phmlrp.getVehiclesList().get(randomRouteIdx).set(randomNodeIdx1+1,
+                phmlrp.getVehiclesList().get(randomRouteIdx).get(randomNodeIdx2+1));
+        phmlrp.getVehiclesList().get(randomRouteIdx).set(randomNodeIdx2+1, temp2);
+
+        System.out.println("randomRouteIdx: " + randomRouteIdx +
+                " randomNodeIdx1: " + randomNodeIdx1 +
+                " randomNodeIdx2: " + randomNodeIdx2);
+//        phmlrp.print(false);
+
+        // get the new cost after the change
+        double newCost = phmlrp.calculateCost(PHMLRP.CostType.OPERATION);
+        if (isSimulatedAnnealing) {
+            return true;
+        }
+        if (newCost >= currentCost) {
+            // if the new cost is greater than or equal to the former cost, re-swap the two nodes
+            temp1 = phmlrp.getVehiclesList().get(randomRouteIdx).get(randomNodeIdx1);
+            temp2 = phmlrp.getVehiclesList().get(randomRouteIdx).get(randomNodeIdx1+1);
+            phmlrp.getVehiclesList().get(randomRouteIdx).set(randomNodeIdx1,
+                    phmlrp.getVehiclesList().get(randomRouteIdx).get(randomNodeIdx2));
+            phmlrp.getVehiclesList().get(randomRouteIdx).set(randomNodeIdx2, temp1);
+            phmlrp.getVehiclesList().get(randomRouteIdx).set(randomNodeIdx1+1,
+                    phmlrp.getVehiclesList().get(randomRouteIdx).get(randomNodeIdx2+1));
+            phmlrp.getVehiclesList().get(randomRouteIdx).set(randomNodeIdx2+1, temp2);
+            phmlrp.setMaxCost(currentCost);
+            return false;
+        }
+
+        return true;
+    }
+
+    boolean edgeOptWithinRoutes(boolean isSimulatedAnnealing, int randomRouteIdx1, int randomRouteIdx2,
+                                int randomNodeIdx1, int randomNodeIdx2) {
+        // if we have less than 2 routes, return.
+        if (phmlrp.getVehiclesList().size() < 2) return false;
+
+        double currentCost = phmlrp.getMaxCost();
+
+        if (randomRouteIdx1 == -1) {
+            int validRoutes = 0;
+            for (List<Integer> route :
+                    phmlrp.getVehiclesList()) {
+                if (route.size() > 1) {
+                    validRoutes++;
+                }
+            }
+            if (validRoutes < 2) return false;
+
+            Random random = new Random();
+            // picking two routes randomly
             randomRouteIdx1 = random.nextInt(phmlrp.getVehiclesList().size());
-        }
+            // if number of nodes in this random route is less than 3, re-pick.
+            while (phmlrp.getVehiclesList().get(randomRouteIdx1).size() < 2) {
+                randomRouteIdx1 = random.nextInt(phmlrp.getVehiclesList().size());
+            }
 
-        int randomRouteIdx2 = random.nextInt(phmlrp.getVehiclesList().size());
-
-        while (randomRouteIdx1 == randomRouteIdx2) {
-            // while the two randomly selected routes are the same, re-pick another one
             randomRouteIdx2 = random.nextInt(phmlrp.getVehiclesList().size());
+
+            while (randomRouteIdx1 == randomRouteIdx2 || phmlrp.getVehiclesList().get(randomRouteIdx2).size() < 2) {
+                // while the two randomly selected routes are the same, re-pick another one
+                randomRouteIdx2 = random.nextInt(phmlrp.getVehiclesList().size());
+            }
+
+            // the two random indices, one from each route
+            randomNodeIdx1 = random.nextInt(phmlrp.getVehiclesList().get(randomRouteIdx1).size() - 1);
+            randomNodeIdx2 = random.nextInt(phmlrp.getVehiclesList().get(randomRouteIdx2).size() - 1);
         }
 
-        // the two random indices, one from each route
-        int randomNodeIdx1 = random.nextInt(phmlrp.getVehiclesList().get(randomRouteIdx1).size() - 1);
-        int randomNewIdx = random.nextInt(phmlrp.getVehiclesList().get(randomRouteIdx2).size());
+        System.out.println(" route1: " + randomRouteIdx1 + " randomNodeIdx: " + randomNodeIdx1 +
+                " route2: " + randomRouteIdx2 + " randomNodeIdx: " + randomNodeIdx2);
 
-        // removing the node from the first route then add it to the new one
-        int removedNode1 = phmlrp.getVehiclesList().get(randomRouteIdx1).remove(randomNodeIdx1);
-        int removedNode2 = phmlrp.getVehiclesList().get(randomRouteIdx1).remove(randomNodeIdx1);
-        phmlrp.getVehiclesList().get(randomRouteIdx2).add(randomNewIdx, removedNode1);
-        phmlrp.getVehiclesList().get(randomRouteIdx2).add(randomNewIdx + 1, removedNode2);
+        // swap the two edges in the first and second route
+        int removedR1N1 = phmlrp.getVehiclesList().get(randomRouteIdx1).remove(randomNodeIdx1);
+        int removedR1N2 = phmlrp.getVehiclesList().get(randomRouteIdx1).remove(randomNodeIdx1);
+        int removedR2N1 = phmlrp.getVehiclesList().get(randomRouteIdx2).remove(randomNodeIdx2);
+        int removedR2N2 = phmlrp.getVehiclesList().get(randomRouteIdx2).remove(randomNodeIdx2);
+        phmlrp.getVehiclesList().get(randomRouteIdx1).add(randomNodeIdx1, removedR2N1);
+        phmlrp.getVehiclesList().get(randomRouteIdx1).add(randomNodeIdx1 + 1, removedR2N2);
+        phmlrp.getVehiclesList().get(randomRouteIdx2).add(randomNodeIdx2, removedR1N1);
+        phmlrp.getVehiclesList().get(randomRouteIdx2).add(randomNodeIdx2 + 1, removedR1N2);
 
-//        System.out.println(" route1: " + randomRouteIdx1 + " nodeIndex: " + randomNodeIdx1 +
-//                " route2: " + randomRouteIdx2 + " newIndex: " + randomNewIdx);
+//        phmlrp.print(false);
 
         // get the new cost after the change
         double newCost = phmlrp.calculateCost(PHMLRP.CostType.OPERATION);
@@ -280,10 +357,14 @@ class Operations {
         if (newCost >= currentCost) {
             // if the new cost is greater than or equal to the former cost,
             // remove the node from new index then to add it into its original index
-            removedNode1 = phmlrp.getVehiclesList().get(randomRouteIdx2).remove(randomNewIdx);
-            removedNode2 = phmlrp.getVehiclesList().get(randomRouteIdx2).remove(randomNewIdx);
-            phmlrp.getVehiclesList().get(randomRouteIdx1).add(randomNodeIdx1, removedNode1);
-            phmlrp.getVehiclesList().get(randomRouteIdx1).add(randomNodeIdx1 + 1, removedNode2);
+            removedR1N1 = phmlrp.getVehiclesList().get(randomRouteIdx1).remove(randomNodeIdx1);
+            removedR1N2 = phmlrp.getVehiclesList().get(randomRouteIdx1).remove(randomNodeIdx1);
+            removedR2N1 = phmlrp.getVehiclesList().get(randomRouteIdx2).remove(randomNodeIdx2);
+            removedR2N2 = phmlrp.getVehiclesList().get(randomRouteIdx2).remove(randomNodeIdx2);
+            phmlrp.getVehiclesList().get(randomRouteIdx1).add(randomNodeIdx1, removedR2N1);
+            phmlrp.getVehiclesList().get(randomRouteIdx1).add(randomNodeIdx1 + 1, removedR2N2);
+            phmlrp.getVehiclesList().get(randomRouteIdx2).add(randomNodeIdx2, removedR1N1);
+            phmlrp.getVehiclesList().get(randomRouteIdx2).add(randomNodeIdx2 + 1, removedR1N2);
             return false;
         }
 
@@ -558,7 +639,7 @@ class Operations {
                 continue;
             }
             phmlrp.getVehiclesList().get(routeAndNode[0]).remove(routeAndNode[1]);
-            insertAfterEachNode(initList.get(i));
+            insertAfterEachNode(initList.get(i), routeAndNode);
 
 //            localSearchSwap();
 //            localSearchSwapHubWithNode();
@@ -579,28 +660,31 @@ class Operations {
         return new int[]{route, nodeIdx};
     }
 
-    private void insertAfterEachNode(int node) {
-        Random random = new Random();
-        int bestRoute = random.nextInt(phmlrp.getVehiclesList().size());
-        int bestIdx = random.nextInt(phmlrp.getVehiclesList().get(bestRoute).size());
+    private void insertAfterEachNode(int node, int[] routeAndNode) {
+        int bestRoute = routeAndNode[0];
+        int bestIdx = routeAndNode[1];
+//        Random random = new Random();
+//        int bestRoute = random.nextInt(phmlrp.getVehiclesList().size());
+//        int bestIdx = random.nextInt(phmlrp.getVehiclesList().get(bestRoute).size());
         double bestCost = phmlrp.getMaxCost();
         for (int i = 0; i < phmlrp.getVehiclesList().size(); i++) {
-            for (int j = 0; j < phmlrp.getVehiclesList().get(i).size(); j++) {
+            for (int j = 0; j <= phmlrp.getVehiclesList().get(i).size(); j++) {
                 // insert the current node before each node
                 double cost = insertNodeLocalSearch(i, node, j);
-//                System.out.println(cost);
+                System.out.println("route " + i + " idx " + j + " " + cost);
                 if (cost < bestCost) {
                     bestCost = cost;
                     bestRoute = i;
                     bestIdx = j;
-//                    phmlrp.print(false);
+                    System.out.println(phmlrp.getMaxCost());
+                    phmlrp.print(false);
                 }
             }
         }
         phmlrp.getVehiclesList().get(bestRoute).add(bestIdx, node);
         phmlrp.setMaxCost(bestCost);
 
-//        System.out.println("Node: " + node);
+        System.out.println("Node: " + node);
     }
 
     private double insertNodeLocalSearch(int routeIdx, int node, int newIdx) {
@@ -668,6 +752,53 @@ class Operations {
                     // then swapping the current node with every other node and calculating cost each time
                     swapHubWithNode(false, h, i, j);
                 }
+            }
+        }
+    }
+
+    void localSearchEdgeOpt() {
+        // create a list of all non-hub nodes
+        List<Integer> initList = new ArrayList<Integer>();
+        for (int i = 0; i < phmlrp.getVehiclesList().size(); i++) {
+            if (phmlrp.getVehiclesList().get(i).size() < 2) {
+                continue;
+            }
+            for (int j = 0; j < phmlrp.getVehiclesList().get(i).size()-1; j+=2) {
+                initList.add(phmlrp.getVehiclesList().get(i).get(j));
+                System.out.println(phmlrp.getVehiclesList().get(i).get(j));
+            }
+        }
+
+        for (int edge : initList) {
+            // going through each edge recursively,
+            // then swapping the current edge with every other edge and calculating cost each time
+            System.out.println("edge " + edge);
+            int counter = 0;
+            int bCounter = 0;
+            for (int edge2 : initList) {
+                if (edge == edge2) continue;
+
+                int[] routeAndNode = searchInMainList(edge);
+                int routeIdx1 = routeAndNode[0];
+                int nodeIdx1 = routeAndNode[1];
+                int[] routeAndNode2 = searchInMainList(edge2);
+                int routeIdx2 = routeAndNode2[0];
+                int nodeIdx2 = routeAndNode2[1];
+
+                // edgeOpt the current edge with each edge
+                if (routeIdx1 == routeIdx2) {
+                    boolean a = edgeOptInRoute(false, routeIdx1, nodeIdx1, nodeIdx2);
+                    phmlrp.print(false);
+                    if (a) counter++;
+                    else bCounter++;
+                } else {
+                    boolean a = edgeOptWithinRoutes(false, routeIdx1, routeIdx2, nodeIdx1, nodeIdx2);
+                    phmlrp.print(false);
+                    if (a) counter++;
+                    else bCounter++;
+                }
+
+                System.out.println("Route: " + routeIdx1 + " Node: " + edge2 + " Counter: " + counter + " bCounter: " + bCounter);
             }
         }
     }

@@ -37,7 +37,7 @@ class VndWithIncompleteHubs {
 //    };
 
     //    0, insertNodeBetweenRoutes
-    //    1, edgeOpt
+    //    1, edgeOptWithinRoutes
     //    2, insertTwoNodes
     //    3, twoOptAlgorithm
     //    4, insertNodeInRoute
@@ -87,25 +87,14 @@ class VndWithIncompleteHubs {
     private void getProblemInstancesFromJson() {
         JSONParser parser = new JSONParser();
         try {
-            if (localSource) {
-                JSONArray arr = (JSONArray) parser.parse(new FileReader("problem_instances.json"));
-                List<String> list = new ArrayList<>();
-                for (Object probInstance : arr) {
-                    list.add((String) probInstance);
-                }
-
-                problemInstances = new String[list.size()];
-                list.toArray(problemInstances);
-            } else {
-                JSONArray arr = (JSONArray) parser.parse(new FileReader("problem_instances_phc_mtsp.json"));
-                List<String> list = new ArrayList<>();
-                for (Object probInstance : arr) {
-                    list.add((String) probInstance);
-                }
-
-                problemInstances = new String[list.size()];
-                list.toArray(problemInstances);
+            JSONArray arr = (JSONArray) parser.parse(new FileReader("problem_instances.json"));
+            List<String> list = new ArrayList<>();
+            for (Object probInstance : arr) {
+                list.add((String) probInstance);
             }
+
+            problemInstances = new String[list.size()];
+            list.toArray(problemInstances);
 
         } catch (IOException e) {
             System.out.println("Exception: " + e);
