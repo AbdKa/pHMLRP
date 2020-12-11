@@ -80,7 +80,7 @@ class SimulatedAnnealing {
                     continue;
                 }
 
-                double probability = Math.pow(Math.E, difference / T);
+                double probability = Math.exp(difference / T);
                 if (probability > Math.random()) {
 //                    System.out.println("temp: " + T + "\tdifference: " + difference);
                     setBestVehiclesList(newSol);
