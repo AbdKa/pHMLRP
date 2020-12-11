@@ -26,15 +26,6 @@ class VndWithIncompleteHubs {
 
     // problem instance: dataset.n.h.v.q
     private String[] problemInstances;
-//            "TR.10.2.1.1", "TR.10.2.2.1", "TR.10.3.1.2",
-//            "TR16.16.2.1.1", "TR16.10.2.2.1", "TR16.10.3.1.2",
-
-//            "TR.15.2.1", "TR.15.2.2",
-//            "TR.25.2.1", "TR.25.2.5", "TR.25.5.1", "TR.25.5.2",
-//            "TR.50.2.1", "TR.50.2.5", "TR.50.5.1", "TR.50.5.2",
-//            "TR.81.2.1", "TR.81.2.5", "TR.81.5.1", "TR.81.5.2",
-//            "TR.81.9.1", "TR.81.9.2", "TR.81.9.3", "TR.81.9.4", "TR.81.9.5",
-//    };
 
     //    0, insertNodeBetweenRoutes
     //    1, edgeOptWithinRoutes
@@ -63,7 +54,7 @@ class VndWithIncompleteHubs {
     VndWithIncompleteHubs(Params params, String resultPath, boolean initSource) {
         getProblemInstancesFromJson();
         this.params = params;
-        combinations = Utils.getCombinations();
+        combinations = Utils.getCombinations("Combinations");
         runs = params.getNumRuns();
 
         iterationCounts = new int[problemInstances.length];
@@ -87,7 +78,7 @@ class VndWithIncompleteHubs {
     private void getProblemInstancesFromJson() {
         JSONParser parser = new JSONParser();
         try {
-            JSONArray arr = (JSONArray) parser.parse(new FileReader("problem_instances.json"));
+            JSONArray arr = (JSONArray) parser.parse(new FileReader("problem_instances_incomp.json"));
             List<String> list = new ArrayList<>();
             for (Object probInstance : arr) {
                 list.add((String) probInstance);

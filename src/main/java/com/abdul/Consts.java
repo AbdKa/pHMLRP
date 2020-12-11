@@ -32,4 +32,22 @@ class Consts {
             put(8, "swapHubWithNode");
         }
     };
+
+    static Map<String, Integer> localSearchMap = new HashMap<String, Integer>() {
+        {
+            put("Insertion", 0);
+            put("Swap", 1);
+            put("HubMove", 2);
+            put("EdgeOpt", 3);
+        }
+    };
+
+    static Map<Integer, String> localSearchesStr = new HashMap<Integer, String>() {
+        {
+            put(0, "Insertion");
+            put(1, "Swap");
+            put(2, "HubMove");
+            put(3, "EdgeOpt");
+        }
+    };
 }

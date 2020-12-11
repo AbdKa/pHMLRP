@@ -51,7 +51,7 @@ class VND {
 
     VND(Params params) {
         this.params = params;
-        combinations = Utils.getCombinations();
+        combinations = Utils.getCombinations("Combinations");
 
         bestSolutions = new PHMLRP[problemInstances.length][combinations.size()];
         bestCosts = new double[problemInstances.length][combinations.size()];

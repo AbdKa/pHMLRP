@@ -17,10 +17,16 @@ class Utils {
 
     static double CPU = 0;
 
-    static List<List<Integer>> getCombinations() {
+    static List<List<Integer>> getCombinations(String fileName) {
+        Map<String, Integer> hashMap;
+        if (fileName.equals("ls_combinations")) {
+            hashMap = Consts.localSearchMap;
+        } else {
+            hashMap = Consts.neighborhoods;
+        }
         List<List<Integer>> combinationsList = new ArrayList<>();
         try {
-            BufferedReader CSVFile = new BufferedReader(new FileReader("Combinations.csv"));
+            BufferedReader CSVFile = new BufferedReader(new FileReader(fileName + ".csv"));
             String dataRow = CSVFile.readLine();
             while (dataRow != null && !dataRow.equals("")) {
                 // converting comma separate String to array of neighborhoods
@@ -28,8 +34,8 @@ class Utils {
                 List<Integer> comb = new ArrayList<>();
 
                 for (String neighborhood : combsStrArr) {
-                    int nbhd = Consts.neighborhoods.getOrDefault(neighborhood, 0);
-                    comb.add(nbhd);
+                    int neighborhoodIdx = hashMap.getOrDefault(neighborhood, 0);
+                    comb.add(neighborhoodIdx);
                 }
 
                 // add combination to the list
@@ -54,6 +60,14 @@ class Utils {
             }
         }
         return list;
+    }
+
+    static String createCombinationStr(List<Integer> combination) {
+        StringBuilder combinationStr = new StringBuilder();
+        for (Integer ls : combination) {
+            combinationStr.append(Consts.localSearchesStr.getOrDefault(ls, "")).append(", ");
+        }
+        return combinationStr.toString();
     }
 
     static <K, V extends Comparable<? super V>> Map<K, V> sortByValue(Map<K, V> map) {

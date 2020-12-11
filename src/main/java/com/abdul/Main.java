@@ -30,6 +30,9 @@ public class Main {
         String path = currentPath + "/" + params.getResultPath();
         Files.createDirectories(Paths.get(path));
 
+        LS_VND ls_vnd = new LS_VND(params);
+        ls_vnd.runVND();
+
 //        Dataset dataset = new Dataset();
 
         // VND
@@ -41,8 +44,8 @@ public class Main {
 //        phmlrp.calculateCost(PHMLRP.CostType.NORMAL);
 //        phmlrp.print(false);
 
-        VND vnd = new VND(params);
-        vnd.runVND();
+//        VND vnd = new VND(params);
+//        vnd.runVND();
 
 
 //        VndWithIncompleteHubs vnd = new VndWithIncompleteHubs(params, path, false);

@@ -802,4 +802,21 @@ class Operations {
             }
         }
     }
+
+    void doLocalSearch(int k) {
+        switch (k) {
+            case 0:
+                localSearchInsertion();
+                break;
+            case 1:
+                localSearchSwap();
+                break;
+            case 2:
+                localSearchSwapHubWithNode();
+                break;
+            case 3:
+                localSearchEdgeOpt();
+                break;
+        }
+    }
 }
