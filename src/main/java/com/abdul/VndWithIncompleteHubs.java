@@ -227,7 +227,7 @@ class VndWithIncompleteHubs {
         XSSFRow row = bcSheet.createRow(0);
         row.createCell(0, CellType.STRING).setCellValue("problemInstance");
         row.createCell(1, CellType.STRING).setCellValue("MTSP Cost");
-        row.createCell(2, CellType.STRING).setCellValue("CPU pHC+MTSP (milli)");
+        row.createCell(2, CellType.STRING).setCellValue("CPU pHC+MTSP (micro)");
         row.createCell(3, CellType.STRING).setCellValue("bestCost");
         row.createCell(4, CellType.STRING).setCellValue("CPUTime (micro)");
         row.createCell(5, CellType.STRING).setCellValue("IterationNumber");

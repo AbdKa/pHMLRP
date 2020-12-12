@@ -30,12 +30,20 @@ public class Main {
         String path = currentPath + "/" + params.getResultPath();
         Files.createDirectories(Paths.get(path));
 
-        LS_VND ls_vnd = new LS_VND(params);
-        ls_vnd.runVND();
+        // Simulated Annealing
+        PHMLRP saPhmlrp = new PHMLRP(params.getDataset(), params.getNumNodes(), params.getNumHubs(), params.getNumVehicles(),
+                params.getCollectionCostCFactor(), params.getDistributionCostCFactor(), params.getHubToHubCFactor(),
+                params.getRemovalPercentage());
+        saPhmlrp.setSimulatedAnnealing(true);
+        randomSolutionAndCost(saPhmlrp);
+        SimulatedAnnealing simulatedAnnealing = new SimulatedAnnealing(saPhmlrp, params);
+        simulatedAnnealing.applySA();
+
+//        LS_VND ls_vnd = new LS_VND(params);
+//        ls_vnd.runVND();
 
 //        Dataset dataset = new Dataset();
 
-        // VND
 //        PHMLRP phmlrp = new PHMLRP(params.getDataset(), params.getNumNodes(), params.getNumHubs(), params.getNumVehicles(),
 //                params.getCollectionCostCFactor(), params.getDistributionCostCFactor(), params.getHubToHubCFactor(),
 //                params.getRemovalPercentage());
@@ -202,10 +210,8 @@ public class Main {
         saPhmlrp.setSimulatedAnnealing(true);
         randomSolutionAndCost(saPhmlrp);
 
-        XSSFSheet saSpreadsheet = saWorkbook.createSheet(sheetName);
-        createSaFirstRow(saSpreadsheet);
-        SimulatedAnnealing simulatedAnnealing = new SimulatedAnnealing(saPhmlrp);
-        simulatedAnnealing.applySA(saWorkbook, saSpreadsheet);
+        SimulatedAnnealing simulatedAnnealing = new SimulatedAnnealing(saPhmlrp, params);
+        simulatedAnnealing.applySA();
 
 //        PHMLRP dpPhmlrp = new PHMLRP(10, numHubs, numVehicles,
 //                params.getCollectionCostCFactor(), params.getDistributionCostCFactor(), params.getHubToHubCFactor(),
@@ -234,17 +240,6 @@ public class Main {
         row.createCell(4, CellType.STRING).setCellValue("Elapsed Time (nano)");
         row.createCell(5, CellType.STRING).setCellValue("hubs");
         row.createCell(6, CellType.STRING).setCellValue("routes");
-    }
-
-    private static void createSaFirstRow(XSSFSheet saSpreadsheet) {
-        XSSFRow row = saSpreadsheet.createRow(0);
-        row.createCell(0, CellType.STRING).setCellValue("Temp");
-        row.createCell(1, CellType.STRING).setCellValue("Iteration#");
-        row.createCell(2, CellType.STRING).setCellValue("Solution Cost");
-        row.createCell(3, CellType.STRING).setCellValue("Difference");
-        row.createCell(4, CellType.STRING).setCellValue("hubs");
-        row.createCell(5, CellType.STRING).setCellValue("routes");
-        row.createCell(6, CellType.STRING).setCellValue("Executed Operation");
     }
 
     private static void createDpFirstRow(XSSFSheet dpSpreadsheet) {

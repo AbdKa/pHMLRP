@@ -158,9 +158,9 @@ class Operations {
                 phmlrp.getVehiclesList().get(randomRouteIdx).get(randomNodeIdx2));
         phmlrp.getVehiclesList().get(randomRouteIdx).set(randomNodeIdx2, temp);
 
-        System.out.println("randomRouteIdx: " + randomRouteIdx +
-                " randomNodeIdx1: " + randomNodeIdx1 +
-                " randomNodeIdx2: " + randomNodeIdx2);
+//        System.out.println("randomRouteIdx: " + randomRouteIdx +
+//                " randomNodeIdx1: " + randomNodeIdx1 +
+//                " randomNodeIdx2: " + randomNodeIdx2);
 
         // get the new cost after the change
         double newCost = phmlrp.calculateCost(PHMLRP.CostType.OPERATION);
@@ -252,28 +252,30 @@ class Operations {
             }
 
             // the two random nodes indices from the random route, if not passed from edgeOpt local search operation
-            randomNodeIdx1 = random.nextInt(phmlrp.getVehiclesList().get(randomRouteIdx).size()-1);
-            randomNodeIdx2 = random.nextInt(phmlrp.getVehiclesList().get(randomRouteIdx).size()-1);
+            randomNodeIdx1 = random.nextInt((phmlrp.getVehiclesList().get(randomRouteIdx).size()) / 2) * 2;
+//                    random.nextInt(phmlrp.getVehiclesList().get(randomRouteIdx).size() - 1);
+            randomNodeIdx2 = random.nextInt((phmlrp.getVehiclesList().get(randomRouteIdx).size()) / 2) * 2;
 
             while (Math.abs(randomNodeIdx1 - randomNodeIdx2) < 2) {
                 // while the two randomly selected indices are the same, regenerate another one
-                randomNodeIdx2 = random.nextInt(phmlrp.getVehiclesList().get(randomRouteIdx).size());
+                randomNodeIdx2 = random.nextInt((phmlrp.getVehiclesList().get(randomRouteIdx).size()) / 2) * 2;
             }
         }
+
+//        System.out.println("randomRouteIdx: " + randomRouteIdx +
+//                " randomNodeIdx1: " + randomNodeIdx1 +
+//                " randomNodeIdx2: " + randomNodeIdx2);
+//        phmlrp.print(false);
+
         // swapping the two edges
         int temp1 = phmlrp.getVehiclesList().get(randomRouteIdx).get(randomNodeIdx1);
-        int temp2 = phmlrp.getVehiclesList().get(randomRouteIdx).get(randomNodeIdx1+1);
+        int temp2 = phmlrp.getVehiclesList().get(randomRouteIdx).get(randomNodeIdx1 + 1);
         phmlrp.getVehiclesList().get(randomRouteIdx).set(randomNodeIdx1,
                 phmlrp.getVehiclesList().get(randomRouteIdx).get(randomNodeIdx2));
         phmlrp.getVehiclesList().get(randomRouteIdx).set(randomNodeIdx2, temp1);
-        phmlrp.getVehiclesList().get(randomRouteIdx).set(randomNodeIdx1+1,
-                phmlrp.getVehiclesList().get(randomRouteIdx).get(randomNodeIdx2+1));
-        phmlrp.getVehiclesList().get(randomRouteIdx).set(randomNodeIdx2+1, temp2);
-
-        System.out.println("randomRouteIdx: " + randomRouteIdx +
-                " randomNodeIdx1: " + randomNodeIdx1 +
-                " randomNodeIdx2: " + randomNodeIdx2);
-//        phmlrp.print(false);
+        phmlrp.getVehiclesList().get(randomRouteIdx).set(randomNodeIdx1 + 1,
+                phmlrp.getVehiclesList().get(randomRouteIdx).get(randomNodeIdx2 + 1));
+        phmlrp.getVehiclesList().get(randomRouteIdx).set(randomNodeIdx2 + 1, temp2);
 
         // get the new cost after the change
         double newCost = phmlrp.calculateCost(PHMLRP.CostType.OPERATION);
@@ -283,13 +285,13 @@ class Operations {
         if (newCost >= currentCost) {
             // if the new cost is greater than or equal to the former cost, re-swap the two nodes
             temp1 = phmlrp.getVehiclesList().get(randomRouteIdx).get(randomNodeIdx1);
-            temp2 = phmlrp.getVehiclesList().get(randomRouteIdx).get(randomNodeIdx1+1);
+            temp2 = phmlrp.getVehiclesList().get(randomRouteIdx).get(randomNodeIdx1 + 1);
             phmlrp.getVehiclesList().get(randomRouteIdx).set(randomNodeIdx1,
                     phmlrp.getVehiclesList().get(randomRouteIdx).get(randomNodeIdx2));
             phmlrp.getVehiclesList().get(randomRouteIdx).set(randomNodeIdx2, temp1);
-            phmlrp.getVehiclesList().get(randomRouteIdx).set(randomNodeIdx1+1,
-                    phmlrp.getVehiclesList().get(randomRouteIdx).get(randomNodeIdx2+1));
-            phmlrp.getVehiclesList().get(randomRouteIdx).set(randomNodeIdx2+1, temp2);
+            phmlrp.getVehiclesList().get(randomRouteIdx).set(randomNodeIdx1 + 1,
+                    phmlrp.getVehiclesList().get(randomRouteIdx).get(randomNodeIdx2 + 1));
+            phmlrp.getVehiclesList().get(randomRouteIdx).set(randomNodeIdx2 + 1, temp2);
             phmlrp.setMaxCost(currentCost);
             return false;
         }
@@ -334,8 +336,8 @@ class Operations {
             randomNodeIdx2 = random.nextInt(phmlrp.getVehiclesList().get(randomRouteIdx2).size() - 1);
         }
 
-        System.out.println(" route1: " + randomRouteIdx1 + " randomNodeIdx: " + randomNodeIdx1 +
-                " route2: " + randomRouteIdx2 + " randomNodeIdx: " + randomNodeIdx2);
+//        System.out.println(" route1: " + randomRouteIdx1 + " randomNodeIdx: " + randomNodeIdx1 +
+//                " route2: " + randomRouteIdx2 + " randomNodeIdx: " + randomNodeIdx2);
 
         // swap the two edges in the first and second route
         int removedR1N1 = phmlrp.getVehiclesList().get(randomRouteIdx1).remove(randomNodeIdx1);
@@ -671,7 +673,7 @@ class Operations {
             for (int j = 0; j <= phmlrp.getVehiclesList().get(i).size(); j++) {
                 // insert the current node before each node
                 double cost = insertNodeLocalSearch(i, node, j);
-                System.out.println("route " + i + " idx " + j + " " + cost);
+//                System.out.println("route " + i + " idx " + j + " " + cost);
                 if (cost < bestCost) {
                     bestCost = cost;
                     bestRoute = i;
@@ -684,7 +686,7 @@ class Operations {
         phmlrp.getVehiclesList().get(bestRoute).add(bestIdx, node);
         phmlrp.setMaxCost(bestCost);
 
-        System.out.println("Node: " + node);
+//        System.out.println("Node: " + node);
     }
 
     private double insertNodeLocalSearch(int routeIdx, int node, int newIdx) {
@@ -763,16 +765,16 @@ class Operations {
             if (phmlrp.getVehiclesList().get(i).size() < 2) {
                 continue;
             }
-            for (int j = 0; j < phmlrp.getVehiclesList().get(i).size()-1; j+=2) {
+            for (int j = 0; j < phmlrp.getVehiclesList().get(i).size() - 1; j += 2) {
                 initList.add(phmlrp.getVehiclesList().get(i).get(j));
-                System.out.println(phmlrp.getVehiclesList().get(i).get(j));
+//                System.out.println(phmlrp.getVehiclesList().get(i).get(j));
             }
         }
 
         for (int edge : initList) {
             // going through each edge recursively,
             // then swapping the current edge with every other edge and calculating cost each time
-            System.out.println("edge " + edge);
+//            System.out.println("edge " + edge);
             int counter = 0;
             int bCounter = 0;
             for (int edge2 : initList) {
@@ -788,17 +790,17 @@ class Operations {
                 // edgeOpt the current edge with each edge
                 if (routeIdx1 == routeIdx2) {
                     boolean a = edgeOptInRoute(false, routeIdx1, nodeIdx1, nodeIdx2);
-                    phmlrp.print(false);
+//                    phmlrp.print(false);
                     if (a) counter++;
                     else bCounter++;
                 } else {
                     boolean a = edgeOptWithinRoutes(false, routeIdx1, routeIdx2, nodeIdx1, nodeIdx2);
-                    phmlrp.print(false);
+//                    phmlrp.print(false);
                     if (a) counter++;
                     else bCounter++;
                 }
 
-                System.out.println("Route: " + routeIdx1 + " Node: " + edge2 + " Counter: " + counter + " bCounter: " + bCounter);
+//                System.out.println("Route: " + routeIdx1 + " Node: " + edge2 + " Counter: " + counter + " bCounter: " + bCounter);
             }
         }
     }

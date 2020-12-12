@@ -10,13 +10,13 @@ public interface Params {
     @Option(description = "Dataset", shortName = "d", longName = "dataset", defaultValue = "TR")
     String getDataset();
 
-    @Option(description = "number of nodes", shortName = "n", longName = "node", defaultValue = "50")
+    @Option(description = "number of nodes", shortName = "n", longName = "node", defaultValue = "10")
     int getNumNodes();
 
-    @Option(description = "number of hubs", shortName = "h", longName = "hubs", defaultValue = "5")
+    @Option(description = "number of hubs", shortName = "h", longName = "hubs", defaultValue = "2")
     int getNumHubs();
 
-    @Option(description = "number of vehicles per hub", shortName = "v", longName = "vehicles", defaultValue = "2")
+    @Option(description = "number of vehicles per hub", shortName = "v", longName = "vehicles", defaultValue = "1")
     int getNumVehicles();
 
     @Option(description = "number of links", shortName = "q", longName = "links", defaultValue = "8")

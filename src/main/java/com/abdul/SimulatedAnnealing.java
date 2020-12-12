@@ -5,8 +5,6 @@ import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
-import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -15,10 +13,29 @@ import java.util.Random;
 class SimulatedAnnealing {
 
     private PHMLRP phmlrp;
+    private Params params;
     private ArrayList<List<Integer>> bestSol;
 
-    SimulatedAnnealing(PHMLRP phmlrp) {
+    private List<Double> temps = new ArrayList<>();
+    private List<Double> costs = new ArrayList<>();
+    private List<Double> differences = new ArrayList<>();
+    private List<Integer> operationNums = new ArrayList<>();
+    private List<String> hubsList = new ArrayList<>();
+    private List<String> routesList = new ArrayList<>();
+
+    // Simulated Annealing parameters
+    // Initial temperature
+    private double T = 1000000;
+    // Temperature at which iteration terminates
+    private final double minT = .0000001;
+    // Decrease in temperature
+    private final double alpha = 0.95;
+    // Number of iterations of annealing before decreasing temperature
+    private final int numIterations = 10;
+
+    SimulatedAnnealing(PHMLRP phmlrp, Params params) {
         this.phmlrp = phmlrp;
+        this.params = params;
         setBestVehiclesList(phmlrp.getVehiclesList());
     }
 
@@ -30,18 +47,7 @@ class SimulatedAnnealing {
         }
     }
 
-    void applySA(XSSFWorkbook workbook, XSSFSheet spreadsheet) throws IOException {
-        // Initial temperature
-        double T = 1000000;
-
-        // Simulated Annealing parameters
-
-        // Temperature at which iteration terminates
-        final double minT = .0000001;
-        // Decrease in temperature
-        final double alpha = 0.95;
-        // Number of iterations of annealing before decreasing temperature
-        final int numIterations = 10;
+    void applySA() {
         // Global minimum
         double min = phmlrp.getMaxCost();
         // new solution initialization
@@ -49,29 +55,31 @@ class SimulatedAnnealing {
 
         phmlrp.print(false);
 
-        int counter = 1;
         phmlrp.setSimulatedAnnealing(true);
-
-        XSSFRow row;
 
         // Continues annealing until reaching minimum
         // temperature
+        int counter = 0;
         while (T > minT) {
-            row = spreadsheet.createRow(counter);
+            System.out.println("Temperature " + T);
+
+            temps.add(counter, T);
+            costs.add(counter, -1.0);
+            differences.add(counter, -1.0);
+            operationNums.add(counter, -1);
+            hubsList.add(counter, "");
+            routesList.add(counter, "");
+
             for (int i = 0; i < numIterations; i++) {
-                int oprationNum = doRandomOperation();
+                int operationNum = doRandomOperation();
                 newSol = phmlrp.getVehiclesList();
                 double newCost = phmlrp.getSaOperationCost();
                 double difference = min - newCost;
 
-                row.createCell(0, CellType.NUMERIC).setCellValue(T);
-                row.createCell(1, CellType.NUMERIC).setCellValue(counter);
-                row.createCell(2, CellType.NUMERIC).setCellValue(newCost);
-                row.createCell(3, CellType.NUMERIC).setCellValue(difference);
-                printHubsAndRoutesToExcel(row);
-                row.createCell(6, CellType.NUMERIC).setCellValue(oprationNum);
-
-                counter++;
+                costs.set(counter, newCost);
+                differences.set(counter, difference);
+                operationNums.set(counter, operationNum);
+                addHubsAndRoutesStr(counter);
 
                 // Reassigns global minimum accordingly
                 if (difference > 0) {
@@ -87,25 +95,20 @@ class SimulatedAnnealing {
                 }
             }
 
+            counter++;
             T *= alpha; // Decreases T, cooling phase
         }
 
-        //Write the workbook in file system
-        FileOutputStream out = new FileOutputStream(
-                new File("sa_results.xlsx"));
-
-        workbook.write(out);
-        out.close();
-        System.out.println("sa_results.xlsx written successfully");
+        printResultsExcel();
 
         phmlrp.setSimulatedAnnealing(false);
 
         phmlrp.resetVehiclesList(bestSol);
         phmlrp.print(false);
-        System.out.println(counter);
+//        System.out.println(counter);
     }
 
-    private void printHubsAndRoutesToExcel(XSSFRow row) {
+    private void addHubsAndRoutesStr(int counter) {
         StringBuilder hubs = new StringBuilder();
         StringBuilder routes = new StringBuilder();
         for (int hub : phmlrp.getHubsArr()) {
@@ -117,13 +120,13 @@ class SimulatedAnnealing {
             }
             routes.append("; ");
         }
-        row.createCell(4, CellType.STRING).setCellValue(hubs.toString());
-        row.createCell(5, CellType.STRING).setCellValue(routes.toString());
+        hubsList.set(counter, hubs.toString());
+        routesList.set(counter, routes.toString());
     }
 
     private int doRandomOperation() {
         Random random = new Random();
-        int randOpr = random.nextInt(5);
+        int randOpr = random.nextInt(7);
 
         Operations operations = new Operations(phmlrp);
 
@@ -147,12 +150,49 @@ class SimulatedAnnealing {
                 operations.edgeOptWithinRoutes(true, -1, -1, -1, -1);
                 break;
             case 6:
-                operations.swapHubWithNode(true,-1,-1,-1);
+                operations.swapHubWithNode(true, -1, -1, -1);
                 break;
         }
 
-        operations.localSearchInsertion();
-        operations.localSearchSwapHubWithNode();
+//        operations.localSearchInsertion();
+//        operations.localSearchSwapHubWithNode();
+//        operations.localSearchSwap();
+//        operations.localSearchEdgeOpt();
+
         return randOpr;
+    }
+
+    private void printResultsExcel() {
+        XSSFWorkbook saWorkbook = new XSSFWorkbook();
+        XSSFSheet spreadsheet = saWorkbook.createSheet("SA Temps");
+        createSaFirstRow(spreadsheet);
+
+        for (int i = 0; i < temps.size(); i++) {
+            XSSFRow row = spreadsheet.createRow(i+1);
+            row.createCell(0, CellType.NUMERIC).setCellValue(temps.get(i));
+            row.createCell(1, CellType.NUMERIC).setCellValue(i+1);
+            row.createCell(2, CellType.NUMERIC).setCellValue(costs.get(i));
+            row.createCell(3, CellType.NUMERIC).setCellValue(differences.get(i));
+            row.createCell(4, CellType.NUMERIC).setCellValue(hubsList.get(i));
+            row.createCell(5, CellType.NUMERIC).setCellValue(routesList.get(i));
+            row.createCell(6, CellType.NUMERIC).setCellValue(operationNums.get(i));
+        }
+
+        try {
+            Utils.createExcelFile(saWorkbook, params.getResultPath() + "/SA");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private static void createSaFirstRow(XSSFSheet saSpreadsheet) {
+        XSSFRow row = saSpreadsheet.createRow(0);
+        row.createCell(0, CellType.STRING).setCellValue("Temp");
+        row.createCell(1, CellType.STRING).setCellValue("Iteration#");
+        row.createCell(2, CellType.STRING).setCellValue("Solution Cost");
+        row.createCell(3, CellType.STRING).setCellValue("Difference");
+        row.createCell(4, CellType.STRING).setCellValue("hubs");
+        row.createCell(5, CellType.STRING).setCellValue("routes");
+        row.createCell(6, CellType.STRING).setCellValue("Executed Operation");
     }
 }
