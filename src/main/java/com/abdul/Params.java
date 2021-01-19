@@ -8,7 +8,7 @@ public interface Params {
     String getResultPath();
 
     @Option(description = "Dataset", shortName = "d", longName = "dataset", defaultValue = "TR")
-    String getDataset();
+    DS getDataset();
 
     @Option(description = "number of nodes", shortName = "n", longName = "node", defaultValue = "10")
     int getNumNodes();

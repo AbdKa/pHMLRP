@@ -17,28 +17,33 @@ class Dataset {
     // just an initialization of a general distances list
     private static List<List<Double>> distances = TRdistances;
 
-    private void loadCSV(String dataset) {
-        switch (dataset) {
-            case "TR16":
+    private void loadCSV(DS ds) {
+
+        String dataset;
+
+        switch (ds) {
+            case DS.TR16:
                 dataset = "Turkish16NetworkDist";
                 distances = TR16distances;
                 break;
-            case "TR":
+            case DS.TR:
                 dataset = "TurkishNetworkDist";
                 distances = TRdistances;
                 break;
-            case "AP100":
+            case DS.AP100:
                 dataset = "APNetworkDist100";
                 distances = AP100distances;
                 break;
-            case "AP200":
+            case DS.AP200:
                 dataset = "APNetworkDist200";
                 distances = AP200distances;
                 break;
-            case "CAB":
+            case DS.CAB:
                 dataset = "CABNetworkDist";
                 distances = CABdistances;
                 break;
+            default:
+                throw new AssertionError("unknown dataset :" + ds);
         }
 
         if (distances.size() > 0) return;
@@ -69,14 +74,14 @@ class Dataset {
         }
     }
 
-    double getDistance(String dataset, int node1, int node2) {
+    double getDistance(DS dataset, int node1, int node2) {
         loadCSV(dataset);
         switch (dataset) {
-            case "TR16":
+            case DS.TR16:
                 return TR16distances.get(node1).get(node2);
-            case "TR":
+            case DS.TR:
                 return TRdistances.get(node1).get(node2);
-            case "AP100":
+            case DS.AP100:
                 return AP100distances.get(node1).get(node2);
             case "AP200":
                 return AP200distances.get(node1).get(node2);

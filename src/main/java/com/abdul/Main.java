@@ -12,7 +12,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 
 public class Main {
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) {
         Params params;
         try {
             params = CliFactory.parseArguments(Params.class, args);
@@ -28,7 +28,12 @@ public class Main {
 //        Files.createDirectories(Paths.get(greedyPath));
 //        Files.createDirectories(Paths.get(randomPath));
         String path = currentPath + "/" + params.getResultPath();
-        Files.createDirectories(Paths.get(path));
+
+        try {
+            Files.createDirectories(Paths.get(path));
+        } catch (IOException ioe) {
+            throw new RuntimeException(ioe);
+        }
 
         // Simulated Annealing
         PHMLRP saPhmlrp = new PHMLRP(params.getDataset(), params.getNumNodes(), params.getNumHubs(), params.getNumVehicles(),

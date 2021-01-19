@@ -200,11 +200,11 @@ class VND {
             row.createCell(0, CellType.NUMERIC).setCellValue(problemInstances[j]);
             for (int k = 0; k < bestCosts[j].length; k++) {
                 if (j == 0) {
-                    row0.createCell(k+1, CellType.NUMERIC).setCellValue(k);
+                    row0.createCell(k + 1, CellType.NUMERIC).setCellValue(k);
 //                    row0.createCell((k * 2)+1, CellType.NUMERIC).setCellValue(k);
 //                    row0.createCell((k * 2)+2, CellType.STRING).setCellValue("T (Micro Sec)");
                 }
-                row.createCell(k+1, CellType.NUMERIC).setCellValue(bestCosts[j][k]);
+                row.createCell(k + 1, CellType.NUMERIC).setCellValue(bestCosts[j][k]);
 //                row.createCell((k * 2)+1, CellType.NUMERIC).setCellValue(bestCosts[j][k]);
 //                row.createCell((k * 2)+2, CellType.NUMERIC).setCellValue(timeSum[j][k]);
             }
@@ -231,30 +231,30 @@ class VND {
             row.createCell(0, CellType.STRING).setCellValue(problemInstances[i]);
             for (int k = 0; k < bestSolutions[i].length; k++) {
                 if (i == 0) {
-                    row0.createCell((k*5)+1, CellType.STRING).setCellValue("Before LS");
-                    row0.createCell((k*5)+2, CellType.STRING).setCellValue("Insertion LS");
-                    row0.createCell((k*5)+3, CellType.STRING).setCellValue("Swap LS");
-                    row0.createCell((k*5)+4, CellType.STRING).setCellValue("SwapHub LS");
-                    row0.createCell((k*5)+5, CellType.BLANK);
+                    row0.createCell((k * 5) + 1, CellType.STRING).setCellValue("Before LS");
+                    row0.createCell((k * 5) + 2, CellType.STRING).setCellValue("Insertion LS");
+                    row0.createCell((k * 5) + 3, CellType.STRING).setCellValue("Swap LS");
+                    row0.createCell((k * 5) + 4, CellType.STRING).setCellValue("SwapHub LS");
+                    row0.createCell((k * 5) + 5, CellType.BLANK);
                 }
 
-                row.createCell((k*5)+1, CellType.NUMERIC).setCellValue(bestCosts[i][k]);
+                row.createCell((k * 5) + 1, CellType.NUMERIC).setCellValue(bestCosts[i][k]);
 
                 Operations operations = new Operations(bestSolutions[i][k]);
 
                 System.out.println("Insertion LS");
                 operations.localSearchInsertion();
-                row.createCell((k*5)+2, CellType.NUMERIC).setCellValue(bestSolutions[i][k].getMaxCost());
+                row.createCell((k * 5) + 2, CellType.NUMERIC).setCellValue(bestSolutions[i][k].getMaxCost());
 
                 System.out.println("Swap LS");
                 operations.localSearchSwap();
-                row.createCell((k*5)+3, CellType.NUMERIC).setCellValue(bestSolutions[i][k].getMaxCost());
+                row.createCell((k * 5) + 3, CellType.NUMERIC).setCellValue(bestSolutions[i][k].getMaxCost());
 
                 System.out.println("SwapHub LS");
                 operations.localSearchSwapHubWithNode();
-                row.createCell((k*5)+4, CellType.NUMERIC).setCellValue(bestSolutions[i][k].getMaxCost());
+                row.createCell((k * 5) + 4, CellType.NUMERIC).setCellValue(bestSolutions[i][k].getMaxCost());
 
-                row.createCell((k*5)+5, CellType.BLANK);
+                row.createCell((k * 5) + 5, CellType.BLANK);
             }
         }
 
@@ -274,7 +274,7 @@ class VND {
 
     private PHMLRP newPHMLRPInstance(String problemInstance) {
         return new PHMLRP(
-                problemInstance.split("\\.")[0],
+                DS.valueOf(problemInstance.split("\\.")[0]),
                 Integer.valueOf(problemInstance.split("\\.")[1]),
                 Integer.valueOf(problemInstance.split("\\.")[2]),
                 Integer.valueOf(problemInstance.split("\\.")[3]),

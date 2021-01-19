@@ -8,7 +8,7 @@ import java.util.Random;
 
 class PHMLRP {
     private double maxCost, maxNonMinEdgeCost, maxCostAfterOperation = 0;
-    private String dataset;
+    private DS dataset;
     private final int numNodes, numHubs, numVehiclesPerHub;
     private int[] hubsArr;
     private final float collectionCostCFactor, distributionCostCFactor, hubToHubCFactor, removalPercentage;
@@ -27,7 +27,7 @@ class PHMLRP {
     /**
      * Constructor
      */
-    PHMLRP(String dataset, int numNodes, int numHubs, int numVehicles,
+    PHMLRP(DS dataset, int numNodes, int numHubs, int numVehicles,
            float collectionCostCFactor, float distributionCostCFactor, float hubToHubCFactor,
            float removalPercentage) {
         this.dataset = dataset;
