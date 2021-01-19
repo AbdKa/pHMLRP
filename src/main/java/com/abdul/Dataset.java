@@ -22,23 +22,23 @@ class Dataset {
         String dataset;
 
         switch (ds) {
-            case DS.TR16:
+            case TR16:
                 dataset = "Turkish16NetworkDist";
                 distances = TR16distances;
                 break;
-            case DS.TR:
+            case TR:
                 dataset = "TurkishNetworkDist";
                 distances = TRdistances;
                 break;
-            case DS.AP100:
+            case AP100:
                 dataset = "APNetworkDist100";
                 distances = AP100distances;
                 break;
-            case DS.AP200:
+            case AP200:
                 dataset = "APNetworkDist200";
                 distances = AP200distances;
                 break;
-            case DS.CAB:
+            case CAB:
                 dataset = "CABNetworkDist";
                 distances = CABdistances;
                 break;
@@ -77,15 +77,15 @@ class Dataset {
     double getDistance(DS dataset, int node1, int node2) {
         loadCSV(dataset);
         switch (dataset) {
-            case DS.TR16:
+            case TR16:
                 return TR16distances.get(node1).get(node2);
-            case DS.TR:
+            case TR:
                 return TRdistances.get(node1).get(node2);
-            case DS.AP100:
+            case AP100:
                 return AP100distances.get(node1).get(node2);
-            case "AP200":
+            case AP200:
                 return AP200distances.get(node1).get(node2);
-            case "CAB":
+            case CAB:
                 return CABdistances.get(node1).get(node2);
         }
 

@@ -267,7 +267,7 @@ class VndWithIncompleteHubs {
 
     private PHMLRP newPHMLRPInstance(String problemInstance) {
         return new PHMLRP(
-                problemInstance.split("\\.")[0],
+                DS.valueOf(problemInstance.split("\\.")[0]),
                 Integer.valueOf(problemInstance.split("\\.")[1]),
                 Integer.valueOf(problemInstance.split("\\.")[2]),
                 Integer.valueOf(problemInstance.split("\\.")[3]),

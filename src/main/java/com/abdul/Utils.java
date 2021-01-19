@@ -156,7 +156,7 @@ class Utils {
         }
 
         PHMLRP phmlrp = new PHMLRP(
-                dataset,
+                DS.valueOf(dataset),
                 N,
                 hubsList.size(),
                 1,
