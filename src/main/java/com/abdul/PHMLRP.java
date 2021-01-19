@@ -8,7 +8,7 @@ import java.util.Random;
 
 class PHMLRP {
     private double maxCost, maxNonMinEdgeCost, maxCostAfterOperation = 0;
-    private DS dataset;
+    private final DS dataset;
     private final int numNodes, numHubs, numVehiclesPerHub;
     private int[] hubsArr;
     private final float collectionCostCFactor, distributionCostCFactor, hubToHubCFactor, removalPercentage;
@@ -92,9 +92,9 @@ class PHMLRP {
     }
 
     void resetVehiclesList(ArrayList<List<Integer>> vehiclesList) {
-        this.vehiclesList = new ArrayList<List<Integer>>();
+        this.vehiclesList = new ArrayList<>();
         for (List<Integer> list : vehiclesList) {
-            List<Integer> innerList = new ArrayList<Integer>(list);
+            List<Integer> innerList = new ArrayList<>(list);
             this.vehiclesList.add(innerList);
         }
     }
@@ -143,7 +143,7 @@ class PHMLRP {
         distributionCostArr = new double[numHubs * numVehiclesPerHub];
         fillCollectionDistributionCostsArr(collectionCostArr, distributionCostArr);
 
-        ArrayList<String> tempStrArr = new ArrayList<String>();
+        ArrayList<String> tempStrArr = new ArrayList<>();
         // loop on the hubs
         for (int h = 0; h < numHubs; h++) {
             double cost;

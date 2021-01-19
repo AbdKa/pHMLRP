@@ -12,16 +12,16 @@ import java.util.Random;
 
 class SimulatedAnnealing {
 
-    private PHMLRP phmlrp;
-    private Params params;
+    private final PHMLRP phmlrp;
+    private final Params params;
     private ArrayList<List<Integer>> bestSol;
 
-    private List<Double> temps = new ArrayList<>();
-    private List<Double> costs = new ArrayList<>();
-    private List<Double> differences = new ArrayList<>();
-    private List<Integer> operationNums = new ArrayList<>();
-    private List<String> hubsList = new ArrayList<>();
-    private List<String> routesList = new ArrayList<>();
+    private final List<Double> temps = new ArrayList<>();
+    private final List<Double> costs = new ArrayList<>();
+    private final List<Double> differences = new ArrayList<>();
+    private final List<Integer> operationNums = new ArrayList<>();
+    private final List<String> hubsList = new ArrayList<>();
+    private final List<String> routesList = new ArrayList<>();
 
     // Simulated Annealing parameters
     // Initial temperature
@@ -40,9 +40,9 @@ class SimulatedAnnealing {
     }
 
     private void setBestVehiclesList(ArrayList<List<Integer>> vehiclesList) {
-        this.bestSol = new ArrayList<List<Integer>>();
+        this.bestSol = new ArrayList<>();
         for (List<Integer> list : vehiclesList) {
-            List<Integer> innerList = new ArrayList<Integer>(list);
+            List<Integer> innerList = new ArrayList<>(list);
             this.bestSol.add(innerList);
         }
     }
@@ -168,9 +168,9 @@ class SimulatedAnnealing {
         createSaFirstRow(spreadsheet);
 
         for (int i = 0; i < temps.size(); i++) {
-            XSSFRow row = spreadsheet.createRow(i+1);
+            XSSFRow row = spreadsheet.createRow(i + 1);
             row.createCell(0, CellType.NUMERIC).setCellValue(temps.get(i));
-            row.createCell(1, CellType.NUMERIC).setCellValue(i+1);
+            row.createCell(1, CellType.NUMERIC).setCellValue(i + 1);
             row.createCell(2, CellType.NUMERIC).setCellValue(costs.get(i));
             row.createCell(3, CellType.NUMERIC).setCellValue(differences.get(i));
             row.createCell(4, CellType.NUMERIC).setCellValue(hubsList.get(i));

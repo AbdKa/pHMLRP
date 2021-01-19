@@ -139,12 +139,12 @@ class Utils {
                 for (int k = 0; k < route.length; k++) {
                     int node = Integer.parseInt(route[k]);
                     if (k == 0) {
-                        if (hubsList.contains(node-1))
+                        if (hubsList.contains(node - 1))
                             continue;
-                        hubsList.add(node-1);
+                        hubsList.add(node - 1);
                         continue;
                     }
-                    r.add(node-1);
+                    r.add(node - 1);
                 }
 
                 vehiclesList.add(r);
@@ -182,5 +182,18 @@ class Utils {
         }
 
         return phmlrp;
+    }
+
+    static PHMLRP newPHMLRPInstance(String problemInstance, Params params) {
+
+        return new PHMLRP(
+                DS.valueOf(problemInstance.split("\\.")[0]),
+                Integer.parseInt(problemInstance.split("\\.")[1]),
+                Integer.parseInt(problemInstance.split("\\.")[2]),
+                Integer.parseInt(problemInstance.split("\\.")[3]),
+                params.getCollectionCostCFactor(),
+                params.getDistributionCostCFactor(),
+                params.getHubToHubCFactor(),
+                params.getRemovalPercentage());
     }
 }

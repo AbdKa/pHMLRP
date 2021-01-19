@@ -9,16 +9,16 @@ import java.util.List;
 
 public class Run extends Thread {
 
-    private Params params;
+    private final Params params;
     private int replicasPerProb = 1;
     private int replicasPerCombination = 100;
 
-    private XSSFSheet[] spreadsheets;
+    private final XSSFSheet[] spreadsheets;
 
-    private long[] timeSum;
-    private long[] timeSumProbs;
+    private final long[] timeSum;
+    private final long[] timeSumProbs;
 
-    private String[] problemInstances;
+    private final String[] problemInstances;
 
     //    0, insertNodeBetweenRoutes
     //    1, edgeOptWithinRoutes
@@ -29,9 +29,9 @@ public class Run extends Thread {
     //    6, swapNodeWithinRoutes
     //    7, nodesRemoveAndGreedyInsert
     //    8, swapHubWithNode
-    private List<List<Integer>> combinations;
+    private final List<List<Integer>> combinations;
 
-    private List<List<List<List<PHMLRP>>>> bestReplicas;
+    private final List<List<List<List<PHMLRP>>>> bestReplicas;
 
     Run(
             Params params,
@@ -125,8 +125,7 @@ public class Run extends Thread {
                 repPerProbList.add(combList);
             }
 
-            long diffProb = System.nanoTime() - probStartTime;
-            timeSumProbs[probIdx] += diffProb / 1000;
+            timeSumProbs[probIdx] += (System.nanoTime() - probStartTime) / 1000;
 
             bestReplicas.add(repPerProbList);
         }
@@ -143,14 +142,6 @@ public class Run extends Thread {
     }
 
     private PHMLRP newPHMLRPInstance(String problemInstance) {
-        return new PHMLRP(
-                DS.valueOf(problemInstance.split("\\.")[0]),
-                Integer.valueOf(problemInstance.split("\\.")[1]),
-                Integer.valueOf(problemInstance.split("\\.")[2]),
-                Integer.valueOf(problemInstance.split("\\.")[3]),
-                params.getCollectionCostCFactor(),
-                params.getDistributionCostCFactor(),
-                params.getHubToHubCFactor(),
-                params.getRemovalPercentage());
+        return Utils.newPHMLRPInstance(problemInstance, this.params);
     }
 }

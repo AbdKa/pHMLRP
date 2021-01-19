@@ -4,7 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class Bounds {
-    private Map<String, Integer> bounds = new HashMap<String, Integer>();
+    private final Map<String, Integer> bounds = new HashMap<>();
 
     public Bounds() {
         bounds.put("10.2.1", 3597);

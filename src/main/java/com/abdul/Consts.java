@@ -5,7 +5,7 @@ import java.util.Map;
 
 class Consts {
 
-    static Map<String, Integer> neighborhoods = new HashMap<String, Integer>() {
+    static Map<String, Integer> neighborhoods = new HashMap<>() {
         {
             put("insertNodeBetweenRoutes", 0);
             put("edgeOptWithinRoutes", 1);
@@ -19,7 +19,7 @@ class Consts {
         }
     };
 
-    static Map<Integer, String> neighborhoodsStr = new HashMap<Integer, String>() {
+    static Map<Integer, String> neighborhoodsStr = new HashMap<>() {
         {
             put(0, "insertNodeBetweenRoutes");
             put(1, "edgeOptWithinRoutes");
@@ -33,7 +33,7 @@ class Consts {
         }
     };
 
-    static Map<String, Integer> localSearchMap = new HashMap<String, Integer>() {
+    static Map<String, Integer> localSearchMap = new HashMap<>() {
         {
             put("Insertion", 0);
             put("Swap", 1);
@@ -42,7 +42,7 @@ class Consts {
         }
     };
 
-    static Map<Integer, String> localSearchesStr = new HashMap<Integer, String>() {
+    static Map<Integer, String> localSearchesStr = new HashMap<>() {
         {
             put(0, "Insertion");
             put(1, "Swap");

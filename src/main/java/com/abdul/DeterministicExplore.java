@@ -5,14 +5,12 @@ import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
-import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 class DeterministicExplore {
-    private PHMLRP phmlrp;
+    private final PHMLRP phmlrp;
 
     private int successCount = 0;
 
@@ -23,9 +21,9 @@ class DeterministicExplore {
     void doDeterministicExplore(XSSFWorkbook workbook, XSSFSheet spreadsheet) throws IOException {
         // Clone hubs array, vehicles list and max cost for reset after numOfIterationForEachOperation
         int[] initHubsArr = phmlrp.getHubsArr().clone();
-        ArrayList<List<Integer>> initVehiclesList = new ArrayList<List<Integer>>();
+        ArrayList<List<Integer>> initVehiclesList = new ArrayList<>();
         for (List<Integer> list : phmlrp.getVehiclesList()) {
-            List<Integer> innerList = new ArrayList<Integer>(list);
+            List<Integer> innerList = new ArrayList<>(list);
             initVehiclesList.add(innerList);
         }
         double initMaxCost = phmlrp.getMaxCost();
@@ -136,7 +134,7 @@ class DeterministicExplore {
 //            }
             printHubsAndRoutesToExcel(row);
 
-            if(i == 801000) break;
+            if (i == 801000) break;
         }
 
         XSSFSheet secondSS = workbook.createSheet(spreadsheet.getSheetName() + " timeSum");
@@ -147,8 +145,8 @@ class DeterministicExplore {
         for (int i = 0; i < countsArr.length; i++) {
             xssfRow = secondSS.createRow(i + 1);
             xssfRow.createCell(0, CellType.STRING).setCellValue(countsArr[i].split(",")[0]);
-            xssfRow.createCell(1, CellType.NUMERIC).setCellValue(Integer.valueOf(countsArr[i].split(",")[1]));
-            xssfRow.createCell(2, CellType.NUMERIC).setCellValue(Integer.valueOf(countsArr[i].split(",")[2]));
+            xssfRow.createCell(1, CellType.NUMERIC).setCellValue(Integer.parseInt(countsArr[i].split(",")[1]));
+            xssfRow.createCell(2, CellType.NUMERIC).setCellValue(Integer.parseInt(countsArr[i].split(",")[2]));
         }
 
         //Write the workbook in file system

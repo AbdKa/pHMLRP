@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Random;
 
 class Operations {
-    private PHMLRP phmlrp;
+    private final PHMLRP phmlrp;
 
     Operations(PHMLRP phmlrp) {
         this.phmlrp = phmlrp;
@@ -534,8 +534,8 @@ class Operations {
 
         double maxCost = phmlrp.getMaxCost();
 
-        for (int i = 0; i < removedNodes.length; i++) {
-            insertRemovedNode(maxCost, removedNodes[i]);
+        for (int removedNode : removedNodes) {
+            insertRemovedNode(maxCost, removedNode);
         }
     }
 
@@ -618,9 +618,9 @@ class Operations {
      */
     void localSearchInsertion() {
         // create a list of all non-hub nodes
-        List<Integer> initList = new ArrayList<Integer>();
+        List<Integer> initList = new ArrayList<>();
         for (List<Integer> list : phmlrp.getVehiclesList()) {
-            List<Integer> innerList = new ArrayList<Integer>(list);
+            List<Integer> innerList = new ArrayList<>(list);
             initList.addAll(innerList);
         }
 
@@ -707,9 +707,9 @@ class Operations {
      */
     void localSearchSwap() {
         // create a list of all non-hub nodes
-        List<Integer> initList = new ArrayList<Integer>();
+        List<Integer> initList = new ArrayList<>();
         for (List<Integer> list : phmlrp.getVehiclesList()) {
-            List<Integer> innerList = new ArrayList<Integer>(list);
+            List<Integer> innerList = new ArrayList<>(list);
             initList.addAll(innerList);
         }
 

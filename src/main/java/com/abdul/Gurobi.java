@@ -15,8 +15,8 @@ import java.util.List;
 class Gurobi {
 
     private final String pyGorubiBasePath = "D:\\Anadolu_uni\\Thesis\\Gurobi-Python\\";
-    private PHMLRP phmlrp;
-    private int numNodes, numHubs, numVehicles;
+    private final PHMLRP phmlrp;
+    private final int numNodes, numHubs, numVehicles;
 
     Gurobi(PHMLRP phmlrp, int numNodes, int numHubs, int numVehicles) {
         this.numNodes = numNodes;
@@ -48,7 +48,7 @@ class Gurobi {
             for (Object routeObj : routesJson) {
                 int j = 0;
                 JSONArray route = (JSONArray) routeObj;
-                ArrayList<Integer> r = new ArrayList<Integer>();
+                ArrayList<Integer> r = new ArrayList<>();
                 for (Object nodeObj : route) {
                     if (j < route.size() - 1) {
                         int node = Math.toIntExact((long) nodeObj);
@@ -94,7 +94,7 @@ class Gurobi {
                             numVehicles +
                             " 1 1 2 7 h " +
                             inRouteStr.substring(0, inRouteStr.length() - 1)
-                    );
+            );
             readPyOutput(p);
         } catch (IOException e) {
             System.out.println("exception happened - here's what I know: ");
@@ -109,7 +109,7 @@ class Gurobi {
             for (Object routeObj : routesJson) {
                 int j = 0;
                 JSONArray route = (JSONArray) routeObj;
-                ArrayList<Integer> r = new ArrayList<Integer>();
+                ArrayList<Integer> r = new ArrayList<>();
                 for (Object nodeObj : route) {
                     if (j > 0 && j < route.size() - 1) {
                         int node = Math.toIntExact((long) nodeObj);
@@ -163,7 +163,7 @@ class Gurobi {
                 // only one route for now
                 int j = 0;
                 JSONArray route = (JSONArray) routeObj;
-                ArrayList<Integer> r = new ArrayList<Integer>();
+                ArrayList<Integer> r = new ArrayList<>();
                 for (Object nodeObj : route) {
                     // because the last node of each route is repeated
                     if (j < route.size() - 1) {

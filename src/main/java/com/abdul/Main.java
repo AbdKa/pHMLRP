@@ -7,6 +7,7 @@ import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -27,7 +28,7 @@ public class Main {
 //        String randomPath = currentPath + "/incompleteHubResults_Random";
 //        Files.createDirectories(Paths.get(greedyPath));
 //        Files.createDirectories(Paths.get(randomPath));
-        String path = currentPath + "/" + params.getResultPath();
+        String path = currentPath + File.separator + params.getResultPath();
 
         try {
             Files.createDirectories(Paths.get(path));

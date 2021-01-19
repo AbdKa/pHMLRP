@@ -12,7 +12,7 @@ public class Benchmark {
 
             for (DS ds : DS.values()) {
 
-                Main.main(new String[]{"-dataset", ds.toString(), "-t", t});
+                Main.main(new String[]{"--dataset", ds.toString(), "-t", t});
 
                 Main.main(new String[]{"", "HC", "-t", t});
                 Main.main(new String[]{"-a", "SA", "-t", t});

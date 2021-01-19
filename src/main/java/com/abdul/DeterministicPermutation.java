@@ -12,11 +12,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 class DeterministicPermutation {
-    private PHMLRP phmlrp;
+    private final PHMLRP phmlrp;
     private Permutation[] bestPermutations;
     private double bestPermutationCost;
     private ArrayList<List<Integer>> initVehiclesList;
-    private double initMaxCost;
+    private final double initMaxCost;
 
     DeterministicPermutation(PHMLRP phmlrp) {
         this.phmlrp = phmlrp;
@@ -25,9 +25,9 @@ class DeterministicPermutation {
     }
 
     void deterministicOperationOrder(XSSFWorkbook workbook, XSSFSheet spreadsheet) throws IOException {
-        initVehiclesList = new ArrayList<List<Integer>>();
+        initVehiclesList = new ArrayList<>();
         for (List<Integer> list : phmlrp.getVehiclesList()) {
-            List<Integer> innerList = new ArrayList<Integer>(list);
+            List<Integer> innerList = new ArrayList<>(list);
             initVehiclesList.add(innerList);
         }
 
@@ -147,9 +147,9 @@ class DeterministicPermutation {
 }
 
 class Permutation {
-    private int[] operationOrder;
-    private double cost;
-    private int[] hubsArr;
+    private final int[] operationOrder;
+    private final double cost;
+    private final int[] hubsArr;
     private ArrayList<List<Integer>> vehiclesList;
 
     Permutation(int[] operationOrder, double cost, int[] hubsArr, ArrayList<List<Integer>> vehiclesList) {
@@ -168,9 +168,9 @@ class Permutation {
     }
 
     private void setVehiclesList(ArrayList<List<Integer>> vehiclesList) {
-        this.vehiclesList = new ArrayList<List<Integer>>();
+        this.vehiclesList = new ArrayList<>();
         for (List<Integer> list : vehiclesList) {
-            List<Integer> innerList = new ArrayList<Integer>(list);
+            List<Integer> innerList = new ArrayList<>(list);
             this.vehiclesList.add(innerList);
         }
     }

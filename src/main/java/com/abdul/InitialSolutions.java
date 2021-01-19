@@ -7,8 +7,8 @@ import java.util.Random;
 
 class InitialSolutions {
 
-    private PHMLRP phmlrp;
-    private int numNodes, numHubs, numVehiclesPerHub;
+    private final PHMLRP phmlrp;
+    private final int numNodes, numHubs, numVehiclesPerHub;
 
     InitialSolutions(PHMLRP phmlrp) {
         this.phmlrp = phmlrp;
@@ -87,7 +87,7 @@ class InitialSolutions {
     }
 
     private void greedyPickHubs() {
-        Map<Integer, Integer> nodesDistanceAvg = new LinkedHashMap<Integer, Integer>();
+        Map<Integer, Integer> nodesDistanceAvg = new LinkedHashMap<>();
         for (int i = 0; i < numNodes; i++) {
             int sum = 0;
             for (int j = 0; j < numNodes; j++) {
@@ -155,7 +155,7 @@ class InitialSolutions {
         int remainingNodes = numNodes - numHubs;
 
         // a hash map of the hub-to-node distances
-        Map<Integer, Double> nodesToHubDistance = new LinkedHashMap<Integer, Double>();
+        Map<Integer, Double> nodesToHubDistance = new LinkedHashMap<>();
         // loop through vehicles lists
         for (int i = 0; i < phmlrp.getVehiclesList().size(); i++) {
             Random random = new Random();
@@ -212,7 +212,7 @@ class InitialSolutions {
      * pick hubs using roulette wheel
      **/
     void probabilisticInitSol() {
-        ArrayList<Integer> nodesDistancesSum = new ArrayList<Integer>(numNodes);
+        ArrayList<Integer> nodesDistancesSum = new ArrayList<>(numNodes);
         int totalSum = 0;
         // timeSum nodes distances and the total of all the summations
         for (int i = 0; i < numNodes; i++) {
@@ -224,7 +224,7 @@ class InitialSolutions {
             totalSum += sum;
         }
 
-        Map<Integer, Double> normalizedSums = new LinkedHashMap<Integer, Double>();
+        Map<Integer, Double> normalizedSums = new LinkedHashMap<>();
         // normalize the summations to => timeSum/totalSum
         for (int i = 0; i < numNodes; i++) {
             double normalizedSum = (double) nodesDistancesSum.get(i) / totalSum;
@@ -298,7 +298,7 @@ class InitialSolutions {
         int remainingNodes = numNodes - numHubs;
 
         // a hash map of the hub-to-node distances
-        Map<Integer, Double> normalizedDistances = new LinkedHashMap<Integer, Double>();
+        Map<Integer, Double> normalizedDistances = new LinkedHashMap<>();
         // loop through vehicles lists
         for (int i = 0; i < phmlrp.getVehiclesList().size(); i++) {
             Random random = new Random();

@@ -273,14 +273,6 @@ class VND {
     }
 
     private PHMLRP newPHMLRPInstance(String problemInstance) {
-        return new PHMLRP(
-                DS.valueOf(problemInstance.split("\\.")[0]),
-                Integer.valueOf(problemInstance.split("\\.")[1]),
-                Integer.valueOf(problemInstance.split("\\.")[2]),
-                Integer.valueOf(problemInstance.split("\\.")[3]),
-                params.getCollectionCostCFactor(),
-                params.getDistributionCostCFactor(),
-                params.getHubToHubCFactor(),
-                params.getRemovalPercentage());
+        return Utils.newPHMLRPInstance(problemInstance, this.params);
     }
 }

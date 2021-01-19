@@ -15,10 +15,10 @@ import java.util.Arrays;
 import java.util.List;
 
 class LS_VND {
-    private Params params;
-    private int replicasPerCombination;
+    private final Params params;
+    private final int replicasPerCombination;
 
-    private float[][] bestTimes;
+    private final float[][] bestTimes;
 
     private String[] problemInstances;
 
@@ -26,10 +26,10 @@ class LS_VND {
     //    1, Swap
     //    2, HubMove
     //    3, EdgeOpt
-    private List<List<Integer>> combinations;
+    private final List<List<Integer>> combinations;
 
-    private double[][] bestCosts;
-    private int[][] bestIterations;
+    private final double[][] bestCosts;
+    private final int[][] bestIterations;
 
     private void getProblemInstancesFromJson() {
         JSONParser parser = new JSONParser();
@@ -104,8 +104,8 @@ class LS_VND {
                     double bestCost = phmlrp.getMaxCost();
 
                     if (bestCost < bestCosts[probIdx][combIdx]) {
-                        long diff = System.nanoTime() - combStartTime;
-                        bestTimes[probIdx][combIdx] = diff / 1000;
+
+                        bestTimes[probIdx][combIdx] = (float) (System.nanoTime() - combStartTime) / 1000;
                         bestCosts[probIdx][combIdx] = bestCost;
                         bestIterations[probIdx][combIdx] = iteration;
                     }
@@ -155,14 +155,6 @@ class LS_VND {
     }
 
     private PHMLRP newPHMLRPInstance(String problemInstance) {
-        return new PHMLRP(
-                DS.valueOf(problemInstance.split("\\.")[0]),
-                Integer.valueOf(problemInstance.split("\\.")[1]),
-                Integer.valueOf(problemInstance.split("\\.")[2]),
-                Integer.valueOf(problemInstance.split("\\.")[3]),
-                params.getCollectionCostCFactor(),
-                params.getDistributionCostCFactor(),
-                params.getHubToHubCFactor(),
-                params.getRemovalPercentage());
+        return Utils.newPHMLRPInstance(problemInstance, this.params);
     }
 }

@@ -9,26 +9,26 @@ import java.util.stream.Collectors;
 
 class IncompleteHubs {
 
-    private PHMLRP phmlrp;
+    private final PHMLRP phmlrp;
     private int numHubs;
-    private List<Integer> hubsList;
-    private List<Double> collectionCostArr;
-    private List<Double> distributionCostArr;
+    private final List<Integer> hubsList;
+    private final List<Double> collectionCostArr;
+    private final List<Double> distributionCostArr;
     private int middleHubIdx = -1;
-    private String path;
-    private int numLinks;
+    private final String path;
+    private final int numLinks;
     private int linksCount = 0;
 
-    private List<Double> hubsMaxCosts;
+    private final List<Double> hubsMaxCosts;
     private double maxCost = 0;
 
     //    private XSSFWorkbook workbook;
 //    private XSSFSheet spreadsheet;
     private int sheetRowCount = 0;
 
-    private String[] links;
+    private final String[] links;
 
-//    FileWriter myWriter;
+    //    FileWriter myWriter;
     private String tempStr = "";
     private int numVehiclesPerHub;
 
@@ -219,7 +219,7 @@ class IncompleteHubs {
     }
 
     double calculateCost() {
-        ArrayList<String> tempStrArr = new ArrayList<String>();
+        ArrayList<String> tempStrArr = new ArrayList<>();
         // loop on the hubs
         for (int h = 0; h < numHubs; h++) {
             double cost;

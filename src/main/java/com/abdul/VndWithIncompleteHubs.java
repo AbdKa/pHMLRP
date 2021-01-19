@@ -15,11 +15,11 @@ import java.util.Arrays;
 import java.util.List;
 
 class VndWithIncompleteHubs {
-    private Params params;
+    private final Params params;
     private final String resultPath;
-    private int runs;
-    private int replicasPerProb = 1;
-    private int replicasPerCombination = 1;
+    private final int runs;
+    private final int replicasPerProb = 1;
+    private final int replicasPerCombination = 1;
 
     private XSSFWorkbook workbook;
     private XSSFSheet spreadsheet;
@@ -36,18 +36,18 @@ class VndWithIncompleteHubs {
     //    6, swapNodeWithinRoutes
     //    7, nodesRemoveAndGreedyInsert
     //    8, swapHubWithNode
-    private List<List<Integer>> combinations;
+    private final List<List<Integer>> combinations;
 
-    int iterationCounts[];
-    private double[] bestCosts;
-    private float[] bestTimes;
-    private int[] bestIterationNumber;
-    private String[] bestLinks;
-    private String[] bestRoutes;
+    final int[] iterationCounts;
+    private final double[] bestCosts;
+    private final float[] bestTimes;
+    private final int[] bestIterationNumber;
+    private final String[] bestLinks;
+    private final String[] bestRoutes;
 
-    private boolean localSource;
-    private double[] mtspCosts;
-    private double[] phcMtspTimes;
+    private final boolean localSource;
+    private final double[] mtspCosts;
+    private final double[] phcMtspTimes;
 
 //    FileWriter myWriter;
 
@@ -170,9 +170,8 @@ class VndWithIncompleteHubs {
                         }
 
                         if (bestCost < bestCosts[probIdx]) {
-                            long diff = System.nanoTime() - combStartTime;
                             bestCosts[probIdx] = bestCost;
-                            bestTimes[probIdx] = diff / 1000;
+                            bestTimes[probIdx] = (float) (System.nanoTime() - combStartTime) / 1000;
                             bestIterationNumber[probIdx] = iterationCounts[probIdx];
                             bestRoutes[probIdx] = phmlrp.getRoutes();
 
@@ -266,14 +265,6 @@ class VndWithIncompleteHubs {
     }
 
     private PHMLRP newPHMLRPInstance(String problemInstance) {
-        return new PHMLRP(
-                DS.valueOf(problemInstance.split("\\.")[0]),
-                Integer.valueOf(problemInstance.split("\\.")[1]),
-                Integer.valueOf(problemInstance.split("\\.")[2]),
-                Integer.valueOf(problemInstance.split("\\.")[3]),
-                params.getCollectionCostCFactor(),
-                params.getDistributionCostCFactor(),
-                params.getHubToHubCFactor(),
-                params.getRemovalPercentage());
+        return Utils.newPHMLRPInstance(problemInstance, this.params);
     }
 }

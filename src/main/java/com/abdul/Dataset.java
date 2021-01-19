@@ -8,11 +8,12 @@ import java.util.Arrays;
 import java.util.List;
 
 class Dataset {
-    private static List<List<Double>> TR16distances = new ArrayList<>();
-    private static List<List<Double>> TRdistances = new ArrayList<>();
-    private static List<List<Double>> AP100distances = new ArrayList<>();
-    private static List<List<Double>> AP200distances = new ArrayList<>();
-    private static List<List<Double>> CABdistances = new ArrayList<>();
+
+    private static final List<List<Double>> TR16distances = new ArrayList<>();
+    private static final List<List<Double>> TRdistances = new ArrayList<>();
+    private static final List<List<Double>> AP100distances = new ArrayList<>();
+    private static final List<List<Double>> AP200distances = new ArrayList<>();
+    private static final List<List<Double>> CABdistances = new ArrayList<>();
 
     // just an initialization of a general distances list
     private static List<List<Double>> distances = TRdistances;
