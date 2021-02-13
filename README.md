@@ -1,6 +1,6 @@
-# pHMLRP
+# IpHCVRP
 
-We introduce the incomplete p-hub center and routing network design problem (IpHCVRP).
+We introduce the *incomplete* p-hub center and routing network design problem (IpHCVRP).
 For [pHCVRP](https://link.springer.com/article/10.1007/s00291-018-0526-2), see [Kartal et al](https://link.springer.com/article/10.1007/s00291-018-0526-2).
 
 ## How to build and run
