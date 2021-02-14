@@ -135,7 +135,7 @@ class PHMLRP {
      * @return the distance as maxCost
      */
     double getDistance(int node1, int node2) {
-        return new Dataset().getDistance(dataset, node1, node2);
+        return Dataset.getDistance(dataset, node1, node2);
     }
 
     double calculateCost(CostType costType) {

@@ -7,6 +7,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import static com.abdul.DS.AP100;
+import static com.abdul.DS.TR;
+
 class Dataset {
 
     private static final List<List<Double>> TR16distances = new ArrayList<>();
@@ -15,40 +18,7 @@ class Dataset {
     private static final List<List<Double>> AP200distances = new ArrayList<>();
     private static final List<List<Double>> CABdistances = new ArrayList<>();
 
-    // just an initialization of a general distances list
-    private static List<List<Double>> distances = TRdistances;
-
-    private void loadCSV(DS ds) {
-
-        String dataset;
-
-        switch (ds) {
-            case TR16:
-                dataset = "Turkish16NetworkDist";
-                distances = TR16distances;
-                break;
-            case TR:
-                dataset = "TurkishNetworkDist";
-                distances = TRdistances;
-                break;
-            case AP100:
-                dataset = "APNetworkDist100";
-                distances = AP100distances;
-                break;
-            case AP200:
-                dataset = "APNetworkDist200";
-                distances = AP200distances;
-                break;
-            case CAB:
-                dataset = "CABNetworkDist";
-                distances = CABdistances;
-                break;
-            default:
-                throw new AssertionError("unknown dataset :" + ds);
-        }
-
-        if (distances.size() > 0) return;
-
+    private static void load(String dataset, List<List<Double>> distances) {
         try {
             BufferedReader CSVFile = new BufferedReader(new FileReader("db/" + dataset + ".csv"));
             String dataRow = CSVFile.readLine();
@@ -71,12 +41,38 @@ class Dataset {
                 dataRow = CSVFile.readLine();
             }
         } catch (IOException e) {
-            System.out.println(e.getMessage());
+            throw new RuntimeException(e.getMessage());
         }
     }
 
-    double getDistance(DS dataset, int node1, int node2) {
-        loadCSV(dataset);
+    static {
+
+        for (DS ds : new DS[]{DS.TR16, TR, AP100, DS.AP200, DS.CAB}) {
+
+            switch (ds) {
+                case TR16:
+                    load("Turkish16NetworkDist", TR16distances);
+                    break;
+                case TR:
+                    load("TurkishNetworkDist", TRdistances);
+                    break;
+                case AP100:
+                    load("APNetworkDist100", AP100distances);
+                    break;
+                case AP200:
+                    load("APNetworkDist200", AP200distances);
+                    break;
+                case CAB:
+                    load("CABNetworkDist", CABdistances);
+                    break;
+                default:
+                    throw new AssertionError("unknown dataset :" + ds);
+            }
+        }
+
+    }
+
+    public static double getDistance(DS dataset, int node1, int node2) {
         switch (dataset) {
             case TR16:
                 return TR16distances.get(node1).get(node2);
@@ -91,14 +87,5 @@ class Dataset {
         }
 
         return 0.0;
-    }
-
-    private static void print(String dataRow) {
-        String[] arr = dataRow.split(",");
-        System.out.print("{");
-        for (int i = 2; i < arr.length; i++) {
-            System.out.print(arr[i] + ", ");
-        }
-        System.out.println("},");
     }
 }
