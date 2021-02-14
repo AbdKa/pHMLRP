@@ -10,7 +10,7 @@ public interface Params {
     @Option(description = "Dataset", shortName = "d", longName = "dataset", defaultValue = "TR")
     DS getDataset();
 
-    @Option(description = "number of nodes", shortName = "n", longName = "node", defaultValue = "10")
+    @Option(description = "number of nodes", shortName = "n", longName = "nodes", defaultValue = "10")
     int getNumNodes();
 
     @Option(description = "number of hubs", shortName = "h", longName = "hubs", defaultValue = "2")

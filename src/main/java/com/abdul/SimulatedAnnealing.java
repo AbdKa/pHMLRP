@@ -12,6 +12,8 @@ import java.util.Random;
 
 class SimulatedAnnealing {
 
+    private final Random random = new Random();
+
     private final PHMLRP phmlrp;
     private final Params params;
     private ArrayList<List<Integer>> bestSol;
@@ -47,7 +49,7 @@ class SimulatedAnnealing {
         }
     }
 
-    void applySA() {
+    void applySA(String uniqueFileName) {
         // Global minimum
         double min = phmlrp.getMaxCost();
         // new solution initialization
@@ -99,7 +101,7 @@ class SimulatedAnnealing {
             T *= alpha; // Decreases T, cooling phase
         }
 
-        printResultsExcel();
+        printResultsExcel(uniqueFileName);
 
         phmlrp.setSimulatedAnnealing(false);
 
@@ -125,7 +127,7 @@ class SimulatedAnnealing {
     }
 
     private int doRandomOperation() {
-        Random random = new Random();
+
         int randOpr = random.nextInt(7);
 
         Operations operations = new Operations(phmlrp);
@@ -162,7 +164,7 @@ class SimulatedAnnealing {
         return randOpr;
     }
 
-    private void printResultsExcel() {
+    private void printResultsExcel(String uniqueFileName) {
         XSSFWorkbook saWorkbook = new XSSFWorkbook();
         XSSFSheet spreadsheet = saWorkbook.createSheet("SA Temps");
         createSaFirstRow(spreadsheet);
@@ -179,7 +181,7 @@ class SimulatedAnnealing {
         }
 
         try {
-            Utils.createExcelFile(saWorkbook, params.getResultPath() + "/SA");
+            Utils.createExcelFile(saWorkbook, params.getResultPath() + "/" + uniqueFileName);
         } catch (IOException e) {
             e.printStackTrace();
         }
