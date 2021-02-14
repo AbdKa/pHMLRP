@@ -200,16 +200,26 @@ m.write("out.lp")
 CPU = tmr.stop()
 m.setObjective(z)
 
-links = {}
-route = ""
+# get routes
+links = [dict() for v in V]
+routes = ["" for v in V]
+# loop to find first moves (H[0], node) in each route and add to links and routes
 for i in range(len(N)):
     for k in range(len(N)):
         for v in V:
             if x[i][k][v].x > 0.5:
-                if i != k:
-                    if route == "":
-                        route = str(dictionary.get(N[i])) + "," + str(dictionary.get(N[k]))
-                    links[dictionary.get(N[i])] = dictionary.get(N[k])
+                if i != k and dictionary.get(N[i]) == dictionary.get(H[0]):
+                    routes[v] = str(dictionary.get(N[i])) + "," + str(dictionary.get(N[k]))
+                    links[v][dictionary.get(N[i])] = dictionary.get(N[k])
+                    print('x(', dictionary.get(N[i]), ',', dictionary.get(N[k]), ',', v, ') ')
+
+# loop on the other edges and add them to links
+for i in range(len(N)):
+    for k in range(len(N)):
+        for v in V:
+            if x[i][k][v].x > 0.5:
+                if i != k and dictionary.get(N[i]) != dictionary.get(H[0]):
+                    links[v][dictionary.get(N[i])] = dictionary.get(N[k])
                     print('x(', dictionary.get(N[i]), ',', dictionary.get(N[k]), ',', v, ') ')
 
 print(links)
@@ -223,19 +233,34 @@ for k in H:
         print("cost2[%d, %d] = %1.1f" % (dictionary.get(k), v, cost2[k, v].x))
 
 
-def get_next(second):
-    for first, last in links.items():
+# get next edge in links e.g. 1:2, 2:5, 5:4
+def get_next(second, v):
+    for first, last in links[v].items():
         if second == first:
             return "," + str(last)
 
 
-for i in range(len(links) - 2):
-    route += str(get_next(int(route.split(',')[-1])))
+# fill in the routes
+for v in V:
+    for i in range(len(links[v]) - 2):
+        routes[v] += str(get_next(int(routes[v].split(',')[-1]), v))
 
-print(route)
+print(routes)
 
 print('***********************************************************************************')
 
 print("dataset instance p nv alpha obj CPU/elapsed Nodes routes")
-print("Problem:", DATA3.dataset, DATA3.instance, DATA3.p, "alpha:", DATA3.alpha, "Obj:", z.x, "CPU:", CPU, )
+print("Problem:", DATA3.dataset, DATA3.instance, DATA3.p, "alpha:", DATA3.alpha, "Obj:", z.x, "CPU: ", str(CPU), )
 print('***********************************************************************************')
+
+import json
+
+with open(DATA3.file_name, 'r+') as f:
+    data = json.load(f)
+    data['CPU'] += CPU
+    for route in routes:
+        data['routes'].append(route)
+    f.seek(0)  # <--- should reset fpHC_MTSPile position to the beginning.
+    json.dump(data, f, indent=4)
+    f.truncate()  # remove remaining part
+    f.close()

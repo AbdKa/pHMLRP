@@ -1,9 +1,7 @@
 #!/usr/bin/env python
 import sys
 import csv, time, numpy as n
-# f = csv.reader(open("/Users/mac/PycharmProjects/untitled6/TurkishNetworkDist10.csv","r"), delimiter=";")
-# D = [row for row in f]
-# N = range(len(D))
+
 D = []
 N = []
 p = 0
@@ -19,9 +17,7 @@ p = int(sys.argv[3])
 # for i in N:
 nv = int(sys.argv[4]) #4
 alpha=float(sys.argv[5]) #5
-#T = float(sys.argv[4]) #6
-#p = int(sys.argv[6])
-#V = range(4)
+
 class Timer:
     def __init__(self):
         self.start = time.clock()
@@ -32,20 +28,17 @@ class Timer:
 
 def loadTR():
     global D, N, MM, W
-    f = csv.reader(open("TurkishNetworkDist.csv", "r", encoding='utf-8-sig'), delimiter=";")
+    f = csv.reader(open("DB/TurkishNetworkDist.csv", "r", encoding='utf-8-sig'), delimiter=";")
     D = [row for row in f]
     print(D)
     D = [[float(y) for y in x] for x in D]
     N = range(len(D))
     MM1 = n.max(D)
     MM = MM1 * len(N)
-    # f = csv.reader(open("/Users/mac/PycharmProjects/Hubs/TR/TurkishNetworkFlow.csv", "r"), delimiter=",")
-    # W = [row for row in f]
-    # W = [[float(y) for y in x] for x in D]
 
 def loadTR16():
     global D, N, MM, W
-    f = csv.reader(open("TR16.csv", "r", encoding='utf-8-sig'), delimiter=",")
+    f = csv.reader(open("DB/TR16.csv", "r", encoding='utf-8-sig'), delimiter=",")
     D = [row for row in f]
     print(D)
     D = [[float(y) for y in x] for x in D]
@@ -55,13 +48,13 @@ def loadTR16():
 
 def loadCAB():
     global D, N, MM, W, nv
-    f = csv.reader(open("/Users/mac/PycharmProjects/Hubs/CAB/CABNetworkDist.csv", "r"), delimiter=",")
+    f = csv.reader(open("DB/CABNetworkDist.csv", "r"), delimiter=",")
     D = [row for row in f]
     D = [[float(y) for y in x] for x in D]
     N = range(len(D))
     MM1 = n.max(D)
     MM = MM1 * len(N)
-    f = csv.reader(open("/Users/mac/PycharmProjects/Hubs/CAB/CABNetworkFlow.csv", "r"), delimiter=",")
+    f = csv.reader(open("DB/CABNetworkFlow.csv", "r"), delimiter=",")
     W = [row for row in f]
     W = [[float(y) for y in x] for x in D]
     # f = open("/Users/mac/PycharmProjects/Hubs/Vehicles/Vehicles1.txt", "r")
@@ -70,25 +63,25 @@ def loadCAB():
 
 def loadAP():
     global D, N, MM, W
-    f = csv.reader(open("/Users/mac/PycharmProjects/Hubs/AP/APNetworkDist10.csv", "r"), delimiter=",")
+    f = csv.reader(open("DB/APNetworkDist10.csv", "r"), delimiter=",")
     D = [row for row in f]
     D = [[float(y) for y in x] for x in D]
     N = range(len(D))
     MM1 = n.max(D)
     MM = MM1 * len(N)
-    f = csv.reader(open("/Users/mac/PycharmProjects/Hubs/AP/APNetworkFlow10.csv", "r"), delimiter=",")
+    f = csv.reader(open("DB/APNetworkFlow10.csv", "r"), delimiter=",")
     W = [row for row in f]
     W = [[float(y) for y in x] for x in D]
 
 def loadAP2():
     global D, N, MM, W
-    f = csv.reader(open("/Users/mac/PycharmProjects/Hubs/AP/APNetworkDist15.csv", "r"), delimiter=",")
+    f = csv.reader(open("DB/APNetworkDist15.csv", "r"), delimiter=",")
     D = [row for row in f]
     D = [[float(y) for y in x] for x in D]
     N = range(len(D))
     MM1 = n.max(D)
     MM = MM1 * len(N)
-    f = csv.reader(open("/Users/mac/PycharmProjects/Hubs/AP/APNetworkFlow15.csv", "r"), delimiter=",")
+    f = csv.reader(open("DB/APNetworkFlow15.csv", "r"), delimiter=",")
     W = [row for row in f]
     W = [[float(y) for y in x] for x in D]
 

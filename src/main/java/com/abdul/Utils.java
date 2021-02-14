@@ -118,6 +118,7 @@ class Utils {
     }
 
     static PHMLRP getJsonInitSol(String fileName) {
+        // TODO: change this to match the new output json
         String dataset = "";
         int N = 0;
         List<Integer> hubsList = new ArrayList<>();

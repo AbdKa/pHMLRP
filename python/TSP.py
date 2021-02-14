@@ -237,3 +237,15 @@ print('*************************************************************************
 print("dataset instance p nv alpha obj CPU/elapsed Nodes routes")
 print ("Problem:", DATA3.dataset, DATA3.instance, DATA3.p, "alpha:", DATA3.alpha, "Obj:", z.x, "CPU:", CPU,)
 print ('***********************************************************************************')
+
+import json
+
+with open(DATA3.file_name, 'r+') as f:
+    data = json.load(f)
+    data['CPU'] += CPU
+    data['routes'].append(route)
+    # data['routes'].sort()
+    f.seek(0)        # <--- should reset fpHC_MTSPile position to the beginning.
+    json.dump(data, f, indent=4)
+    f.truncate()     # remove remaining part
+    f.close()
