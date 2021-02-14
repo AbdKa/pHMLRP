@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # Solve combined hub center & routing problems with python
-### python MTSP.py pHC_MTSP_10_1.json TR 10 1 1 1 1 h 1 s 2,3,4,5,6,7,8,9,10 ###
+### python NVEG.py pHC_MTSP_10_1.json TR 10 1 2 1 1 h 1 s 2,3,4,5,6,7,8,9,10 ###
 
 ##################################################
 ##  for nv > 1 formulation  ###

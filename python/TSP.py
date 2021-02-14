@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # Solve combined hub center & routing problems with python
 # TSP: if there is just one vehicle (TSP.py TR 10 1 1 1 1 h 2)
-### python MTSP.py pHC_MTSP_10_1.json TR 10 1 1 1 1 h 1 s 2,3,4,5,6,7,8,9,10 ###
+### python TSP.py pHC_MTSP_10_1.json TR 10 1 1 1 1 h 1 s 2,3,4,5,6,7,8,9,10 ###
 
 import DATA3, sys
 from gurobipy import *
@@ -197,23 +197,42 @@ m.write("out.lp")
 CPU = tmr.stop()
 m.setObjective(z)
 
-#print('The model is infeasible; computing IIS')
-#m.computeIIS()
-#print('\nThe following constraint(s) cannot be satisfied:')
-#for c in m.getConstrs():
-#    if c.IISConstr:
- #       print('%s' % c.constrName)
-
-
-
-print ('***********************************************************************************')
-
-
-for i in N:
-    for k in N:
-       for v in V:
+print('***********************************************************************************')
+links = {}
+route = ""
+for i in range(len(N)):
+    for k in range(len(N)):
+        for v in V:
             if (x[i][k][v].x > 0.5):
-                print('x(', i+1, ',', k+1, ',', v, ') ')
+                if i != k:
+                    if route == "":
+                        route = str(dictionary.get(N[i])) + "," + str(dictionary.get(N[k]))
+                    links[dictionary.get(N[i])] = dictionary.get(N[k])
+                    print('x(', dictionary.get(N[i]), ',', dictionary.get(N[k]), ',', v, ') ')
+
+print(links)
+
+for k in H:
+    for v in V:
+        print("cost1[%d, %d] = %1.1f" % (dictionary.get(k), v, cost1[k, v].x))
+
+for k in H:
+    for v in V:
+        print("cost2[%d, %d] = %1.1f" % (dictionary.get(k), v, cost2[k, v].x))
+
+
+def get_next(second):
+    for first, last in links.items():
+        if second == first:
+            return "," + str(last)
+
+
+for i in range(len(links) - 2):
+    route += str(get_next(int(route.split(',')[-1])))
+
+print(route)
+
+print('***********************************************************************************')
 
 print("dataset instance p nv alpha obj CPU/elapsed Nodes routes")
 print ("Problem:", DATA3.dataset, DATA3.instance, DATA3.p, "alpha:", DATA3.alpha, "Obj:", z.x, "CPU:", CPU,)
