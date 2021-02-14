@@ -99,9 +99,9 @@ class InitialSolutions {
         nodesDistanceAvg = Utils.sortByValue(nodesDistanceAvg);
 
         int h = 0;
-        for (Map.Entry node : nodesDistanceAvg.entrySet()) {
+        for (Map.Entry<Integer, Integer> node : nodesDistanceAvg.entrySet()) {
             if (h >= numHubs) break;
-            phmlrp.getHubsArr()[h] = (int) node.getKey();
+            phmlrp.getHubsArr()[h] = node.getKey();
             phmlrp.getIsVisitedCity()[phmlrp.getHubsArr()[h]] = true;
             h++;
         }
