@@ -84,8 +84,8 @@ class Dataset {
                 return AP200distances.get(node1).get(node2);
             case CAB:
                 return CABdistances.get(node1).get(node2);
+            default:
+                throw new AssertionError("unknown dataset :" + dataset);
         }
-
-        return 0.0;
     }
 }
