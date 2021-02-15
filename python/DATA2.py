@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 import sys
 import csv, time, numpy as n
+from time import perf_counter
 
 D = []
 N = []
@@ -18,12 +19,14 @@ p = int(sys.argv[3])
 nv = int(sys.argv[4]) #4
 alpha=float(sys.argv[5]) #5
 
+# perf_counter() function always returns the float value of time in seconds.
+# https://www.geeksforgeeks.org/time-perf_counter-function-in-python/
 class Timer:
     def __init__(self):
-        self.start = time.clock()
+        self.start = perf_counter()
     def stop(self):
-        dur = time.clock()-self.start
-        self.start = time.clock()
+        dur = perf_counter()-self.start
+        self.start = perf_counter()
         return (dur * 1000000.0)
 
 def loadTR():

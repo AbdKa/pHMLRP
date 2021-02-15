@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 # Solve combined hub center & routing problems with python
-### python3 TSP.py TR 10 2 2 1 1 ###
+### python3 phubcenter.py TR 10 2 2 1 1 ###
 
 import DATA2, sys
 from gurobipy import *
-from time import clock
+from time import perf_counter
 from DATA2 import Timer
 
 DATA2.loadScriptArgs()
@@ -17,11 +17,11 @@ m = Model()
 tmr = Timer()
 #m.setParam(GRB.Param.TimeLimit, 1000.0)
 threads = -1  # number of threads to use
-startTotal = clock()
+startTotal = perf_counter()
 
 
 def tPrint(msg):
-    print("%5.1f: %s" % (clock() - startTotal, msg))
+    print("%5.1f: %s" % (perf_counter() - startTotal, msg))
 
 
 # Create optimization model
@@ -124,7 +124,7 @@ with open("pHC_MTSP_" + str(len(N)) + "_" + str(p) + "_" + str(nv) + ".json", "w
 write_file.close()
 
 for h, s in sets.items():
-    command = "python NVEG.py pHC_MTSP_" + str(len(N)) + "_" + str(p) + "_" + str(nv) + ".json TR " + \
+    command = "python3 NVEG.py pHC_MTSP_" + str(len(N)) + "_" + str(p) + "_" + str(nv) + ".json TR " + \
               str(int(len(s)/2)+1) + " 1 " + str(nv) + " 1 1 h " + str(h) + " s " + s[:-1]
     print(command)
     os.system(command)
