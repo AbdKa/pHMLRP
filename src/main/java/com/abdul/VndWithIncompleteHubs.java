@@ -255,11 +255,14 @@ class VndWithIncompleteHubs {
     private void createInitSol(PHMLRP phmlrp) {
         InitialSolutions initialSolutions = new InitialSolutions(phmlrp);
         switch (params.getInitSol()) {
-            case "greedy":
+            case GREEDY:
                 initialSolutions.greedySolution();
                 break;
-            default:
+            case RND:
                 initialSolutions.randomSolution();
+                break;
+            default:
+                throw new AssertionError("unrecognized initial solution construction " + params.getInitSol());
         }
         phmlrp.calculateCost(PHMLRP.CostType.NORMAL);
     }

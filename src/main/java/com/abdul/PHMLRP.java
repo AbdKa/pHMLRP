@@ -24,6 +24,12 @@ class PHMLRP {
         NORMAL, OPERATION
     }
 
+    private boolean silent = false;
+
+    public void setSilent(boolean silent) {
+        this.silent = silent;
+    }
+
     /**
      * Constructor
      */
@@ -39,10 +45,10 @@ class PHMLRP {
         this.hubToHubCFactor = hubToHubCFactor;
         this.removalPercentage = removalPercentage;
         hubsArr = new int[numHubs];
-        vehiclesList = new ArrayList<List<Integer>>();
+        vehiclesList = new ArrayList<>();
         isVisitedCity = new boolean[numNodes];
         for (int i = 0; i < numHubs * numVehicles; i++) {
-            vehiclesList.add(new ArrayList<Integer>());
+            vehiclesList.add(new ArrayList<>());
         }
     }
 
@@ -440,6 +446,7 @@ class PHMLRP {
      * @param verbose defines either nodes will be printed in words or numbers
      */
     void print(boolean verbose) {
+        if (silent) return;
         // loop on hubs
         for (int i = 0; i < hubsArr.length; i++) {
             if (verbose) {

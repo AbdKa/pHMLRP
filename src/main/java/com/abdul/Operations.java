@@ -678,8 +678,8 @@ class Operations {
                     bestCost = cost;
                     bestRoute = i;
                     bestIdx = j;
-                    System.out.println(phmlrp.getMaxCost());
-                    phmlrp.print(false);
+                  //  System.out.println(phmlrp.getMaxCost());
+                  //  phmlrp.print(false);
                 }
             }
         }
@@ -760,7 +760,7 @@ class Operations {
 
     void localSearchEdgeOpt() {
         // create a list of all non-hub nodes
-        List<Integer> initList = new ArrayList<Integer>();
+        List<Integer> initList = new ArrayList<>();
         for (int i = 0; i < phmlrp.getVehiclesList().size(); i++) {
             if (phmlrp.getVehiclesList().get(i).size() < 2) {
                 continue;

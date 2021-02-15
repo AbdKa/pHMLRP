@@ -41,6 +41,12 @@ class SimulatedAnnealing {
         setBestVehiclesList(phmlrp.getVehiclesList());
     }
 
+    private boolean silent = false;
+
+    public void setSilent(boolean silent) {
+        this.silent = silent;
+    }
+
     private void setBestVehiclesList(ArrayList<List<Integer>> vehiclesList) {
         this.bestSol = new ArrayList<>();
         for (List<Integer> list : vehiclesList) {
@@ -63,7 +69,8 @@ class SimulatedAnnealing {
         // temperature
         int counter = 0;
         while (T > minT) {
-            System.out.println("Temperature " + T);
+            if (!silent)
+                System.out.println("Temperature " + T);
 
             temps.add(counter, T);
             costs.add(counter, -1.0);

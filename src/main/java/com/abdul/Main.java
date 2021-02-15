@@ -42,8 +42,10 @@ public class Main {
                 params.getCollectionCostCFactor(), params.getDistributionCostCFactor(), params.getHubToHubCFactor(),
                 params.getRemovalPercentage());
         saPhmlrp.setSimulatedAnnealing(true);
+        saPhmlrp.setSilent(params.getSilent());
         randomSolutionAndCost(saPhmlrp);
         SimulatedAnnealing simulatedAnnealing = new SimulatedAnnealing(saPhmlrp, params);
+        simulatedAnnealing.setSilent(params.getSilent());
         simulatedAnnealing.applySA(params.getDataset() + "." + params.getNumNodes() + "." + params.getNumHubs() + "." + params.getNumVehicles() + "-" + UUID.randomUUID().toString());
 
 //        LS_VND ls_vnd = new LS_VND(params);
