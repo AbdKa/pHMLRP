@@ -23,8 +23,17 @@ public class Benchmark {
         IntStream.range(0, 10).boxed().parallel().forEach(v ->
         {
             for (String s : instances) {
+
                 String[] parts = s.split("\\.");
-                Main.main(new String[]{"--dataset", parts[0], "--nodes", parts[1], "--hubs", parts[2], "--vehicles", parts[3], "--silent"});
+
+                for (IS is : IS.values())
+                    Main.main(new String[]{
+                            "--dataset", parts[0],
+                            "--nodes", parts[1],
+                            "--hubs", parts[2],
+                            "--vehicles", parts[3],
+                            "--initial", is.toString(),
+                            "--silent"});
             }
         });
     }

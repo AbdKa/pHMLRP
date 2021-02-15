@@ -1,7 +1,7 @@
 package com.abdul;
 
 /**
- * initial solution strategy
+ * initial solution construction strategy
  **/
 
 public enum IS {

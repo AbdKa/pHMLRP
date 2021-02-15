@@ -46,7 +46,7 @@ public class Main {
         randomSolutionAndCost(saPhmlrp);
         SimulatedAnnealing simulatedAnnealing = new SimulatedAnnealing(saPhmlrp, params);
         simulatedAnnealing.setSilent(params.getSilent());
-        simulatedAnnealing.applySA(params.getDataset() + "." + params.getNumNodes() + "." + params.getNumHubs() + "." + params.getNumVehicles() + "-" + UUID.randomUUID().toString());
+        simulatedAnnealing.applySA(params.getDataset() + "." + params.getNumNodes() + "." + params.getNumHubs() + "." + params.getNumVehicles() + "-" + params.getInitSol() + "-SA" + "-" + UUID.randomUUID().toString().replaceAll("-", ""));
 
 //        LS_VND ls_vnd = new LS_VND(params);
 //        ls_vnd.runVND();

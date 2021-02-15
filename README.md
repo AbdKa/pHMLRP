@@ -15,6 +15,13 @@ The top-level directory contains python scripts that call/use the [Gurobi Optimi
 ### TSP
 If there is just one vehicle call `python3 python/TSP.py TR 10 1 1 1 1 h 2`
 
+# How to get all runs on a server machine
+Run the command: `java -server -Xmx3g -cp target/pHMLRP.jar com.abdul.Benchmark 2>runs.log` 
+Algorithms like SA and VNS prints the desired output (e.g. objective function, running time etc) to the standard error.
+The command captures the desired output by saving the standard error to a file (runs.log).
+Later of you can open this dumpfile with excel and apply text to columns (split by dash) transformation.
+You can create pivot tables, analyze the results (min, max, average) and compare algorithms.
+
 
 ## Dependencies
 

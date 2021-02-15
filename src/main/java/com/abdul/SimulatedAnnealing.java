@@ -110,6 +110,11 @@ class SimulatedAnnealing {
 
         printResultsExcel(uniqueFileName);
 
+        // Capture the desired output by saving standard error to a file.
+        // Later of you can open this dump with excel and apply text to columns.
+        // You can create pivot tables, analyse results, min, max, average, compare algorithms etc.
+        System.err.println(uniqueFileName + "\t" + phmlrp.getMaxCost());
+
         phmlrp.setSimulatedAnnealing(false);
 
         phmlrp.resetVehiclesList(bestSol);
