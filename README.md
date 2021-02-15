@@ -27,9 +27,9 @@ You can create pivot tables, analyze the results (min, max, average) and compare
 
 * JDK 9 or above
 * Apache Maven 3.6.3 or above
-* Python3 or above
+* Python 3.9.1 or above
 * Numpy 1.20.1 or above
 * Gurobi 9.1.1 or above
-* python3 /Library/gurobi911/mac64/setup.py install
+* python3 /Library/gurobi911/mac64/setup.py `build` and then `install`
 * python3.9 -m pip install pulp --user
 * pip3 install dlib
