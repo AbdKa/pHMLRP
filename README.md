@@ -13,4 +13,4 @@ For [pHCVRP](https://link.springer.com/article/10.1007/s00291-018-0526-2), see [
 The top-level directory contains python scripts that call/use the [Gurobi Optimizer](https://www.gurobi.com).
 
 ### TSP
-If there is just one vehicle call `python\TSP.py TR 10 1 1 1 1 h 2`
+If there is just one vehicle call `python/TSP.py TR 10 1 1 1 1 h 2`
