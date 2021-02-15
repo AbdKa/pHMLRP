@@ -2,7 +2,7 @@
 # Solve combined hub center & routing problems with python
 ### python3 phubcenter.py TR 10 2 2 1 1 ###
 
-import DATA2, sys
+import DATA2, sys, os, json
 from gurobipy import *
 from time import perf_counter
 from DATA2 import Timer
@@ -105,19 +105,16 @@ for i in N:
 print("pHubCenter CPU: " + str(CPU))
 data = {'routes': [], 'CPU': CPU, 'dataset': DATA2.dataset, "N": DATA2.instance}
 
-import os
 try:
     os.remove("pHC_MTSP_" + str(len(N)) + "_" + str(p) + ".json")
 except OSError:
     pass
 
-import os
 try:
     os.remove("pHC_MTSP_" + str(len(N)) + "_" + str(p) + "_" + str(nv) + ".json")
 except OSError:
     pass
 
-import json
 # convert into JSON:
 with open("pHC_MTSP_" + str(len(N)) + "_" + str(p) + "_" + str(nv) + ".json", "w") as write_file:
     y = json.dump(data, write_file, indent=4)
@@ -125,7 +122,7 @@ with open("pHC_MTSP_" + str(len(N)) + "_" + str(p) + "_" + str(nv) + ".json", "w
 write_file.close()
 
 
-p_command = "python";
+p_command = "python"
 if platform == "linux" or platform == "linux2":
     p_command = "python"
 elif platform == "darwin":
