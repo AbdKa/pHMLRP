@@ -6,7 +6,7 @@
 ##  for nv > 1 formulation  ###
 ##################################################
 
-from time import clock
+from time import perf_counter
 
 from gurobipy import *
 
@@ -46,7 +46,7 @@ m = Model()
 tmr = Timer()
 m.setParam(GRB.Param.TimeLimit, 1000.0)
 threads = -1  # number of threads to use
-startTotal = clock()
+startTotal = perf_counter()
 
 
 def tPrint(msg):
