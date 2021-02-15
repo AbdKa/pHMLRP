@@ -6,6 +6,7 @@ import DATA2, sys
 from gurobipy import *
 from time import perf_counter
 from DATA2 import Timer
+from sys import platform
 
 DATA2.loadScriptArgs()
 D = DATA2.D
@@ -123,8 +124,18 @@ with open("pHC_MTSP_" + str(len(N)) + "_" + str(p) + "_" + str(nv) + ".json", "w
 
 write_file.close()
 
+
+p_command = "python";
+if platform == "linux" or platform == "linux2":
+    p_command = "python"
+elif platform == "darwin":
+    p_command = "python3"
+elif platform == "win32":
+    p_command = "python"
+
 for h, s in sets.items():
-    command = "python3 NVEG.py pHC_MTSP_" + str(len(N)) + "_" + str(p) + "_" + str(nv) + ".json TR " + \
+
+    command = p_command + " NVEG.py pHC_MTSP_" + str(len(N)) + "_" + str(p) + "_" + str(nv) + ".json TR " + \
               str(int(len(s)/2)+1) + " 1 " + str(nv) + " 1 1 h " + str(h) + " s " + s[:-1]
     print(command)
     os.system(command)
