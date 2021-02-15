@@ -1,6 +1,6 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # Solve combined hub center & routing problems with python
-### python TSP.py TR 10 2 2 1 1 ###
+### python3 TSP.py TR 10 2 2 1 1 ###
 
 import DATA2, sys
 from gurobipy import *

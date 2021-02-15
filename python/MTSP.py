@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # Solve combined hub center & routing problems with python
 
 import DATA3, sys
