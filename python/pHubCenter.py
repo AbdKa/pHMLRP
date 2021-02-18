@@ -1,14 +1,14 @@
 #!/usr/bin/env python3
 # Solve combined hub center & routing problems with python
-### python phubcenter.py TR 10 2 2 1 1 ###
+### python pHubCenter.py TR 10 2 2 1 1 ###
 
+import json
 from sys import platform
 from time import perf_counter
 
 from gurobipy import *
 
 import DATA2
-import json
 from DATA2 import Timer
 
 DATA2.loadScriptArgs()
@@ -41,10 +41,6 @@ for i in N:
     x.append([])
     for j in N:
         x[i].append(m.addVar(vtype=GRB.BINARY, name="x%s"))
-
-# TODO: set hubs properly
-for h in DATA2.H:
-    x[h][h] = 1
 
 z = m.addVar(obj=1, vtype=GRB.CONTINUOUS, name="z")
 
@@ -83,19 +79,20 @@ successor = [[j for j in N if x[i][j].x > 0.5] for i in N]
 sets = {}
 for i in N:
     for k in N:
-        if (x[i][k].x > 0.5):
+        if x[i][k].x > 0.5:
             if i == k:
-                print('x(', i + 1, ',', k + 1, ') => hub')
+                print('x(', i, ',', k, ') => hub')
             else:
-                if (k + 1) not in sets:
-                    sets[k + 1] = ""
-                sets[k + 1] += str(i + 1) + ","
-                print('x(', i + 1, ',', k + 1, ')')
+                if k not in sets:
+                    sets[k] = ""
+                sets[k] += str(i) + ","
+                print('x(', i, ',', k, ')')
 
 print("pHubCenter CPU: " + str(CPU))
 data = {'routes': [], 'CPU': CPU, 'dataset': DATA2.dataset, "N": DATA2.instance}
 
 from pathlib import Path
+
 Path("results").mkdir(parents=True, exist_ok=True)
 json_file = "results/pHC_MTSP_" + str(len(N)) + "_" + str(p) + "_" + str(nv) + ".json"
 
@@ -129,12 +126,3 @@ for h, s in sets.items():
     os.system(command)
 
 print('***********************************************************************************')
-#
-# for i in N:
-#     for k in N:
-#         if (x[i][k].x > 0.5):
-#             if i == k:
-#                 print('x(',i,',', k,') => hub')
-#
-#             else:
-#                 print('x(',i,',', k,')')

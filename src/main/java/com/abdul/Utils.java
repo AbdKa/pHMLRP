@@ -125,7 +125,8 @@ class Utils {
         ArrayList<List<Integer>> vehiclesList = new ArrayList<>();
         JSONParser parser = new JSONParser();
         try {
-            JSONObject a = (JSONObject) parser.parse(new FileReader("pHC_MTSP/pHC_MTSP_" + fileName + ".json"));
+            JSONObject a = (JSONObject) parser.parse(new FileReader("python/results/pHC_MTSP_" +
+                    fileName + ".json"));
             JSONArray routesJson = (JSONArray) a.get("routes");
             dataset = (String) a.get("dataset");
             N = Math.toIntExact((long) a.get("N"));
@@ -140,12 +141,12 @@ class Utils {
                 for (int k = 0; k < route.length; k++) {
                     int node = Integer.parseInt(route[k]);
                     if (k == 0) {
-                        if (hubsList.contains(node - 1))
+                        if (hubsList.contains(node))
                             continue;
-                        hubsList.add(node - 1);
+                        hubsList.add(node);
                         continue;
                     }
-                    r.add(node - 1);
+                    r.add(node);
                 }
 
                 vehiclesList.add(r);

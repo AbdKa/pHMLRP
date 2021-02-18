@@ -7,13 +7,14 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import static com.abdul.DS.AP100;
-import static com.abdul.DS.TR;
+import static com.abdul.DS.*;
 
 class Dataset {
 
     private static final List<List<Double>> TR16distances = new ArrayList<>();
     private static final List<List<Double>> TRdistances = new ArrayList<>();
+    private static final List<List<Double>> AP10distances = new ArrayList<>();
+    private static final List<List<Double>> AP15distances = new ArrayList<>();
     private static final List<List<Double>> AP100distances = new ArrayList<>();
     private static final List<List<Double>> AP200distances = new ArrayList<>();
     private static final List<List<Double>> CABdistances = new ArrayList<>();
@@ -46,7 +47,7 @@ class Dataset {
 
     static {
 
-        for (DS ds : new DS[]{DS.TR16, TR, AP100, DS.AP200, DS.CAB}) {
+        for (DS ds : new DS[]{TR16, TR, AP10, AP15, AP100, AP200, CAB}) {
 
             switch (ds) {
                 case TR16:
@@ -54,6 +55,12 @@ class Dataset {
                     break;
                 case TR:
                     load("TurkishNetworkDist", TRdistances);
+                    break;
+                case AP10:
+                    load("APNetworkDist10", AP10distances);
+                    break;
+                case AP15:
+                    load("APNetworkDist15", AP15distances);
                     break;
                 case AP100:
                     load("APNetworkDist100", AP100distances);
@@ -77,6 +84,10 @@ class Dataset {
                 return TR16distances.get(node1).get(node2);
             case TR:
                 return TRdistances.get(node1).get(node2);
+            case AP10:
+                return AP10distances.get(node1).get(node2);
+            case AP15:
+                return AP15distances.get(node1).get(node2);
             case AP100:
                 return AP100distances.get(node1).get(node2);
             case AP200:

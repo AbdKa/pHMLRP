@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
+import csv
+import numpy as n
 import sys
-import csv, time, numpy as n
 from time import perf_counter
 
 file_name = str(sys.argv[1])
@@ -14,7 +15,7 @@ alpha = 0
 MM = 0
 MM1 = 0
 q = 0
-V = range(nv*p)
+V = range(nv * p)
 dataset = str(sys.argv[2])
 instance = int(sys.argv[3])
 p = int(sys.argv[4])
@@ -31,18 +32,14 @@ if len(sys.argv) > 8:
         hub = sys.argv[9]
         H = [int(hub)]
         print(H)
-        # if len(H) != p:
-        #     print("Error: p != entered hubs length")
-        #     print("    >> p = " + str(p) + "\thubs length = " + str(len(H)))
-        #     exit(0)
         if len(sys.argv) > 10:
             if str(sys.argv[10]) == "s":
                 set = ",".join(sys.argv[11:])
                 NH = [int(nh) for nh in set.split(",")]
-                i=0
+                i = 0
                 while i < len(NH):
-                    NH[i]=NH[i]
-                    i+=1
+                    NH[i] = NH[i]
+                    i += 1
 
                 N = H + NH
                 N.sort()
@@ -54,15 +51,18 @@ else:
     print("Error: Enter a hub")
     exit(0)
 
+
 # perf_counter() function always returns the float value of time in seconds.
 # https://www.geeksforgeeks.org/time-perf_counter-function-in-python/
 class Timer:
     def __init__(self):
         self.start = perf_counter()
+
     def stop(self):
-        dur = perf_counter()-self.start
+        dur = perf_counter() - self.start
         self.start = perf_counter()
         return round(dur * 1000000)
+
 
 def loadTR():
     global D, N, MM, W, MM1
@@ -86,6 +86,7 @@ def loadTR():
     W = [row for row in f]
     W = [[float(y) for y in x] for x in D]
 
+
 def loadCAB():
     global D, N, MM, W, MM1
     f = csv.reader(open("DB/CABNetworkDist.csv", "r"), delimiter=",")
@@ -98,6 +99,7 @@ def loadCAB():
     W = [row for row in f]
     W = [[float(y) for y in x] for x in D]
 
+
 def loadAP():
     global D, N, MM, W
     f = csv.reader(open("DB/APNetworkDist10.csv", "r"), delimiter=",")
@@ -109,6 +111,7 @@ def loadAP():
     f = csv.reader(open("DB/APNetworkFlow10.csv", "r"), delimiter=",")
     W = [row for row in f]
     W = [[float(y) for y in x] for x in D]
+
 
 def loadAP2():
     global D, N, MM, W
@@ -124,7 +127,7 @@ def loadAP2():
 
 
 def truncateData(n):
-    global D,N,W
+    global D, N, W
     if len(route) > 1:
         N = route
         D = [[D[i][j] for i in N] for j in N]
