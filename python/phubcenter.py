@@ -44,8 +44,7 @@ for i in N:
 
 # TODO: set hubs properly
 for h in DATA2.H:
-    x[h][h].lb = 1
-    x[h][h].ub = 1
+    x[h][h] = 1
 
 z = m.addVar(obj=1, vtype=GRB.CONTINUOUS, name="z")
 
