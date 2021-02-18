@@ -62,7 +62,7 @@ class Timer:
     def stop(self):
         dur = perf_counter()-self.start
         self.start = perf_counter()
-        return (dur * 1000000.0)
+        return round(dur * 1000000)
 
 def loadTR():
     global D, N, MM, W, MM1
