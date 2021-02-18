@@ -22,7 +22,6 @@ class Dataset {
         try {
             BufferedReader CSVFile = new BufferedReader(new FileReader("db/" + dataset + ".csv"));
             String dataRow = CSVFile.readLine();
-            // TODO: edit AP10 and AP15 (add two rows and cols)
             dataRow = CSVFile.readLine();
             dataRow = CSVFile.readLine();
             while (dataRow != null && !dataRow.equals("")) {
