@@ -45,7 +45,7 @@ for i in N:
 z = m.addVar(obj=1, vtype=GRB.CONTINUOUS, name="z")
 
 m.update()
-m.params.TimeLimit = 1000
+m.params.TimeLimit = 3600
 
 for k in N:
     for i in N:
