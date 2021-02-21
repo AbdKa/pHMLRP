@@ -12,10 +12,25 @@ For [pHCVRP](https://link.springer.com/article/10.1007/s00291-018-0526-2), see [
 # Gurobi / python stuff
 The top-level directory contains python scripts that call/use the [Gurobi Optimizer](https://www.gurobi.com).
 
-### TSP
-If there is just one vehicle call `python3 python/TSP.py TR 10 1 1 1 1 h 2`
+### pHubCenter.py
+After gurobi optimization, it calls TSP.py or NVEG.py for each hub and passes a json file name that has been created (pHC_MTSP_p_h_nv.json) as an argument
+to fill in the routes array in json.
+command `python pHubCenter.py TR 10 2 2 1 1 1`
 
-# How to get all runs on a server machine
+### pHubCenter_H.py
+Like pHubCenter.py but accepts hubs list as an argument.
+command `python pHubCenter_H.py TR 10 2 2 1 1 1 h 5,7`
+
+### TSP.py
+If there is just one vehicle (called by pHubCenter.py and pHubCenter_H.py):
+`python TSP.py json_file TR 10 1 1 1 1 h 1 s 2,3,4,5,6,7,8,9,10`
+
+### NVEG.py
+If there are more than one vehicle (called by pHubCenter.py and pHubCenter_H.py):
+`python NVEG.py json_file TR 10 1 2 1 1 h 1 s 2,3,4,5,6,7,8,9,10`
+
+
+## How to get all runs on a server machine
 Run the command: `java -server -Xmx3g -cp target/pHMLRP.jar com.abdul.Benchmark 2>runs.log` 
 Algorithms like SA and VNS prints the desired output (e.g. objective function, running time etc) to the standard error.
 The command captures the desired output by saving the standard error to a file (runs.log).

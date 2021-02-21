@@ -136,7 +136,8 @@ class VndWithIncompleteHubs {
                             createInitSol(phmlrp);
                         } else {
                             phmlrp = Utils.getJsonInitSol(problemInstances[probIdx].split("\\.")[1] +
-                                    "_" + problemInstances[probIdx].split("\\.")[2]);
+                                    "_" + problemInstances[probIdx].split("\\.")[2] +
+                                    "_" + problemInstances[probIdx].split("\\.")[3]);
                             phmlrp.calculateCost(PHMLRP.CostType.NORMAL);
                             mtspCost = phmlrp.getMaxCost();
                         }
