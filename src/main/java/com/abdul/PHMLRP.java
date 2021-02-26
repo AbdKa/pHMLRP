@@ -93,8 +93,8 @@ class PHMLRP {
         this.hubsArr = hubsArr;
     }
 
-    void addRouteToVehiclesList(List<Integer> route) {
-        vehiclesList.add(route);
+    void setRouteInVehiclesList(int index, List<Integer> route) {
+        vehiclesList.set(index, route);
     }
 
     void resetVehiclesList(ArrayList<List<Integer>> vehiclesList) {

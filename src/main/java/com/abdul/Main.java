@@ -11,6 +11,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.Arrays;
 import java.util.UUID;
 
 public class Main {
@@ -38,15 +39,15 @@ public class Main {
         }
 
         // Simulated Annealing
-        PHMLRP saPhmlrp = new PHMLRP(params.getDataset(), params.getNumNodes(), params.getNumHubs(), params.getNumVehicles(),
-                params.getCollectionCostCFactor(), params.getDistributionCostCFactor(), params.getHubToHubCFactor(),
-                params.getRemovalPercentage());
-        saPhmlrp.setSimulatedAnnealing(true);
-        saPhmlrp.setSilent(params.getSilent());
-        randomSolutionAndCost(saPhmlrp);
-        SimulatedAnnealing simulatedAnnealing = new SimulatedAnnealing(saPhmlrp, params);
-        simulatedAnnealing.setSilent(params.getSilent());
-        simulatedAnnealing.applySA(params.getDataset() + "." + params.getNumNodes() + "." + params.getNumHubs() + "." + params.getNumVehicles() + "-" + params.getInitSol() + "-SA" + "-" + UUID.randomUUID().toString().replaceAll("-", ""));
+//        PHMLRP saPhmlrp = new PHMLRP(params.getDataset(), params.getNumNodes(), params.getNumHubs(), params.getNumVehicles(),
+//                params.getCollectionCostCFactor(), params.getDistributionCostCFactor(), params.getHubToHubCFactor(),
+//                params.getRemovalPercentage());
+//        saPhmlrp.setSimulatedAnnealing(true);
+//        saPhmlrp.setSilent(params.getSilent());
+//        randomSolutionAndCost(saPhmlrp);
+//        SimulatedAnnealing simulatedAnnealing = new SimulatedAnnealing(saPhmlrp, params);
+//        simulatedAnnealing.setSilent(params.getSilent());
+//        simulatedAnnealing.applySA(params.getDataset() + "." + params.getNumNodes() + "." + params.getNumHubs() + "." + params.getNumVehicles() + "-" + params.getInitSol() + "-SA" + "-" + UUID.randomUUID().toString().replaceAll("-", ""));
 
 //        LS_VND ls_vnd = new LS_VND(params);
 //        ls_vnd.runVND();
@@ -117,10 +118,19 @@ public class Main {
 //        phmlrpObj.print(false);
 
 
-//        Gurobi gurobi = new Gurobi(phmlrpObj, params.getNumNodes(), params.getNumHubs(), params.getNumVehicles());
-//        gurobi.getInitSol();
-//        gurobi.optimizeRoute(new int[]{0,36,77,23,61,25,10,8,47});
-//        gurobi.getSolWithHubs(new int[]{0,1});
+        PHMLRP phmlrpObj = new PHMLRP(params.getDataset(), params.getNumNodes(), params.getNumHubs(), params.getNumVehicles(),
+                params.getCollectionCostCFactor(), params.getDistributionCostCFactor(), params.getHubToHubCFactor(),
+                params.getRemovalPercentage());
+
+        Gurobi gurobi = new Gurobi(phmlrpObj, params.getDataset(), params.getNumNodes(), params.getNumHubs(),
+                params.getNumVehicles(), 1);
+        System.out.println(phmlrpObj.getVehiclesList().size());
+//        int[] route = gurobi.optimizeRoute(new int[]{0,36,77,23,61,25,10,8,47});
+//        System.out.println(Arrays.toString(route));
+//        gurobi.getSolWithHubs(new int[]{3,4});
+        gurobi.getInitSol();
+        phmlrpObj.calculateCost(PHMLRP.CostType.NORMAL);
+        phmlrpObj.print(false);
 
         XSSFWorkbook workbook = new XSSFWorkbook();
         XSSFWorkbook saWorkbook = new XSSFWorkbook();
@@ -213,14 +223,14 @@ public class Main {
 //        de.doDeterministicExplore(workbook, spreadsheet);
 
         // Simulated Annealing
-        PHMLRP saPhmlrp = new PHMLRP(params.getDataset(), params.getNumNodes(), params.getNumHubs(), params.getNumVehicles(),
-                params.getCollectionCostCFactor(), params.getDistributionCostCFactor(), params.getHubToHubCFactor(),
-                params.getRemovalPercentage());
-        saPhmlrp.setSimulatedAnnealing(true);
-        randomSolutionAndCost(saPhmlrp);
-
-        SimulatedAnnealing simulatedAnnealing = new SimulatedAnnealing(saPhmlrp, params);
-        simulatedAnnealing.applySA(""); //TODO fixme
+//        PHMLRP saPhmlrp = new PHMLRP(params.getDataset(), params.getNumNodes(), params.getNumHubs(), params.getNumVehicles(),
+//                params.getCollectionCostCFactor(), params.getDistributionCostCFactor(), params.getHubToHubCFactor(),
+//                params.getRemovalPercentage());
+//        saPhmlrp.setSimulatedAnnealing(true);
+//        randomSolutionAndCost(saPhmlrp);
+//
+//        SimulatedAnnealing simulatedAnnealing = new SimulatedAnnealing(saPhmlrp, params);
+//        simulatedAnnealing.applySA(""); //TODO fixme
 
 //        PHMLRP dpPhmlrp = new PHMLRP(10, numHubs, numVehicles,
 //                params.getCollectionCostCFactor(), params.getDistributionCostCFactor(), params.getHubToHubCFactor(),
