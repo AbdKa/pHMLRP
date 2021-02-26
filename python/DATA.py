@@ -87,7 +87,7 @@ def loadCAB():
 
 def loadAP10():
     global D, N, MM
-    f = csv.reader(open("DB/APNetworkDist10.csv", "r"), delimiter=",")
+    f = csv.reader(open("python/DB/APNetworkDist10.csv", "r"), delimiter=",")
     D = [row for row in f]
     D = [[float(y) for y in x] for x in D]
     N = range(len(D))
@@ -97,7 +97,7 @@ def loadAP10():
 
 def loadAP15():
     global D, N, MM
-    f = csv.reader(open("DB/APNetworkDist15.csv", "r"), delimiter=",")
+    f = csv.reader(open("python/DB/APNetworkDist15.csv", "r"), delimiter=",")
     D = [row for row in f]
     D = [[float(y) for y in x] for x in D]
     N = range(len(D))
@@ -107,7 +107,7 @@ def loadAP15():
 
 def loadAP100():
     global D, N, MM
-    f = csv.reader(open("DB/APNetworkDist100.csv", "r"), delimiter=",")
+    f = csv.reader(open("python/DB/APNetworkDist100.csv", "r"), delimiter=",")
     D = [row for row in f]
     D = [[float(y) for y in x] for x in D]
     N = range(len(D))
@@ -117,7 +117,7 @@ def loadAP100():
 
 def loadAP200():
     global D, N, MM
-    f = csv.reader(open("DB/APNetworkDist200.csv", "r"), delimiter=",")
+    f = csv.reader(open("python/DB/APNetworkDist200.csv", "r"), delimiter=",")
     D = [row for row in f]
     D = [[float(y) for y in x] for x in D]
     N = range(len(D))
