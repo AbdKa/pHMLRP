@@ -254,7 +254,8 @@ class VndWithIncompleteHubs {
     }
 
     private void createInitSol(PHMLRP phmlrp) {
-        InitialSolutions initialSolutions = new InitialSolutions(phmlrp);
+        InitialSolutions initialSolutions = new InitialSolutions(phmlrp, params.getDataset(),
+                params.getCollectionCostCFactor());
         switch (params.getInitSol()) {
             case GREEDY:
                 initialSolutions.greedySolution();

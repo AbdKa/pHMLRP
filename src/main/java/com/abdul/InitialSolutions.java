@@ -8,13 +8,17 @@ import java.util.Random;
 class InitialSolutions {
 
     private final PHMLRP phmlrp;
+    private DS dataset;
     private final int numNodes, numHubs, numVehiclesPerHub;
+    private float collectionCostCFactor;
 
-    InitialSolutions(PHMLRP phmlrp) {
+    InitialSolutions(PHMLRP phmlrp, DS dataset, float collectionCostCFactor) {
         this.phmlrp = phmlrp;
+        this.dataset = dataset;
         this.numNodes = phmlrp.getNumNodes();
         this.numHubs = phmlrp.getNumHubs();
         this.numVehiclesPerHub = phmlrp.getNumVehiclesPerHub();
+        this.collectionCostCFactor = collectionCostCFactor;
     }
 
     /*void testSameDistancesSum() {
@@ -44,7 +48,7 @@ class InitialSolutions {
         randomlyAssignNonHubsToVehicles();
     }
 
-    void semiGreedySolution() {
+    void greedyRandomSolution() {
         // 1- greedily pick hubs, after calculating the average distances for each node
         greedyPickHubs();
         // 2- greedily assign non-hub nodes to hubs
@@ -52,12 +56,20 @@ class InitialSolutions {
         randomlyAssignNonHubsToVehicles();
     }
 
-    void semiGreedySolution2() {
+    void randomGreedySolution() {
         // 1- greedily pick hubs, after calculating the average distances for each node
         randomlyPickHubs();
         // 2- greedily assign non-hub nodes to hubs
         // 3- distribute non-hubs on the vehicles
         greedilyAssignNonHubsToVehicles();
+    }
+
+    void greedyGurobiSolution() {
+        // 1- greedily pick hubs, after calculating the average distances for each node
+        greedyPickHubs();
+        // assign non-hub nodes to hubs through Gurobi
+        Gurobi gurobi = new Gurobi(phmlrp, dataset, numNodes, numHubs, numVehiclesPerHub, collectionCostCFactor);
+        gurobi.getSolGivenHubs();
     }
 
     /**

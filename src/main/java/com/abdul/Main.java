@@ -11,8 +11,6 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.Arrays;
-import java.util.UUID;
 
 public class Main {
     public static void main(String[] args) {
@@ -36,6 +34,35 @@ public class Main {
             Files.createDirectories(Paths.get(path));
         } catch (IOException ioe) {
             throw new RuntimeException(ioe);
+        }
+
+        PHMLRP phmlrp = new PHMLRP(params.getDataset(), params.getNumNodes(), params.getNumHubs(), params.getNumVehicles(),
+                params.getCollectionCostCFactor(), params.getDistributionCostCFactor(), params.getHubToHubCFactor(),
+                params.getRemovalPercentage());
+        InitialSolutions initialSolutions = new InitialSolutions(phmlrp, params.getDataset(),
+                params.getCollectionCostCFactor());
+
+        switch (params.getInitSol()) {
+            case RND:
+                initialSolutions.randomSolution();
+                break;
+            case GREEDY:
+                initialSolutions.greedySolution();
+                break;
+            case GREEDY_RND:
+                initialSolutions.greedyRandomSolution();
+                break;
+            case RND_GREEDY:
+                initialSolutions.randomGreedySolution();
+                break;
+            case GREEDY_GRB:
+                initialSolutions.greedyGurobiSolution();
+                break;
+            case GRB:
+                Gurobi gurobi = new Gurobi(phmlrp, params.getDataset(), params.getNumNodes(), params.getNumHubs(),
+                        params.getNumVehicles(), params.getCollectionCostCFactor());
+                gurobi.getInitSol();
+                break;
         }
 
         // Simulated Annealing
@@ -122,15 +149,15 @@ public class Main {
                 params.getCollectionCostCFactor(), params.getDistributionCostCFactor(), params.getHubToHubCFactor(),
                 params.getRemovalPercentage());
 
-        Gurobi gurobi = new Gurobi(phmlrpObj, params.getDataset(), params.getNumNodes(), params.getNumHubs(),
-                params.getNumVehicles(), 1);
-        System.out.println(phmlrpObj.getVehiclesList().size());
+//        Gurobi gurobi = new Gurobi(phmlrpObj, params.getDataset(), params.getNumNodes(), params.getNumHubs(),
+//                params.getNumVehicles(), 1);
+//        System.out.println(phmlrpObj.getVehiclesList().size());
 //        int[] route = gurobi.optimizeRoute(new int[]{0,36,77,23,61,25,10,8,47});
 //        System.out.println(Arrays.toString(route));
-//        gurobi.getSolWithHubs(new int[]{3,4});
-        gurobi.getInitSol();
-        phmlrpObj.calculateCost(PHMLRP.CostType.NORMAL);
-        phmlrpObj.print(false);
+//        gurobi.getSolGivenHubs(new int[]{3,4});
+//        gurobi.getInitSol();
+//        phmlrpObj.calculateCost(PHMLRP.CostType.NORMAL);
+//        phmlrpObj.print(false);
 
         XSSFWorkbook workbook = new XSSFWorkbook();
         XSSFWorkbook saWorkbook = new XSSFWorkbook();
@@ -158,22 +185,22 @@ public class Main {
             PHMLRP phmlrp = new PHMLRP(params.getNumNodes(), params.getNumHubs(), params.getNumVehicles(),
                     params.getCollectionCostCFactor(), params.getDistributionCostCFactor(), params.getHubToHubCFactor(),
                     params.getRemovalPercentage());
-            phmlrp.semiGreedySolution();
+            phmlrp.greedyRandomSolution();
             phmlrp.calculateCost(PHMLRP.CostType.NORMAL);
             timeSum += phmlrp.getMaxCost();
         }
-        System.out.println("semiGreedySolution: " + timeSum / counter);
+        System.out.println("greedyRandomSolution: " + timeSum / counter);
 
         timeSum = 0;
         for (int n = 0; n < counter; n++) {
             PHMLRP phmlrp = new PHMLRP(params.getNumNodes(), params.getNumHubs(), params.getNumVehicles(),
                     params.getCollectionCostCFactor(), params.getDistributionCostCFactor(), params.getHubToHubCFactor(),
                     params.getRemovalPercentage());
-            phmlrp.semiGreedySolution2();
+            phmlrp.randomGreedySolution();
             phmlrp.calculateCost(PHMLRP.CostType.NORMAL);
             timeSum += phmlrp.getMaxCost();
         }
-        System.out.println("semiGreedySolution2: " + timeSum / counter);
+        System.out.println("randomGreedySolution: " + timeSum / counter);
 
         timeSum = 0;
         for (int n = 0; n < counter; n++) {
@@ -243,12 +270,12 @@ public class Main {
 //        deterministicOperation.deterministicOperationOrder(dpWorkbook, dpSpreadsheet);
     }
 
-    private static void randomSolutionAndCost(PHMLRP phmlrp) {
-        InitialSolutions initialSolutions = new InitialSolutions(phmlrp);
-        initialSolutions.randomSolution();
-        phmlrp.calculateCost(PHMLRP.CostType.NORMAL);
-        phmlrp.print(false);
-    }
+//    private static void randomSolutionAndCost(PHMLRP phmlrp) {
+//        InitialSolutions initialSolutions = new InitialSolutions(phmlrp, dataset, collectionCostCFactor);
+//        initialSolutions.randomSolution();
+//        phmlrp.calculateCost(PHMLRP.CostType.NORMAL);
+//        phmlrp.print(false);
+//    }
 
     private static void createFirstRow(XSSFSheet spreadsheet) {
         XSSFRow row = spreadsheet.createRow(0);

@@ -144,7 +144,8 @@ class LS_VND {
     }
 
     private void createInitSol(PHMLRP phmlrp) {
-        InitialSolutions initialSolutions = new InitialSolutions(phmlrp);
+        InitialSolutions initialSolutions = new InitialSolutions(phmlrp, params.getDataset(),
+                params.getCollectionCostCFactor());
         if (params.getInitSol().equals("greedy")) {
             initialSolutions.greedySolution();
         } else {

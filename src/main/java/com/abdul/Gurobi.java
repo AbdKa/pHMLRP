@@ -89,16 +89,16 @@ class Gurobi {
         }
     }
 
-    void getSolWithHubs(int[] hubs) {
+    void getSolGivenHubs() {
         StringBuilder inRouteStr = new StringBuilder();
-        for (int hub : hubs)
+        for (int hub : phmlrp.getHubsArr())
             inRouteStr.append(hub).append(",");
         try {
             Process p = Runtime.getRuntime().exec(
                     "python " + pyGorubiBasePath + " " +
                             dataset + " " +
                             numNodes + " " +
-                            hubs.length + " " +
+                            phmlrp.getHubsArr().length + " " +
                             numVehicles + " " +
                             alpha + " 1 2 7 h " +
                             inRouteStr.substring(0, inRouteStr.length() - 1)
@@ -128,7 +128,6 @@ class Gurobi {
                 phmlrp.setRouteInVehiclesList(i, r);
                 i++;
             }
-            phmlrp.setHubsArr(hubs);
         } catch (IOException e) {
             System.out.println("Exception: " + e);
         } catch (ParseException e) {
@@ -140,6 +139,7 @@ class Gurobi {
                 phmlrp.getHubsArr()) {
             System.out.print(h + ", ");
         }
+        System.out.println();
         for (List<Integer> route :
                 phmlrp.getVehiclesList()) {
             route.forEach(node -> System.out.print(node + ", "));

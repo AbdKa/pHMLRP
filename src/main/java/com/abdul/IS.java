@@ -5,9 +5,10 @@ package com.abdul;
  **/
 
 public enum IS {
-
-    RND, // random
-    GRB1, // Gurobi #1
-    GRB2, // Gurobi #2
-    GREEDY // Greedy
+    RND, // random,
+    GREEDY,
+    GREEDY_RND, // greedily pick hubs & randomly assign nodes
+    RND_GREEDY, // randomly pick hubs & greedily assign nodes
+    GREEDY_GRB, // greedily pick hubs & Gurobi assign nodes
+    GRB // Gurobi
 }
