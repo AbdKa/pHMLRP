@@ -469,8 +469,7 @@ class PHMLRP {
             }
             System.out.println();
         }
-//        Bounds bounds = new Bounds();
-//        int bound = bounds.getBound(numNodes + "." + numHubs + "." + numVehiclesPerHub);
+
         System.out.println("**Total maxCost is " + this.maxCost);
 //        System.out.println("**Total maxNonMinEdgeCost is " + this.maxNonMinEdgeCost);
 //        System.out.println("**The bound is " + bound);

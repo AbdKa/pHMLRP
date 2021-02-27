@@ -27,13 +27,6 @@ class DeterministicExplore {
             initVehiclesList.add(innerList);
         }
         double initMaxCost = phmlrp.getMaxCost();
-        //Create blank excel workbook
-//        XSSFWorkbook workbook = new XSSFWorkbook();
-//        //Create a blank sheet
-//        XSSFSheet spreadsheet = workbook.createSheet(" PHMLRP Deterministic ");
-//        //Create row object
-//        XSSFRow row = spreadsheet.createRow(0);
-//        createFirstRow(row);
 
         XSSFRow row;
         int numberOfOperations = 9;
@@ -104,34 +97,7 @@ class DeterministicExplore {
                     System.out.println(i);
                     break;
             }
-//            if (i < numOfIterationForEachOne) {
-//                // operation 0
-//                doOperation(0, "insertNodeInRoute", row, i);
-//            } else if (i < numOfIterationForEachOne * 2) {
-//                // operation 1
-//                doOperation(1, "insertNodeBetweenRoutes", row, i);
-//            } else if (i < numOfIterationForEachOne * 3) {
-//                // operation 2
-//                doOperation(2, "swapNodeInRoute", row, i);
-//            } else if (i < numOfIterationForEachOne * 4) {
-//                // operation 3
-//                doOperation(3, "swapNodeWithinRoutes", row, i);
-//            } else if (i < numOfIterationForEachOne * 5) {
-//                // operation 4
-//                doOperation(4, "edgeOptWithinRoutes", row, i);
-//            } else if (i < numOfIterationForEachOne * 6) {
-//                // operation 5
-//                doOperation(5, "swapHubWithNode", row, i);
-//            } else if (i < numOfIterationForEachOne * 7) {
-//                // operation 6
-//                doOperation(6, "twoOptAlgorithm", row, i);
-//            } else if (i < numOfIterationForEachOne * 8) {
-//                // operation 7
-//                doOperation(7, "insertTwoNodes", row, i);
-//            } else {
-//                // operation 8
-//                doOperation(8, "nodesRemoveAndGreedyInsert", row, i);
-//            }
+
             printHubsAndRoutesToExcel(row);
 
             if (i == 801000) break;

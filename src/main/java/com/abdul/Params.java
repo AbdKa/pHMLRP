@@ -41,7 +41,7 @@ public interface Params {
     @Option(description = "use city names when displaying/printing", shortName = "g", longName = "verbose")
     boolean getVerbose();
 
-    @Option(description = "initial solution", shortName = "i", longName = "initial", defaultValue = "RND")
+    @Option(description = "initial solution", shortName = "i", longName = "initial", defaultValue = "PROB")
     IS getInitSol();
 
     @Option(description = "silent mode: do not print info messages", shortName = "s", longName = "silent")

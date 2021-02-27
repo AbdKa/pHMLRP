@@ -21,25 +21,6 @@ class InitialSolutions {
         this.collectionCostCFactor = collectionCostCFactor;
     }
 
-    /*void testSameDistancesSum() {
-        int[] nodesDistancesSum = new int[numNodes];
-        int totalSum = 0;
-        for (int i = 0; i < numNodes; i++) {
-            int timeSum = 0;
-            for (int j = 0; j < numNodes; j++) {
-                timeSum += phmlrp.getDistance(i, j);
-            }
-            nodesDistancesSum[i] = timeSum;
-            totalSum += timeSum;
-
-            for (int j = 0; j < numNodes; j++) {
-                if (i != j && nodesDistancesSum[i] == nodesDistancesSum[j]) {
-                    System.out.println(i + " " + j + " = " + nodesDistancesSum[i]);
-                }
-            }
-        }
-    }*/
-
     void randomSolution() {
         // 1- pick hubs randomly
         randomlyPickHubs();
@@ -72,9 +53,6 @@ class InitialSolutions {
         gurobi.getSolGivenHubs();
     }
 
-    /**
-     * Getters and setters
-     **/
     void greedySolution() {
         // 1- greedily pick hubs, after calculating the average distances for each node
         greedyPickHubs();
@@ -83,6 +61,9 @@ class InitialSolutions {
         greedilyAssignNonHubsToVehicles();
     }
 
+    /**
+     * methods
+     **/
     private void randomlyPickHubs() {
         for (int i = 0; i < numHubs; i++) {
             Random rand = new Random();
