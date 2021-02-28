@@ -38,11 +38,14 @@ public interface Params {
             defaultValue = "0.2")
     float getRemovalPercentage();
 
-    @Option(description = "use city names when displaying/printing", shortName = "g", longName = "verbose")
+    @Option(description = "use city names when displaying/printing", shortName = "j", longName = "verbose")
     boolean getVerbose();
 
     @Option(description = "initial solution", shortName = "i", longName = "initial", defaultValue = "PROB")
     IS getInitSol();
+
+    @Option(description = "algorithm", shortName = "g", longName = "algorithm", defaultValue = "SA")
+    ALGO getAlgorithm();
 
     @Option(description = "silent mode: do not print info messages", shortName = "s", longName = "silent")
     boolean getSilent();

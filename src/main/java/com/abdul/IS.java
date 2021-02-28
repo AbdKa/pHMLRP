@@ -5,7 +5,7 @@ package com.abdul;
  **/
 
 public enum IS {
-    RND, // random,
+    RND, // random
     GREEDY,
     GREEDY_RND, // greedily pick hubs & randomly assign nodes
     RND_GREEDY, // randomly pick hubs & greedily assign nodes

@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import java.util.UUID;
 
 class SimulatedAnnealing {
 
@@ -55,7 +56,7 @@ class SimulatedAnnealing {
         }
     }
 
-    void applySA(String uniqueFileName) {
+    void applySA() {
         // Global minimum
         double min = phmlrp.getMaxCost();
         // new solution initialization
@@ -108,6 +109,9 @@ class SimulatedAnnealing {
             T *= alpha; // Decreases T, cooling phase
         }
 
+        String uniqueFileName = params.getDataset() + "." + params.getNumNodes() + "." + params.getNumHubs() + "." +
+                params.getNumVehicles() + "-" + params.getInitSol() + "-SA" + "-" +
+                UUID.randomUUID().toString().replaceAll("-", "");
         printResultsExcel(uniqueFileName);
 
         // Capture the desired output by saving standard error to a file.

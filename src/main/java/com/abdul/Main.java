@@ -63,5 +63,16 @@ public class Main {
                 gurobi.getInitSol();
                 break;
         }
+
+        switch (params.getAlgorithm()) {
+            case SA:
+                SimulatedAnnealing simulatedAnnealing = new SimulatedAnnealing(phmlrp, params);
+                simulatedAnnealing.applySA();
+                break;
+            case VNS:
+                VND vnd = new VND(params);
+                vnd.runVND();
+                break;
+        }
     }
 }

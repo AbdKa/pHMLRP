@@ -27,13 +27,16 @@ public class Benchmark {
                 String[] parts = s.split("\\.");
 
                 for (IS is : IS.values())
-                    Main.main(new String[]{
-                            "--dataset", parts[0],
-                            "--nodes", parts[1],
-                            "--hubs", parts[2],
-                            "--vehicles", parts[3],
-                            "--initial", is.toString(),
-                            "--silent"});
+                    for (ALGO algo : ALGO.values()) {
+                        Main.main(new String[]{
+                                "--dataset", parts[0],
+                                "--nodes", parts[1],
+                                "--hubs", parts[2],
+                                "--vehicles", parts[3],
+                                "--initial", is.toString(),
+                                "--algorithm", algo.toString(),
+                                "--silent"});
+                    }
             }
         });
     }
