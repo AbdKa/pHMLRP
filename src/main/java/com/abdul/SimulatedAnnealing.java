@@ -40,13 +40,10 @@ class SimulatedAnnealing {
         this.phmlrp = phmlrp;
         this.params = params;
         setBestVehiclesList(phmlrp.getVehiclesList());
+        this.silent = params.getSilent();
     }
 
-    private boolean silent = false;
-
-    public void setSilent(boolean silent) {
-        this.silent = silent;
-    }
+    private final boolean silent;
 
     private void setBestVehiclesList(ArrayList<List<Integer>> vehiclesList) {
         this.bestSol = new ArrayList<>();

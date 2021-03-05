@@ -49,8 +49,11 @@ class VND {
     private double[][] bestCosts;
     private PHMLRP[][] bestSolutions;
 
+    private final boolean silent;
+
     VND(Params params) {
         this.params = params;
+        this.silent = params.getSilent();
         combinations = Utils.getCombinations("Combinations");
 
         bestSolutions = new PHMLRP[problemInstances.length][combinations.size()];
@@ -128,7 +131,8 @@ class VND {
                 for (int row = 0; row < rows.length; row++) {
 //                            int rowNum = row + (i * replicaIdx * replicasPerCombination) + 1;
                     int rowNum = spreadsheets[probIdx].getLastRowNum() + 1;
-                    System.out.println(rowNum);
+                    if (!silent)
+                        System.out.println(rowNum);
                     rows[row] = spreadsheets[probIdx].createRow(rowNum);
                 }
 
@@ -141,15 +145,17 @@ class VND {
                         long combStartTime = System.nanoTime();
 
                         PHMLRP phmlrp = newPHMLRPInstance(problemInstances[probIdx]);
+                        phmlrp.setSilent(silent);
                         createInitSol(phmlrp);
                         for (int k : combinations.get(combIdx)) {
                             // for each neighborhood
-                            System.out.println(i +
-                                    " " + problemInstances[probIdx] +
-                                    " " + replicaIdx +
-                                    " " + combIdx +
-                                    " " + repPerCombinationIdx +
-                                    " " + k);
+                            if (!silent)
+                                System.out.println(i +
+                                        " " + problemInstances[probIdx] +
+                                        " " + replicaIdx +
+                                        " " + combIdx +
+                                        " " + repPerCombinationIdx +
+                                        " " + k);
 
                             while (true) {
                                 // change neighborhood until no better solution, jump to next one
@@ -242,15 +248,18 @@ class VND {
 
                 Operations operations = new Operations(bestSolutions[i][k]);
 
-                System.out.println("Insertion LS");
+                if (!silent)
+                    System.out.println("Insertion LS");
                 operations.localSearchInsertion();
                 row.createCell((k * 5) + 2, CellType.NUMERIC).setCellValue(bestSolutions[i][k].getMaxCost());
 
-                System.out.println("Swap LS");
+                if (!silent)
+                    System.out.println("Swap LS");
                 operations.localSearchSwap();
                 row.createCell((k * 5) + 3, CellType.NUMERIC).setCellValue(bestSolutions[i][k].getMaxCost());
 
-                System.out.println("SwapHub LS");
+                if (!silent)
+                    System.out.println("SwapHub LS");
                 operations.localSearchSwapHubWithNode();
                 row.createCell((k * 5) + 4, CellType.NUMERIC).setCellValue(bestSolutions[i][k].getMaxCost());
 
