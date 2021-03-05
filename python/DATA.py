@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 import csv
 import sys
-import time
+from time import perf_counter
 
 import numpy as n
 
@@ -45,15 +45,16 @@ if len(sys.argv) > 9:
         exit(0)
 
 
+# perf_counter() function always returns the float value of time in seconds.
+# https://www.geeksforgeeks.org/time-perf_counter-function-in-python/
 class Timer:
     def __init__(self):
-        self.start = time.clock()
+        self.start = perf_counter()
 
     def stop(self):
-        dur = time.clock() - self.start
-        self.start = time.clock()
-        return dur
-
+        dur = perf_counter() - self.start
+        self.start = perf_counter()
+        return round(dur * 1000000)
 
 def loadTR16():
     global D, N, MM

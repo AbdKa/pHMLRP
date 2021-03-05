@@ -5,18 +5,16 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 class Gurobi {
 
-    private final String pyGorubiBasePath = "python\\hubRoutingCenter.py";
-    private final String outputJson = "python\\results\\gorubi-routes.json";
+    private final static String pyGorubiBasePath = "python" + File.separator + "hubRoutingCenter.py";
+    private final static String outputJson = "python" + File.separator + "results" + File.separator + "gorubi-routes.json";
+    private static final String python = System.getProperty("os.name").contains("Mac OS X") ? "python3" : "python";
     private final PHMLRP phmlrp;
     private final DS dataset;
     private final int numNodes, numHubs, numVehicles;
@@ -34,7 +32,8 @@ class Gurobi {
     void getInitSol() {
         try {
             Process p = Runtime.getRuntime().exec(
-                    "python " + pyGorubiBasePath + " " +
+                    python + " " +
+                            pyGorubiBasePath + " " +
                             dataset + " " +
                             numNodes + " " +
                             numHubs + " " +
@@ -95,7 +94,8 @@ class Gurobi {
             inRouteStr.append(hub).append(",");
         try {
             Process p = Runtime.getRuntime().exec(
-                    "python " + pyGorubiBasePath + " " +
+                    python + " " +
+                            pyGorubiBasePath + " " +
                             dataset + " " +
                             numNodes + " " +
                             phmlrp.getHubsArr().length + " " +
@@ -153,7 +153,8 @@ class Gurobi {
             inRouteStr.append(node).append(",");
         try {
             Process p = Runtime.getRuntime().exec(
-                    "python " + pyGorubiBasePath + " " +
+                    python + " " +
+                            pyGorubiBasePath + " " +
                             dataset + " " +
                             inRoute.length + " " +
                             "1 1 " + alpha +
