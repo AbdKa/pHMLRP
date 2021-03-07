@@ -164,7 +164,6 @@ for k in H:
 
 
 m.optimize()
-m.write("out.lp")
 CPU = tmr.stop()
 m.setObjective(z)
 

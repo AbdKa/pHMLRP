@@ -17,9 +17,7 @@ N = DATA2.N
 p = DATA2.p
 nv = DATA2.nv
 alpha = DATA2.alpha
-m = Model()
 tmr = Timer()
-# m.setParam(GRB.Param.TimeLimit, 1000.0)
 threads = -1  # number of threads to use
 startTotal = perf_counter()
 
@@ -30,6 +28,9 @@ def tPrint(msg):
 
 # Create optimization model
 m = Model('pHubCenter')
+m.setParam('OutputFlag', False)
+m.setParam('LogToConsole', False)
+m.setParam(GRB.Param.TimeLimit, 1000.0)
 # Create variables
 
 r = []
