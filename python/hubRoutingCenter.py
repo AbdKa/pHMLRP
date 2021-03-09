@@ -19,7 +19,6 @@ alpha = DATA.alpha
 V = range(p * nv)
 MM = DATA.MM
 # Start to model
-m = Model()
 tmr = Timer()
 threads = -1  # number of threads to use
 startTotal = process_time()
