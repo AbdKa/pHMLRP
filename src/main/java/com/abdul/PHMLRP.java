@@ -1,7 +1,5 @@
 package com.abdul;
 
-import com.abdul.dbs.TurkishNetwork;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -386,7 +384,7 @@ class PHMLRP {
                 break;
         }
 
-        print(false);
+        print();
     }
 
     boolean callOperation(int operationNumber) {
@@ -443,27 +441,18 @@ class PHMLRP {
     /**
      * Prints the resulted hubs with their vehicles' routes
      *
-     * @param verbose defines either nodes will be printed in words or numbers
      */
-    void print(boolean verbose) {
+    void print() {
         if (silent) return;
         // loop on hubs
         for (int i = 0; i < hubsArr.length; i++) {
-            if (verbose) {
-                System.out.printf("Hub %d: %s%n", i, TurkishNetwork.nodes[hubsArr[i]]);
-            } else {
-                System.out.printf("Hub %d: %d%n", i, hubsArr[i]);
-            }
+            System.out.printf("Hub %d: %d%n", i, hubsArr[i]);
             // loop on vehicles in a hub
             for (int j = 0; j < numVehiclesPerHub; j++) {
                 System.out.printf("\tVehicle%d: ", j);
                 // loop on the vehicle's nodes
                 for (int node : vehiclesList.get(numVehiclesPerHub * i + j)) {
-                    if (verbose) {
-                        System.out.printf("%s,", TurkishNetwork.nodes[node]);
-                    } else {
-                        System.out.printf("%d,", node);
-                    }
+                    System.out.printf("%d,", node);
                 }
                 System.out.println();
             }

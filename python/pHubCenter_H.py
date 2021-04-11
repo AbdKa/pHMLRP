@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 # Solve combined hub center & routing problems with python
+### python pHubCenter_H.py TR 10 2 2 h 4,5 ###
 import json
 from sys import platform
 from time import perf_counter
@@ -138,7 +139,7 @@ if nv == 1:
     py_file = "TSP.py"
 
 for h, s in sets.items():
-    command = p_command + " " + py_file + " " + json_file + " TR " + \
+    command = p_command + " python/" + py_file + " " + json_file + " " + DATA2.dataset + " " + \
               str(int(len(s) / 2) + 1) + " 1 " + str(nv) + " 1 1 h " + str(h) + " s " + s[:-1]
     print(command)
     os.system(command)

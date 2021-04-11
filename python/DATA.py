@@ -56,69 +56,11 @@ class Timer:
         self.start = perf_counter()
         return round(dur * 1000000)
 
-def loadTR16():
+
+def loadDB(file_name):
     global D, N, MM
-    f = csv.reader(open("python/DB/TR16.csv", "r", encoding='utf-8-sig'), delimiter=",")
-    D = [row for row in f]
-    D = [[float(y) for y in x] for x in D]
-    N = range(len(D))
-    MM1 = n.max(D)
-    MM = MM1 * len(N)
-
-
-def loadTR():
-    global D, N, MM
-    f = csv.reader(open("python/DB/TurkishNetworkDist.csv", "r"), delimiter=";")
-    D = [row for row in f]
-    D = [[float(y) for y in x] for x in D]
-    N = range(len(D))
-    MM1 = n.max(D)
-    MM = MM1 * len(N)
-
-
-def loadCAB():
-    global D, N, MM
-    f = csv.reader(open("python/DB/CABNetworkDist.csv", "r"), delimiter=",")
-    D = [row for row in f]
-    D = [[float(y) for y in x] for x in D]
-    N = range(len(D))
-    MM1 = n.max(D)
-    MM = MM1 * len(N)
-
-
-def loadAP10():
-    global D, N, MM
-    f = csv.reader(open("python/DB/APNetworkDist10.csv", "r"), delimiter=",")
-    D = [row for row in f]
-    D = [[float(y) for y in x] for x in D]
-    N = range(len(D))
-    MM1 = n.max(D)
-    MM = MM1 * len(N)
-
-
-def loadAP15():
-    global D, N, MM
-    f = csv.reader(open("python/DB/APNetworkDist15.csv", "r"), delimiter=",")
-    D = [row for row in f]
-    D = [[float(y) for y in x] for x in D]
-    N = range(len(D))
-    MM1 = n.max(D)
-    MM = MM1 * len(N)
-
-
-def loadAP100():
-    global D, N, MM
-    f = csv.reader(open("python/DB/APNetworkDist100.csv", "r"), delimiter=",")
-    D = [row for row in f]
-    D = [[float(y) for y in x] for x in D]
-    N = range(len(D))
-    MM1 = n.max(D)
-    MM = MM1 * len(N)
-
-
-def loadAP200():
-    global D, N, MM
-    f = csv.reader(open("python/DB/APNetworkDist200.csv", "r"), delimiter=",")
+    # remove "encoding" or put it on function's parameters if there is a problem
+    f = csv.reader(open("db/" + file_name, "r", encoding='utf-8-sig'), delimiter=",")
     D = [row for row in f]
     D = [[float(y) for y in x] for x in D]
     N = range(len(D))
@@ -143,20 +85,18 @@ def truncateData(n):
 def loadScriptArgs():
     global dataset, instance
     if dataset in ["AP10"]:
-        loadAP10()
-        truncateData(instance)
+        loadDB("APNetworkDist10.csv")
     elif dataset in ["AP15"]:
-        loadAP15()
-        truncateData(instance)
+        loadDB("APNetworkDist15.csv")
     elif dataset in ["AP100"]:
-        loadAP100()
-        truncateData(instance)
+        loadDB("APNetworkDist100.csv")
     elif dataset in ["AP200"]:
-        loadAP200()
-        truncateData(instance)
+        loadDB("APNetworkDist200.csv")
     elif dataset in ["TR"]:
-        loadTR()
-        truncateData(instance)
+        loadDB("TurkishNetworkDist.csv")
+    elif dataset in ["TR16"]:
+        loadDB("TurkishNetworkDist16.csv")
     else:
-        loadCAB()
-        truncateData(instance)
+        loadDB("CABNetworkDist.csv")
+
+    truncateData(instance)

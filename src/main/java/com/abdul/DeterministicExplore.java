@@ -148,7 +148,7 @@ class DeterministicExplore {
         double costDifference = priorCost - phmlrp.getMaxCost();
         if (costDifference > 0) {
             successCount++;
-            phmlrp.print(false);
+            phmlrp.print();
         }
         row.createCell(2, CellType.NUMERIC).setCellValue(costDifference);
         row.createCell(3, CellType.NUMERIC).setCellValue(phmlrp.getMaxCost());

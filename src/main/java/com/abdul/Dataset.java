@@ -23,12 +23,13 @@ class Dataset {
         try {
             BufferedReader CSVFile = new BufferedReader(new FileReader("db/" + dataset + ".csv"));
             String dataRow = CSVFile.readLine();
-            dataRow = CSVFile.readLine();
-            dataRow = CSVFile.readLine();
+//            dataRow = CSVFile.readLine();
+//            dataRow = CSVFile.readLine();
             while (dataRow != null && !dataRow.equals("")) {
                 // step 1 : converting comma separate String to array of nodes
                 String[] nodesStrArr = dataRow.split(",");
-                nodesStrArr = Arrays.copyOfRange(nodesStrArr, 2, nodesStrArr.length);
+//                nodesStrArr = Arrays.copyOfRange(nodesStrArr, 2, nodesStrArr.length);
+                System.out.println(Arrays.toString(nodesStrArr));
                 // step 2 : convert String array to array of Doubles
                 Double[] doubleValues = Arrays.stream(nodesStrArr)
                         .map(Double::valueOf)
@@ -51,7 +52,7 @@ class Dataset {
 
             switch (ds) {
                 case TR16:
-                    load("Turkish16NetworkDist", TR16distances);
+                    load("TurkishNetworkDist16", TR16distances);
                     break;
                 case TR:
                     load("TurkishNetworkDist", TRdistances);

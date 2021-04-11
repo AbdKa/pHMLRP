@@ -151,10 +151,6 @@ class InitialSolutions {
         Map<Integer, Double> nodesToHubDistance = new LinkedHashMap<>();
         // loop through vehicles lists
         for (int i = 0; i < phmlrp.getVehiclesList().size(); i++) {
-            Random random = new Random();
-            int numOfNodesForVehicle = random.nextInt(maxNumOfNodesInVehicle) + minNumOfNodesInVehicle;
-            int remainingVehicles = phmlrp.getVehiclesList().size() - i;
-
             // if it's a new hub
             if (i % numVehiclesPerHub == 0) {
                 // create a hash map of the hub-to-node distances
@@ -168,6 +164,10 @@ class InitialSolutions {
                 }
                 nodesToHubDistance = Utils.sortByValue(nodesToHubDistance);
             }
+
+            Random random = new Random();
+            int numOfNodesForVehicle = random.nextInt(maxNumOfNodesInVehicle) + minNumOfNodesInVehicle;
+            int remainingVehicles = phmlrp.getVehiclesList().size() - i;
 
             // this condition ensures that we do not run out of nodes
             if (remainingNodes - numOfNodesForVehicle >= remainingVehicles - 1) {

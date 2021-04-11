@@ -1,5 +1,12 @@
 #!/usr/bin/env python
 # Solve combined hub center & routing problems with python
+# initial solution
+### python hubRoutingCenter.py TR 10 2 2 1 1 2 7 ###
+# initial solution given hubs
+### python hubRoutingCenter.py TR 10 2 2 1 1 2 7 h 6,7 ###
+# optimizing a route
+### python hubRoutingCenter.py TR 5 1 1 1 1 2 7 r  1,2,3,4,5 ###
+
 from time import process_time
 
 from gurobipy import *

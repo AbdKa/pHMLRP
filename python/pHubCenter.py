@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # Solve combined hub center & routing problems with python
-### python pHubCenter.py TR 10 2 2 1 1 ###
+### python pHubCenter.py TR 10 2 2 ###
 
 import json
 from sys import platform
@@ -121,7 +121,7 @@ if nv == 1:
     py_file = "TSP.py"
 
 for h, s in sets.items():
-    command = p_command + " " + py_file + " " + json_file + " TR " + \
+    command = p_command + " python/" + py_file + " " + json_file + " " + DATA2.dataset + " " + \
               str(int(len(s) / 2) + 1) + " 1 " + str(nv) + " 1 1 h " + str(h) + " s " + s[:-1]
     print(command)
     os.system(command)

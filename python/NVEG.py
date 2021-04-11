@@ -33,10 +33,10 @@ for hh in HH:
     NH.remove(hh)
 alpha = DATA3.alpha
 
+print(N)
+print(NH)
 print(H)
 print(dictionary)
-print(NH)
-print(N)
 print(V)
 
 L = len(N) - len(H) * nv + 1  # max tour length

@@ -17,6 +17,8 @@ class SimulatedAnnealing {
 
     private final PHMLRP phmlrp;
     private final Params params;
+    private final boolean silent;
+
     private ArrayList<List<Integer>> bestSol;
 
     private final List<Double> temps = new ArrayList<>();
@@ -43,8 +45,6 @@ class SimulatedAnnealing {
         this.silent = params.getSilent();
     }
 
-    private final boolean silent;
-
     private void setBestVehiclesList(ArrayList<List<Integer>> vehiclesList) {
         this.bestSol = new ArrayList<>();
         for (List<Integer> list : vehiclesList) {
@@ -59,7 +59,7 @@ class SimulatedAnnealing {
         // new solution initialization
         ArrayList<List<Integer>> newSol;
 
-        phmlrp.print(false);
+        phmlrp.print();
 
         phmlrp.setSimulatedAnnealing(true);
 
@@ -114,12 +114,12 @@ class SimulatedAnnealing {
         // Capture the desired output by saving standard error to a file.
         // Later of you can open this dump with excel and apply text to columns.
         // You can create pivot tables, analyse results, min, max, average, compare algorithms etc.
-        System.err.println(uniqueFileName + "\t" + phmlrp.getMaxCost());
+        System.err.println(uniqueFileName + "\t" + phmlrp.getSaOperationCost());
 
         phmlrp.setSimulatedAnnealing(false);
-
+        
         phmlrp.resetVehiclesList(bestSol);
-        phmlrp.print(false);
+        phmlrp.print();
 //        System.out.println(counter);
     }
 
