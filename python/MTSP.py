@@ -25,10 +25,7 @@ print(V)
 print(nv)
 print(NH)
 print(L)
-# Start to model
-m = Model()
 tmr = Timer()
-m.setParam(GRB.Param.TimeLimit, 7200.0)
 startTotal = clock()
 
 
@@ -37,6 +34,9 @@ def tPrint(msg):
 
 # Create optimization model
 m = Model('FixedpHubCenterRouting')
+m.setParam('OutputFlag', False)
+m.setParam('LogToConsole', False)
+m.setParam(GRB.Param.TimeLimit, 7200.0)
 # Create variables
 
 h = []
