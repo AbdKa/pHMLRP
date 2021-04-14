@@ -7,7 +7,7 @@
 # optimizing a route
 ### python hubRoutingCenter.py TR 5 1 1 1 1 2 7 r  1,2,3,4,5 ###
 
-from time import process_time
+from time import perf_counter
 
 from gurobipy import *
 
@@ -26,11 +26,11 @@ alpha = DATA.alpha
 V = range(p * nv)
 MM = DATA.MM
 tmr = Timer()
-startTotal = process_time()
+startTotal = perf_counter()
 
 
 def tPrint(msg):
-    print("%5.1f: %s" % (process_time() - startTotal, msg))
+    print("%5.1f: %s" % (perf_counter() - startTotal, msg))
 
 
 # Create optimization model
