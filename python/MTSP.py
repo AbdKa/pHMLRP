@@ -28,8 +28,7 @@ print(L)
 # Start to model
 m = Model()
 tmr = Timer()
-m.setParam(GRB.Param.TimeLimit, 1000.0)
-threads = -1  # number of threads to use
+m.setParam(GRB.Param.TimeLimit, 7200.0)
 startTotal = clock()
 
 

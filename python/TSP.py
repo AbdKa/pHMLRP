@@ -40,7 +40,6 @@ L = len(N) - len(H) * nv + 1  # max tour length
 
 # Start to model
 tmr = Timer()
-threads = -1  # number of threads to use
 startTotal = perf_counter()
 
 
@@ -52,7 +51,7 @@ def tPrint(msg):
 m = Model('FixedpHubCenterRouting')
 m.setParam('OutputFlag', False)
 m.setParam('LogToConsole', False)
-m.setParam(GRB.Param.TimeLimit, 1000.0)
+m.setParam(GRB.Param.TimeLimit, 7200.0)
 # Create variables
 
 h = []

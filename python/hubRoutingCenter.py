@@ -27,7 +27,6 @@ V = range(p * nv)
 MM = DATA.MM
 # Start to model
 tmr = Timer()
-threads = -1  # number of threads to use
 startTotal = process_time()
 
 
@@ -37,7 +36,7 @@ def tPrint(msg):
 
 # Create optimization model
 m = Model('HubCenterRouting')
-m.setParam(GRB.Param.TimeLimit, 10 * 60.0)
+m.setParam(GRB.Param.TimeLimit, 7200.0)
 # Create variables
 ab = []
 for i in N:
