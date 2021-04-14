@@ -54,7 +54,7 @@ class Timer:
     def stop(self):
         dur = perf_counter() - self.start
         self.start = perf_counter()
-        return round(dur * 1000000)
+        return dur * 1000000
 
 
 def loadDB(file_name):

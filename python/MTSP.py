@@ -3,7 +3,7 @@
 
 import DATA3, sys
 from gurobipy import *
-from time import perf_counter
+from time import clock
 from DATA3 import Timer
 
 # BURASI DA AYNI HUB LARI VERDIGIMIZDE KULLANABILDIGIMIZ HALE GETIRMEMIZ GEREKLI
@@ -25,19 +25,18 @@ print(V)
 print(nv)
 print(NH)
 print(L)
-# Start to model
-m = Model()
 tmr = Timer()
-m.setParam(GRB.Param.TimeLimit, 1000.0)
-threads = -1  # number of threads to use
-startTotal = perf_counter()
+startTotal = clock()
 
 
 def tPrint(msg):
-    print("%5.1f: %s" % (perf_counter() - startTotal, msg))
+    print("%5.1f: %s" % (clock() - startTotal, msg))
 
 # Create optimization model
 m = Model('FixedpHubCenterRouting')
+m.setParam('OutputFlag', False)
+m.setParam('LogToConsole', False)
+m.setParam(GRB.Param.TimeLimit, 7200.0)
 # Create variables
 
 h = []

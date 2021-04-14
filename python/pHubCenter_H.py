@@ -17,10 +17,7 @@ p = DATA2.p
 nv = DATA2.nv
 H = DATA2.H
 alpha = DATA2.alpha
-m = Model()
 tmr = Timer()
-m.setParam(GRB.Param.TimeLimit, 1000.0)
-threads = -1  # number of threads to use
 startTotal = perf_counter()
 
 
@@ -30,6 +27,9 @@ def tPrint(msg):
 
 # Create optimization model
 m = Model('pHubCenter')
+m.setParam('OutputFlag', False)
+m.setParam('LogToConsole', False)
+m.setParam(GRB.Param.TimeLimit, 7200.0)
 # Create variables
 
 r = []
@@ -129,7 +129,7 @@ write_file.close()
 p_command = "python"
 # change python to python3 for mac and linux
 if platform == "linux" or platform == "linux2":
-    p_command = "python"
+    p_command = "python3"
 if platform == "darwin":
     p_command = "python3"
 

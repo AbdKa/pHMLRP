@@ -3,7 +3,7 @@
 # TSP: if there is just one vehicle (TSP.py TR 10 1 1 1 1 h 2)
 ### python TSP.py pHC_MTSP_10_1.json TR 10 1 1 1 1 h 1 s 2,3,4,5,6,7,8,9,10 ###
 
-from time import perf_counter, clock
+from time import perf_counter
 
 from gurobipy import *
 
@@ -40,7 +40,6 @@ L = len(N) - len(H) * nv + 1  # max tour length
 
 # Start to model
 tmr = Timer()
-threads = -1  # number of threads to use
 startTotal = perf_counter()
 
 
@@ -52,7 +51,7 @@ def tPrint(msg):
 m = Model('FixedpHubCenterRouting')
 m.setParam('OutputFlag', False)
 m.setParam('LogToConsole', False)
-m.setParam(GRB.Param.TimeLimit, 1000.0)
+m.setParam(GRB.Param.TimeLimit, 7200.0)
 # Create variables
 
 h = []

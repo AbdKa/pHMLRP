@@ -18,7 +18,6 @@ p = DATA2.p
 nv = DATA2.nv
 alpha = DATA2.alpha
 tmr = Timer()
-threads = -1  # number of threads to use
 startTotal = perf_counter()
 
 
@@ -30,7 +29,7 @@ def tPrint(msg):
 m = Model('pHubCenter')
 m.setParam('OutputFlag', False)
 m.setParam('LogToConsole', False)
-m.setParam(GRB.Param.TimeLimit, 1000.0)
+m.setParam(GRB.Param.TimeLimit, 7200.0)
 # Create variables
 
 r = []
@@ -46,7 +45,6 @@ for i in N:
 z = m.addVar(obj=1, vtype=GRB.CONTINUOUS, name="z")
 
 m.update()
-m.params.TimeLimit = 3600
 
 for k in N:
     for i in N:
@@ -95,7 +93,7 @@ data = {'routes': [], 'CPU': CPU, 'dataset': DATA2.dataset, "N": DATA2.instance,
 from pathlib import Path
 
 Path("results").mkdir(parents=True, exist_ok=True)
-json_file = "results/pHC_MTSP_" + str(len(N)) + "_" + str(p) + "_" + str(nv) + ".json"
+json_file = "results/pHC_MTSP_" + str(DATA2.dataset) + "_" + str(len(N)) + "_" + str(p) + "_" + str(nv) + ".json"
 
 try:
     os.remove(json_file)
@@ -111,7 +109,7 @@ write_file.close()
 p_command = "python"
 # change python to python3 for mac and linux
 if platform == "linux" or platform == "linux2":
-    p_command = "python"
+    p_command = "python3"
 if platform == "darwin":
     p_command = "python3"
 
