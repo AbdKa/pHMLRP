@@ -29,7 +29,7 @@ class Dataset {
                 // step 1 : converting comma separate String to array of nodes
                 String[] nodesStrArr = dataRow.split(",");
 //                nodesStrArr = Arrays.copyOfRange(nodesStrArr, 2, nodesStrArr.length);
-                System.out.println(Arrays.toString(nodesStrArr));
+//                System.out.println(Arrays.toString(nodesStrArr));
                 // step 2 : convert String array to array of Doubles
                 Double[] doubleValues = Arrays.stream(nodesStrArr)
                         .map(Double::valueOf)

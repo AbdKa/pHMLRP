@@ -55,7 +55,7 @@ class SimulatedAnnealing {
 
     void applySA() {
         // Global minimum
-        double min = phmlrp.getMaxCost();
+        double minCost = phmlrp.getMaxCost();
         // new solution initialization
         ArrayList<List<Integer>> newSol;
 
@@ -70,28 +70,24 @@ class SimulatedAnnealing {
             if (!silent)
                 System.out.println("Temperature " + T);
 
-            temps.add(counter, T);
-            costs.add(counter, -1.0);
-            differences.add(counter, -1.0);
-            operationNums.add(counter, -1);
-            hubsList.add(counter, "");
-            routesList.add(counter, "");
-
             for (int i = 0; i < numIterations; i++) {
                 int operationNum = doRandomOperation();
                 newSol = phmlrp.getVehiclesList();
                 double newCost = phmlrp.getSaOperationCost();
-                double difference = min - newCost;
+                double difference = minCost - newCost;
 
-                costs.set(counter, newCost);
-                differences.set(counter, difference);
-                operationNums.set(counter, operationNum);
+                temps.add(counter, T);
+                costs.add(counter, newCost);
+                differences.add(counter, difference);
+                operationNums.add(counter, operationNum);
                 addHubsAndRoutesStr(counter);
+                counter++;
 
                 // Reassigns global minimum accordingly
                 if (difference > 0) {
                     setBestVehiclesList(newSol);
-                    min = newCost;
+                    minCost = newCost;
+
                     continue;
                 }
 
@@ -100,9 +96,9 @@ class SimulatedAnnealing {
 //                    System.out.println("temp: " + T + "\tdifference: " + difference);
                     setBestVehiclesList(newSol);
                 }
+
             }
 
-            counter++;
             T *= alpha; // Decreases T, cooling phase
         }
 
@@ -117,7 +113,7 @@ class SimulatedAnnealing {
         System.err.println(uniqueFileName + "\t" + phmlrp.getSaOperationCost());
 
         phmlrp.setSimulatedAnnealing(false);
-        
+
         phmlrp.resetVehiclesList(bestSol);
         phmlrp.print();
 //        System.out.println(counter);
@@ -135,8 +131,8 @@ class SimulatedAnnealing {
             }
             routes.append("; ");
         }
-        hubsList.set(counter, hubs.toString());
-        routesList.set(counter, routes.toString());
+        hubsList.add(counter, hubs.toString());
+        routesList.add(counter, routes.toString());
     }
 
     private int doRandomOperation() {

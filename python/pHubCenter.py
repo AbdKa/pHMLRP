@@ -90,7 +90,7 @@ for i in N:
                 print('x(', i, ',', k, ')')
 
 print("pHubCenter CPU: " + str(CPU))
-data = {'routes': [], 'CPU': CPU, 'dataset': DATA2.dataset, "N": DATA2.instance}
+data = {'routes': [], 'CPU': CPU, 'dataset': DATA2.dataset, "N": DATA2.instance, "obj": z.x, "optimal": GRB.OPTIMAL}
 
 from pathlib import Path
 

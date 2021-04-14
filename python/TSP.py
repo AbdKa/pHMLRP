@@ -187,6 +187,8 @@ def get_next(second):
 for i in range(len(links) - 2):
     route += str(get_next(int(route.split(',')[-1])))
 
+route += ',' + str(dictionary.get(H[0]))
+
 print(route)
 
 print('***********************************************************************************')
@@ -201,6 +203,7 @@ with open(DATA3.file_name, 'r+') as f:
     data = json.load(f)
     data['CPU'] += CPU
     data['routes'].append(route)
+    data['MTSP' + str(dictionary[H[0]])] = z.x
     # data['routes'].sort()
     f.seek(0)  # <--- should reset fpHC_MTSPile position to the beginning.
     json.dump(data, f, indent=4)

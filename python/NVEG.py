@@ -244,6 +244,7 @@ def get_next(second, v):
 for v in V:
     for i in range(len(links[v]) - 2):
         routes[v] += str(get_next(int(routes[v].split(',')[-1]), v))
+    routes[v] += ',' + str(dictionary.get(H[0]))
 
 print(routes)
 
@@ -260,7 +261,9 @@ with open(DATA3.file_name, 'r+') as f:
     data['CPU'] += CPU
     for route in routes:
         data['routes'].append(route)
-    f.seek(0)  # <--- should reset fpHC_MTSPile position to the beginning.
+    data['MTSP' + str(dictionary[H[0]])] = z.x
+    data['MTSP optimal' + str(dictionary[H[0]])] = GRB.OPTIMAL
+    f.seek(0)  # <--- should reset pHC_MTSP file position to the beginning.
     json.dump(data, f, indent=4)
     f.truncate()  # remove remaining part
     f.close()

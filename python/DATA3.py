@@ -73,7 +73,7 @@ def loadDB(db_file):
     for z in N:
         list1 = []
         for j in N:
-            print(str(z) + " " + str(j))
+            # print(str(z) + " " + str(j))
             list1.append(DD[z][j])
         D.append(list1)
 

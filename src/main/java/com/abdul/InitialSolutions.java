@@ -79,7 +79,7 @@ class InitialSolutions {
         }
     }
 
-    private void greedyPickHubs() {
+    void greedyPickHubs() {
         Map<Integer, Integer> nodesDistanceAvg = new LinkedHashMap<>();
         for (int i = 0; i < numNodes; i++) {
             int sum = 0;
