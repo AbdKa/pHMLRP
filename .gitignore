@@ -2,6 +2,9 @@
 target
 .idea
 *.iml
+__pycache__/
+gurobi.log
+*.pyc
 
 pom.xml.tag
 pom.xml.releaseBackup
