@@ -260,8 +260,8 @@ with open(DATA3.file_name, 'r+') as f:
     data['CPU'] += CPU
     for route in routes:
         data['routes'].append(route)
-    data['MTSP' + str(dictionary[H[0]])] = z.x
-    data['MTSP optimal' + str(dictionary[H[0]])] = GRB.OPTIMAL
+    data['objectives'][str(dictionary[H[0]])] = z.x
+    data['statuses'][str(dictionary[H[0]])] = 'Optimal' if GRB.OPTIMAL == 2 else 'NOT'
     f.seek(0)  # <--- should reset pHC_MTSP file position to the beginning.
     json.dump(data, f, indent=4)
     f.truncate()  # remove remaining part

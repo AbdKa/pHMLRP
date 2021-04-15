@@ -108,12 +108,20 @@ for i in N:
                 print('x(', i, ',', k, ')')
 
 print("pHubCenter CPU: " + str(CPU))
-data = {'routes': [], 'CPU': CPU, 'dataset': DATA2.dataset, "N": DATA2.instance}
+data = {'CPU': CPU,
+        'dataset': DATA2.dataset,
+        "N": DATA2.instance,
+        'hubs': list(sets.keys()),
+        'routes': [],
+        "pHubCenterObjective": z.x,
+        "pHubCenterStatus": 'Optimal' if GRB.OPTIMAL == 2 else 'NOT',
+        'objectives': {},
+        'statuses': {}}
 
 from pathlib import Path
 
 Path("results").mkdir(parents=True, exist_ok=True)
-json_file = "results/pHC_MTSP_" + str(len(N)) + "_" + str(p) + "_" + str(nv) + ".json"
+json_file = "results/pHC_MTSP_H_" + ".".join(str(element) for element in list(sets.keys())) + "_" + str(DATA2.dataset) + "_" + str(len(N)) + "_" + str(p) + "_" + str(nv) + ".json"
 
 try:
     os.remove(json_file)

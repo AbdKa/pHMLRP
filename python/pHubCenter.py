@@ -88,7 +88,15 @@ for i in N:
                 print('x(', i, ',', k, ')')
 
 print("pHubCenter CPU: " + str(CPU))
-data = {'routes': [], 'CPU': CPU, 'dataset': DATA2.dataset, "N": DATA2.instance, "obj": z.x, "optimal": GRB.OPTIMAL}
+data = {'CPU': CPU,
+        'dataset': DATA2.dataset,
+        "N": DATA2.instance,
+        'hubs': list(sets.keys()),
+        'routes': [],
+        "pHubCenterObjective": z.x,
+        "pHubCenterStatus": 'Optimal' if GRB.OPTIMAL == 2 else 'NOT',
+        'objectives': {},
+        'statuses': {}}
 
 from pathlib import Path
 
