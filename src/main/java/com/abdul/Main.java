@@ -11,6 +11,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.Arrays;
 
 public class Main {
     public static void main(String[] args) {
@@ -33,54 +34,54 @@ public class Main {
         }
 
         // call this to create greedy hubs for each problem instance
-//        getGreedyHubs(params);
+        getGreedyHubs(params);
 
-        PHMLRP phmlrp = new PHMLRP(params.getDataset(), params.getNumNodes(), params.getNumHubs(), params.getNumVehicles(),
-                params.getCollectionCostCFactor(), params.getDistributionCostCFactor(), params.getHubToHubCFactor(),
-                params.getRemovalPercentage());
-        phmlrp.setSilent(params.getSilent());
-        InitialSolutions initialSolutions = new InitialSolutions(phmlrp, params.getDataset(),
-                params.getCollectionCostCFactor());
-
-        switch (params.getInitSol()) {
-            case RND:
-                initialSolutions.randomSolution();
-                break;
-            case GREEDY:
-                initialSolutions.greedySolution();
-                break;
-            case GREEDY_RND:
-                initialSolutions.greedyRandomSolution();
-                break;
-            case RND_GREEDY:
-                initialSolutions.randomGreedySolution();
-                break;
-            case PROB:
-                initialSolutions.probabilisticInitSol();
-                break;
-            case GREEDY_GRB:
-                initialSolutions.greedyGurobiSolution();
-                break;
-            case GRB:
-                Gurobi gurobi = new Gurobi(phmlrp, params.getDataset(), params.getNumNodes(), params.getNumHubs(),
-                        params.getNumVehicles(), params.getCollectionCostCFactor());
-                gurobi.getInitSol();
-                break;
-        }
-
-        phmlrp.calculateCost(PHMLRP.CostType.NORMAL);
-
-
-        switch (params.getAlgorithm()) {
-            case SA:
-                SimulatedAnnealing simulatedAnnealing = new SimulatedAnnealing(phmlrp, params);
-                simulatedAnnealing.applySA();
-                break;
-            case VNS:
-                VND vnd = new VND(params);
-                vnd.runVND();
-                break;
-        }
+//        PHMLRP phmlrp = new PHMLRP(params.getDataset(), params.getNumNodes(), params.getNumHubs(), params.getNumVehicles(),
+//                params.getCollectionCostCFactor(), params.getDistributionCostCFactor(), params.getHubToHubCFactor(),
+//                params.getRemovalPercentage());
+//        phmlrp.setSilent(params.getSilent());
+//        InitialSolutions initialSolutions = new InitialSolutions(phmlrp, params.getDataset(),
+//                params.getCollectionCostCFactor());
+//
+//        switch (params.getInitSol()) {
+//            case RND:
+//                initialSolutions.randomSolution();
+//                break;
+//            case GREEDY:
+//                initialSolutions.greedySolution();
+//                break;
+//            case GREEDY_RND:
+//                initialSolutions.greedyRandomSolution();
+//                break;
+//            case RND_GREEDY:
+//                initialSolutions.randomGreedySolution();
+//                break;
+//            case PROB:
+//                initialSolutions.probabilisticInitSol();
+//                break;
+//            case GREEDY_GRB:
+//                initialSolutions.greedyGurobiSolution();
+//                break;
+//            case GRB:
+//                Gurobi gurobi = new Gurobi(phmlrp, params.getDataset(), params.getNumNodes(), params.getNumHubs(),
+//                        params.getNumVehicles(), params.getCollectionCostCFactor());
+//                gurobi.getInitSol();
+//                break;
+//        }
+//
+//        phmlrp.calculateCost(PHMLRP.CostType.NORMAL);
+//
+//
+//        switch (params.getAlgorithm()) {
+//            case SA:
+//                SimulatedAnnealing simulatedAnnealing = new SimulatedAnnealing(phmlrp, params);
+//                simulatedAnnealing.applySA();
+//                break;
+//            case VNS:
+//                VND vnd = new VND(params);
+//                vnd.runVND();
+//                break;
+//        }
     }
 
     private static void getGreedyHubs(Params params) {
@@ -94,6 +95,7 @@ public class Main {
                     params.getCollectionCostCFactor());
             initialSolutions.greedyPickHubs();
             StringBuilder hubsSB = new StringBuilder();
+            Arrays.sort(phmlrp.getHubsArr());
             for (int hub : phmlrp.getHubsArr()) {
                 hubsSB.append(hub).append(", ");
             }
