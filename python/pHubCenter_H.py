@@ -122,7 +122,8 @@ data = {'CPU': CPU,
 from pathlib import Path
 
 Path("results").mkdir(parents=True, exist_ok=True)
-json_file = "results/pHC_MTSP_H_" + ".".join(str(element) for element in list(sets.keys())) + "_" + str(DATA2.dataset) + "_" + str(len(N)) + "_" + str(p) + "_" + str(nv) + ".json"
+json_file = "results/HUBS_GRB_" + str(DATA2.dataset) + "_" + str(len(N)) + "_" + str(p) + "_" + str(nv) + ".json"
+#".".join(str(element) for element in list(sets.keys())) + "_"
 
 try:
     os.remove(json_file)
