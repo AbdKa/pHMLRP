@@ -9,6 +9,7 @@ from gurobipy import *
 
 import DATA3
 from DATA3 import Timer
+from Commons import status_code
 
 # BURASI DA AYNI HUB LARI VERDIGIMIZDE KULLANABILDIGIMIZ HALE GETIRMEMIZ GEREKLI
 
@@ -203,7 +204,7 @@ with open(DATA3.file_name, 'r+') as f:
     data['CPU'] += CPU
     data['routes'].append(route)
     data['objectives'][str(dictionary[H[0]])] = z.x
-    data['statuses'][str(dictionary[H[0]])] = 'Optimal' if GRB.OPTIMAL == 2 else 'NOT'
+    data['statuses'][str(dictionary[H[0]])] = status_code(m.status)
     # data['routes'].sort()
     f.seek(0)  # <--- should reset fpHC_MTSPile position to the beginning.
     json.dump(data, f, indent=4)
