@@ -10,6 +10,7 @@ from gurobipy import *
 
 import DATA2
 from DATA2 import Timer
+from Commons import status_code
 
 DATA2.loadScriptArgs()
 D = DATA2.D
@@ -94,7 +95,7 @@ data = {'CPU': CPU,
         'hubs': list(sets.keys()),
         'routes': [],
         "pHubCenterObjective": z.x,
-        "pHubCenterStatus": 'Optimal' if GRB.OPTIMAL == 2 else 'NOT',
+        "pHubCenterStatus": status_code(m.status),
         'objectives': {},
         'statuses': {}}
 
