@@ -1,0 +1,25 @@
+{
+    "CPU": 0.05992430495098233,
+    "dataset": "CAB",
+    "N": 10,
+    "hubs": [
+        6,
+        5
+    ],
+    "routes": [
+        "6,9,0,6",
+        "6,7,6",
+        "5,8,3,4,5",
+        "5,1,2,5"
+    ],
+    "pHubCenterObjective": 3188.639400000021,
+    "pHubCenterStatus": "OPTIMAL",
+    "objectives": {
+        "6": 2068.1057,
+        "5": 1511.9627000000003
+    },
+    "statuses": {
+        "6": "OPTIMAL",
+        "5": "OPTIMAL"
+    }
+}
