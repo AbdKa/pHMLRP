@@ -32,7 +32,7 @@ public class Main {
 //        Extra.getGreedyHubs(params);
 
         // TODO: remove this if statement after preparing VNS
-        if(params.getAlgorithm() == ALGO.SA) {
+        if (params.getAlgorithm() == ALGO.SA) {
             PHMLRP phmlrp = new PHMLRP(params.getDataset(), params.getNumNodes(), params.getNumHubs(), params.getNumVehicles(),
                     params.getCollectionCostCFactor(), params.getDistributionCostCFactor(), params.getHubToHubCFactor(),
                     params.getRemovalPercentage());
@@ -63,6 +63,10 @@ public class Main {
             }
 
             phmlrp.calculateCost(PHMLRP.CostType.NORMAL);
+//            add initial solution's hubs and routes to the general results
+            int solIdx = GeneralResults.getIndex(params);
+            GeneralResults.hubsArr[solIdx] = phmlrp.getHubsString();
+            GeneralResults.routesArr[solIdx] = phmlrp.getVehiclesListString();
 
             switch (params.getAlgorithm()) {
                 case SA:

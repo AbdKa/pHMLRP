@@ -88,14 +88,14 @@ class InitialSolutions {
             e.printStackTrace();
         }
 
-        System.out.println("hubs:");
-        System.out.print(Arrays.toString(phmlrp.getHubsArr()));
+//        System.out.println("hubs:");
+//        System.out.print(Arrays.toString(phmlrp.getHubsArr()));
 
-        for (List<Integer> route :
-                phmlrp.getVehiclesList()) {
-            System.out.print(route);
-            System.out.println();
-        }
+//        for (List<Integer> route :
+//                phmlrp.getVehiclesList()) {
+//            System.out.print(route);
+//            System.out.println();
+//        }
     }
 
     void greedySolution() {

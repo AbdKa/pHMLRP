@@ -83,6 +83,15 @@ class PHMLRP {
         return hubsArr;
     }
 
+    String getHubsString() {
+        StringBuilder hubs = new StringBuilder();
+        for (int hub : hubsArr) {
+            hubs.append(hub).append(", ");
+        }
+
+        return hubs.toString();
+    }
+
     ArrayList<List<Integer>> getVehiclesList() {
         return vehiclesList;
     }
@@ -101,6 +110,18 @@ class PHMLRP {
             List<Integer> innerList = new ArrayList<>(list);
             this.vehiclesList.add(innerList);
         }
+    }
+
+    String getVehiclesListString() {
+        StringBuilder routes = new StringBuilder();
+        for (List<Integer> route : vehiclesList) {
+            for (int node : route) {
+                routes.append(node).append(", ");
+            }
+            routes.append("; ");
+        }
+
+        return routes.toString();
     }
 
     public boolean[] getIsVisitedCity() {

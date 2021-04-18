@@ -74,7 +74,7 @@ class GeneralResults {
         row.createCell(2, CellType.STRING).setCellValue("initSol");
         row.createCell(3, CellType.STRING).setCellValue("algo");
         row.createCell(4, CellType.STRING).setCellValue("obj");
-        row.createCell(5, CellType.STRING).setCellValue("CPU");
+        row.createCell(5, CellType.STRING).setCellValue("CPU (ms)");
         row.createCell(6, CellType.STRING).setCellValue("iteration");
         row.createCell(7, CellType.STRING).setCellValue("hubs");
         row.createCell(8, CellType.STRING).setCellValue("routes");

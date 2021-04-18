@@ -41,8 +41,8 @@ class SimulatedAnnealing {
     private int bestIteration;
     private String bestHubs;
     private String bestRoutes;
-    private StringBuilder hubs;
-    private StringBuilder routes;
+    private String hubs;
+    private String routes;
 
     SimulatedAnnealing(PHMLRP phmlrp, Params params) {
         this.phmlrp = phmlrp;
@@ -83,11 +83,7 @@ class SimulatedAnnealing {
                 double newCost = phmlrp.getSaOperationCost();
                 double difference = minCost - newCost;
 
-                temps.add(counter, T);
-                costs.add(counter, newCost);
-                differences.add(counter, difference);
-                operationNums.add(counter, operationNum);
-                addHubsAndRoutesStr(counter);
+                addValuesToLists(counter, operationNum, newCost, difference);
                 counter++;
 
                 // Reassigns global minimum accordingly
@@ -95,8 +91,8 @@ class SimulatedAnnealing {
                     setBestVehiclesList(newSol);
                     minCost = newCost;
                     bestIteration = counter-1;
-                    bestHubs = hubs.toString();
-                    bestRoutes = routes.toString();
+                    bestHubs = hubs;
+                    bestRoutes = routes;
 
                     continue;
                 }
@@ -133,6 +129,18 @@ class SimulatedAnnealing {
 //        System.out.println(counter);
     }
 
+    private void addValuesToLists(int counter, int operationNum, double newCost, double difference) {
+        temps.add(counter, T);
+        costs.add(counter, newCost);
+        differences.add(counter, difference);
+        operationNums.add(counter, operationNum);
+
+        hubs = phmlrp.getHubsString();
+        routes = phmlrp.getVehiclesListString();
+        hubsList.add(counter, hubs);
+        routesList.add(counter, routes);
+    }
+
     private void setGeneralValues(double minCost) {
 //        get the index of the current solution
         int solIdx = GeneralResults.getIndex(params);
@@ -143,25 +151,11 @@ class SimulatedAnnealing {
             GeneralResults.objectives[solIdx] = minCost;
             GeneralResults.CPUs[solIdx] = solCPU;
             GeneralResults.iterations[solIdx] = bestIteration;
-            GeneralResults.hubsArr[solIdx] = bestHubs;
-            GeneralResults.routesArr[solIdx] = bestRoutes;
-        }
-    }
-
-    private void addHubsAndRoutesStr(int counter) {
-        hubs = new StringBuilder();
-        routes = new StringBuilder();
-        for (int hub : phmlrp.getHubsArr()) {
-            hubs.append(hub).append(", ");
-        }
-        for (List<Integer> route : phmlrp.getVehiclesList()) {
-            for (int node : route) {
-                routes.append(node).append(", ");
+            if (bestHubs != null) {
+                GeneralResults.hubsArr[solIdx] = bestHubs;
+                GeneralResults.routesArr[solIdx] = bestRoutes;
             }
-            routes.append("; ");
         }
-        hubsList.add(counter, hubs.toString());
-        routesList.add(counter, routes.toString());
     }
 
     private int doRandomOperation() {
