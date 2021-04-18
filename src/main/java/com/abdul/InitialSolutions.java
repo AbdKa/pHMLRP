@@ -12,17 +12,17 @@ import java.util.*;
 
 class InitialSolutions {
 
-    private final PHMLRP phmlrp;
+    private final PHCRP PHCRP;
     private DS dataset;
     private final int numNodes, numHubs, numVehiclesPerHub;
     private float collectionCostCFactor;
 
-    InitialSolutions(PHMLRP phmlrp, DS dataset, float collectionCostCFactor) {
-        this.phmlrp = phmlrp;
+    InitialSolutions(PHCRP PHCRP, DS dataset, float collectionCostCFactor) {
+        this.PHCRP = PHCRP;
         this.dataset = dataset;
-        this.numNodes = phmlrp.getNumNodes();
-        this.numHubs = phmlrp.getNumHubs();
-        this.numVehiclesPerHub = phmlrp.getNumVehiclesPerHub();
+        this.numNodes = PHCRP.getNumNodes();
+        this.numHubs = PHCRP.getNumHubs();
+        this.numVehiclesPerHub = PHCRP.getNumVehiclesPerHub();
         this.collectionCostCFactor = collectionCostCFactor;
     }
 
@@ -78,10 +78,10 @@ class InitialSolutions {
                     }
                     j++;
                 }
-                phmlrp.setRouteInVehiclesList(i, r);
+                PHCRP.setRouteInVehiclesList(i, r);
                 i++;
             }
-            phmlrp.setHubsArr(hubsArr);
+            PHCRP.setHubsArr(hubsArr);
         } catch (IOException e) {
             System.out.println("Exception: " + e);
         } catch (ParseException e) {
@@ -89,10 +89,10 @@ class InitialSolutions {
         }
 
 //        System.out.println("hubs:");
-//        System.out.print(Arrays.toString(phmlrp.getHubsArr()));
+//        System.out.print(Arrays.toString(PHCRP.getHubsArr()));
 
 //        for (List<Integer> route :
-//                phmlrp.getVehiclesList()) {
+//                PHCRP.getVehiclesList()) {
 //            System.out.print(route);
 //            System.out.println();
 //        }
@@ -114,13 +114,13 @@ class InitialSolutions {
             Random rand = new Random();
             int randomNode = rand.nextInt(numNodes); // random node index
 
-            if (phmlrp.getIsVisitedCity()[randomNode]) {
+            if (PHCRP.getIsVisitedCity()[randomNode]) {
                 i--;
                 continue;
             }
 
-            phmlrp.getHubsArr()[i] = randomNode;
-            phmlrp.getIsVisitedCity()[randomNode] = true;
+            PHCRP.getHubsArr()[i] = randomNode;
+            PHCRP.getIsVisitedCity()[randomNode] = true;
         }
     }
 
@@ -129,7 +129,7 @@ class InitialSolutions {
         for (int i = 0; i < numNodes; i++) {
             int sum = 0;
             for (int j = 0; j < numNodes; j++) {
-                sum += phmlrp.getDistance(i, j);
+                sum += PHCRP.getDistance(i, j);
             }
             nodesDistanceAvg.put(i, sum / numNodes);
         }
@@ -139,8 +139,8 @@ class InitialSolutions {
         int h = 0;
         for (Map.Entry<Integer, Integer> node : nodesDistanceAvg.entrySet()) {
             if (h >= numHubs) break;
-            phmlrp.getHubsArr()[h] = node.getKey();
-            phmlrp.getIsVisitedCity()[phmlrp.getHubsArr()[h]] = true;
+            PHCRP.getHubsArr()[h] = node.getKey();
+            PHCRP.getIsVisitedCity()[PHCRP.getHubsArr()[h]] = true;
             h++;
         }
     }
@@ -153,10 +153,10 @@ class InitialSolutions {
         int remainingNodes = numNodes - numHubs;
 
         // loop through vehicles lists
-        for (int i = 0; i < phmlrp.getVehiclesList().size(); i++) {
+        for (int i = 0; i < PHCRP.getVehiclesList().size(); i++) {
             Random random = new Random();
             int numOfNodesForVehicle = random.nextInt(maxNumOfNodesInVehicle) + minNumOfNodesInVehicle;
-            int remainingVehicles = phmlrp.getVehiclesList().size() - i;
+            int remainingVehicles = PHCRP.getVehiclesList().size() - i;
 
             // this condition ensures that we do not run out of nodes
             if (remainingNodes - numOfNodesForVehicle >= remainingVehicles - 1) {
@@ -171,13 +171,13 @@ class InitialSolutions {
                 // filling in a vehicle's list with nodes
                 for (int j = 0; j < numOfNodesForVehicle; j++) {
                     int randomNode = random.nextInt(numNodes);
-                    if (phmlrp.getIsVisitedCity()[randomNode]) {
+                    if (PHCRP.getIsVisitedCity()[randomNode]) {
                         j--;
                         continue;
                     }
 
-                    phmlrp.getVehiclesList().get(i).add(j, randomNode);
-                    phmlrp.getIsVisitedCity()[randomNode] = true;
+                    PHCRP.getVehiclesList().get(i).add(j, randomNode);
+                    PHCRP.getIsVisitedCity()[randomNode] = true;
                 }
             } else {
                 i--;
@@ -195,7 +195,7 @@ class InitialSolutions {
         // a hash map of the hub-to-node distances
         Map<Integer, Double> nodesToHubDistance = new LinkedHashMap<>();
         // loop through vehicles lists
-        for (int i = 0; i < phmlrp.getVehiclesList().size(); i++) {
+        for (int i = 0; i < PHCRP.getVehiclesList().size(); i++) {
             // if it's a new hub
             if (i % numVehiclesPerHub == 0) {
                 // create a hash map of the hub-to-node distances
@@ -204,15 +204,15 @@ class InitialSolutions {
                 for (int node = 0; node < numNodes; node++) {
                     // loop through node and get distances to the current hub
                     // only if the node is non-hub
-                    if (!phmlrp.getIsVisitedCity()[node])
-                        nodesToHubDistance.put(node, phmlrp.getDistance(phmlrp.getHubsArr()[currentHub], node));
+                    if (!PHCRP.getIsVisitedCity()[node])
+                        nodesToHubDistance.put(node, PHCRP.getDistance(PHCRP.getHubsArr()[currentHub], node));
                 }
                 nodesToHubDistance = Utils.sortByValue(nodesToHubDistance);
             }
 
             Random random = new Random();
             int numOfNodesForVehicle = random.nextInt(maxNumOfNodesInVehicle) + minNumOfNodesInVehicle;
-            int remainingVehicles = phmlrp.getVehiclesList().size() - i;
+            int remainingVehicles = PHCRP.getVehiclesList().size() - i;
 
             // this condition ensures that we do not run out of nodes
             if (remainingNodes - numOfNodesForVehicle >= remainingVehicles - 1) {
@@ -228,13 +228,13 @@ class InitialSolutions {
                 for (int j = 0; j < numOfNodesForVehicle; j++) {
                     Map.Entry<Integer, Double> entry = nodesToHubDistance.entrySet().iterator().next();
                     int closestNode = entry.getKey();
-                    if (phmlrp.getIsVisitedCity()[closestNode]) {
+                    if (PHCRP.getIsVisitedCity()[closestNode]) {
                         j--;
                         continue;
                     }
 
-                    phmlrp.getVehiclesList().get(i).add(j, closestNode);
-                    phmlrp.getIsVisitedCity()[closestNode] = true;
+                    PHCRP.getVehiclesList().get(i).add(j, closestNode);
+                    PHCRP.getIsVisitedCity()[closestNode] = true;
                     // remove the visited node, because already added to a hub
                     nodesToHubDistance.remove(closestNode);
                 }
@@ -256,7 +256,7 @@ class InitialSolutions {
         for (int i = 0; i < numNodes; i++) {
             int sum = 0;
             for (int j = 0; j < numNodes; j++) {
-                sum += phmlrp.getDistance(i, j);
+                sum += PHCRP.getDistance(i, j);
             }
             nodesDistancesSum.add(sum);
             totalSum += sum;
@@ -320,8 +320,8 @@ class InitialSolutions {
             }
         }
 
-        phmlrp.setHubsArr(hubsArr);
-        phmlrp.setIsVisitedCity(isVisitedCity);
+        PHCRP.setHubsArr(hubsArr);
+        PHCRP.setIsVisitedCity(isVisitedCity);
         assignNodesRouletteWheel(isVisitedCity);
     }
 
@@ -338,10 +338,10 @@ class InitialSolutions {
         // a hash map of the hub-to-node distances
         Map<Integer, Double> normalizedDistances = new LinkedHashMap<>();
         // loop through vehicles lists
-        for (int i = 0; i < phmlrp.getVehiclesList().size(); i++) {
+        for (int i = 0; i < PHCRP.getVehiclesList().size(); i++) {
             Random random = new Random();
             int numOfNodesForVehicle = random.nextInt(maxNumOfNodesInVehicle) + minNumOfNodesInVehicle;
-            int remainingVehicles = phmlrp.getVehiclesList().size() - i;
+            int remainingVehicles = PHCRP.getVehiclesList().size() - i;
 
             // current hub
             int currentHub = i / numVehiclesPerHub;
@@ -349,7 +349,7 @@ class InitialSolutions {
             int distancesSum = 0;
             for (int node = 0; node < numNodes; node++) {
                 // distancesSum hub to node distances
-                distancesSum += phmlrp.getDistance(currentHub, node);
+                distancesSum += PHCRP.getDistance(currentHub, node);
             }
 
             // if it's a new hub
@@ -359,7 +359,7 @@ class InitialSolutions {
                     // loop through node and get distances to the current hub
                     // only if the node is non-hub
                     if (!isVisitedCity[node]) {
-                        double prob = (double) phmlrp.getDistance(phmlrp.getHubsArr()[currentHub], node) / distancesSum;
+                        double prob = (double) PHCRP.getDistance(PHCRP.getHubsArr()[currentHub], node) / distancesSum;
                         normalizedDistances.put(node, prob);
                     }
                 }
@@ -400,7 +400,7 @@ class InitialSolutions {
 //                            System.out.println("randomProb " + randomProb + " nodeProb " + n.getValue() +
 //                                    " node " + node + " totalSum " + distancesSum);
 
-                            phmlrp.getVehiclesList().get(i).add(j, node);
+                            PHCRP.getVehiclesList().get(i).add(j, node);
                             isVisitedCity[node] = true;
                             int oldDistancesSum = distancesSum;
                             distancesSum -= (distancesSum * n.getValue());

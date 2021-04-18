@@ -129,17 +129,17 @@ class VndWithIncompleteHubs {
                         // run each problem instance n number of replicas
                         long combStartTime = System.nanoTime();
                         iterationCounts[probIdx]++;
-                        PHMLRP phmlrp;
+                        PHCRP PHCRP;
                         double mtspCost = 0;
                         if (localSource) {
-                            phmlrp = newPHMLRPInstance(problemInstances[probIdx]);
-                            createInitSol(phmlrp);
+                            PHCRP = newPHMLRPInstance(problemInstances[probIdx]);
+                            createInitSol(PHCRP);
                         } else {
-                            phmlrp = Utils.getJsonInitSol(problemInstances[probIdx].split("\\.")[1] +
+                            PHCRP = Utils.getJsonInitSol(problemInstances[probIdx].split("\\.")[1] +
                                     "_" + problemInstances[probIdx].split("\\.")[2] +
                                     "_" + problemInstances[probIdx].split("\\.")[3]);
-                            phmlrp.calculateCost(PHMLRP.CostType.NORMAL);
-                            mtspCost = phmlrp.getMaxCost();
+                            PHCRP.calculateCost(PHCRP.CostType.NORMAL);
+                            mtspCost = PHCRP.getMaxCost();
                         }
                         for (int k : combinations.get(combIdx)) {
                             // for each neighborhood
@@ -152,7 +152,7 @@ class VndWithIncompleteHubs {
 
                             while (true) {
                                 // change neighborhood until no better solution, jump to next one
-                                if (!phmlrp.callOperation(k)) {
+                                if (!PHCRP.callOperation(k)) {
                                     // if doesn't give a better solution, break and jump to next neighborhood
                                     break;
                                 }
@@ -160,21 +160,21 @@ class VndWithIncompleteHubs {
                         }
 
                         int numLinks = Integer.parseInt(problemInstances[probIdx].split("\\.")[4]);
-                        IncompleteHubs incompleteHubs = new IncompleteHubs(phmlrp, resultPath, numLinks, null);
+                        IncompleteHubs incompleteHubs = new IncompleteHubs(PHCRP, resultPath, numLinks, null);
                         double bestCost;
                         if (Integer.parseInt(problemInstances[probIdx].split("\\.")[2]) > 2) {
                             incompleteHubs.runIncomplete();
                             bestCost = incompleteHubs.getMaxCost();
                             System.out.println("bestCost " + bestCost);
                         } else {
-                            bestCost = phmlrp.getMaxCost();
+                            bestCost = PHCRP.getMaxCost();
                         }
 
                         if (bestCost < bestCosts[probIdx]) {
                             bestCosts[probIdx] = bestCost;
                             bestTimes[probIdx] = (float) (System.nanoTime() - combStartTime) / 1000;
                             bestIterationNumber[probIdx] = iterationCounts[probIdx];
-                            bestRoutes[probIdx] = phmlrp.getRoutes();
+                            bestRoutes[probIdx] = PHCRP.getRoutes();
 
                             if (Integer.parseInt(problemInstances[probIdx].split("\\.")[2]) > 2) {
                                 bestLinks[probIdx] = String.join("; ", incompleteHubs.getLinks());
@@ -253,8 +253,8 @@ class VndWithIncompleteHubs {
         }
     }
 
-    private void createInitSol(PHMLRP phmlrp) {
-        InitialSolutions initialSolutions = new InitialSolutions(phmlrp, params.getDataset(),
+    private void createInitSol(PHCRP PHCRP) {
+        InitialSolutions initialSolutions = new InitialSolutions(PHCRP, params.getDataset(),
                 params.getCollectionCostCFactor());
         switch (params.getInitSol()) {
             case GREEDY:
@@ -266,10 +266,10 @@ class VndWithIncompleteHubs {
             default:
                 throw new AssertionError("unrecognized initial solution construction " + params.getInitSol());
         }
-        phmlrp.calculateCost(PHMLRP.CostType.NORMAL);
+        PHCRP.calculateCost(PHCRP.CostType.NORMAL);
     }
 
-    private PHMLRP newPHMLRPInstance(String problemInstance) {
+    private PHCRP newPHMLRPInstance(String problemInstance) {
         return Utils.newPHMLRPInstance(problemInstance, this.params);
     }
 }

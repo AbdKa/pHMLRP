@@ -10,23 +10,23 @@ import java.util.ArrayList;
 import java.util.List;
 
 class DeterministicExplore {
-    private final PHMLRP phmlrp;
+    private final PHCRP PHCRP;
 
     private int successCount = 0;
 
-    DeterministicExplore(PHMLRP phmlrp) {
-        this.phmlrp = phmlrp;
+    DeterministicExplore(PHCRP PHCRP) {
+        this.PHCRP = PHCRP;
     }
 
     void doDeterministicExplore(XSSFWorkbook workbook, XSSFSheet spreadsheet) throws IOException {
         // Clone hubs array, vehicles list and max cost for reset after numOfIterationForEachOperation
-        int[] initHubsArr = phmlrp.getHubsArr().clone();
+        int[] initHubsArr = PHCRP.getHubsArr().clone();
         ArrayList<List<Integer>> initVehiclesList = new ArrayList<>();
-        for (List<Integer> list : phmlrp.getVehiclesList()) {
+        for (List<Integer> list : PHCRP.getVehiclesList()) {
             List<Integer> innerList = new ArrayList<>(list);
             initVehiclesList.add(innerList);
         }
-        double initMaxCost = phmlrp.getMaxCost();
+        double initMaxCost = PHCRP.getMaxCost();
 
         XSSFRow row;
         int numberOfOperations = 9;
@@ -38,10 +38,10 @@ class DeterministicExplore {
         for (int i = 0; i < numberOfOperations * numOfIterationForEachOne + 1; i++) {
             // reset the hubsArr, vehicles list and maxCost
             if (i % numOfIterationForEachOne == 0 && i > 0 || i == 801000) {
-                phmlrp.setHubsArr(initHubsArr.clone());
-                phmlrp.resetVehiclesList(initVehiclesList);
-                countsArr[operNum] = operName + "," + successCount + "," + phmlrp.getMaxCost();
-                phmlrp.setMaxCost(initMaxCost);
+                PHCRP.setHubsArr(initHubsArr.clone());
+                PHCRP.resetVehiclesList(initVehiclesList);
+                countsArr[operNum] = operName + "," + successCount + "," + PHCRP.getMaxCost();
+                PHCRP.setMaxCost(initMaxCost);
                 successCount = 0;
                 System.out.println(operNum + " -------------------------------------------- " + operName);
                 operNum++;
@@ -122,10 +122,10 @@ class DeterministicExplore {
     private void printHubsAndRoutesToExcel(XSSFRow row) {
         StringBuilder hubs = new StringBuilder();
         StringBuilder routes = new StringBuilder();
-        for (int hub : phmlrp.getHubsArr()) {
+        for (int hub : PHCRP.getHubsArr()) {
             hubs.append(hub).append(", ");
         }
-        for (List<Integer> route : phmlrp.getVehiclesList()) {
+        for (List<Integer> route : PHCRP.getVehiclesList()) {
             for (int node : route) {
                 routes.append(node).append(", ");
             }
@@ -138,20 +138,20 @@ class DeterministicExplore {
     private void doOperation(int operationNum, String operationName, XSSFRow row, int i) {
         row.createCell(0, CellType.STRING).setCellValue(operationName);
         row.createCell(1, CellType.NUMERIC).setCellValue(i + 1);
-        double priorCost = phmlrp.getMaxCost();
+        double priorCost = PHCRP.getMaxCost();
         //operation start time in milliseconds
         long startTime = System.nanoTime();
-        phmlrp.callOperation(operationNum);
+        PHCRP.callOperation(operationNum);
         //operation end time in milliseconds
         long endTime = System.nanoTime();
         //time elapsed
-        double costDifference = priorCost - phmlrp.getMaxCost();
+        double costDifference = priorCost - PHCRP.getMaxCost();
         if (costDifference > 0) {
             successCount++;
-            phmlrp.print();
+            PHCRP.print();
         }
         row.createCell(2, CellType.NUMERIC).setCellValue(costDifference);
-        row.createCell(3, CellType.NUMERIC).setCellValue(phmlrp.getMaxCost());
+        row.createCell(3, CellType.NUMERIC).setCellValue(PHCRP.getMaxCost());
         long elapsed = endTime - startTime;
         row.createCell(4, CellType.NUMERIC).setCellValue(elapsed);
     }

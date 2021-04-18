@@ -117,7 +117,7 @@ class Utils {
         }
     }
 
-    static PHMLRP getJsonInitSol(String fileName) {
+    static PHCRP getJsonInitSol(String fileName) {
         // TODO: change this to match the new output json
         String dataset = "";
         int N = 0;
@@ -157,7 +157,7 @@ class Utils {
             e.printStackTrace();
         }
 
-        PHMLRP phmlrp = new PHMLRP(
+        PHCRP PHCRP = new PHCRP(
                 DS.valueOf(dataset),
                 N,
                 hubsList.size(),
@@ -168,27 +168,27 @@ class Utils {
                 0.2f);
 
         int[] hubsArr = hubsList.stream().mapToInt(i -> i).toArray();
-        phmlrp.setHubsArr(hubsArr);
-        phmlrp.resetVehiclesList(vehiclesList);
+        PHCRP.setHubsArr(hubsArr);
+        PHCRP.resetVehiclesList(vehiclesList);
 
         System.out.println("hubs:");
         for (int h :
-                phmlrp.getHubsArr()) {
+                PHCRP.getHubsArr()) {
             System.out.print(h + ", ");
         }
         System.out.println();
         for (List<Integer> route :
-                phmlrp.getVehiclesList()) {
+                PHCRP.getVehiclesList()) {
             route.forEach(node -> System.out.print(node + ", "));
             System.out.println();
         }
 
-        return phmlrp;
+        return PHCRP;
     }
 
-    static PHMLRP newPHMLRPInstance(String problemInstance, Params params) {
+    static PHCRP newPHMLRPInstance(String problemInstance, Params params) {
 
-        return new PHMLRP(
+        return new PHCRP(
                 DS.valueOf(problemInstance.split("\\.")[0]),
                 Integer.parseInt(problemInstance.split("\\.")[1]),
                 Integer.parseInt(problemInstance.split("\\.")[2]),

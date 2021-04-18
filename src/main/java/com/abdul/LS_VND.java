@@ -86,9 +86,9 @@ class LS_VND {
 
                     long combStartTime = System.nanoTime();
 
-                    PHMLRP phmlrp = newPHMLRPInstance(problemInstances[probIdx]);
-                    createInitSol(phmlrp);
-                    Operations operations = new Operations(phmlrp);
+                    PHCRP PHCRP = newPHMLRPInstance(problemInstances[probIdx]);
+                    createInitSol(PHCRP);
+                    Operations operations = new Operations(PHCRP);
                     iteration++;
 
                     for (int k : combinations.get(combIdx)) {
@@ -101,7 +101,7 @@ class LS_VND {
                         operations.doLocalSearch(k);
                     }
 
-                    double bestCost = phmlrp.getMaxCost();
+                    double bestCost = PHCRP.getMaxCost();
 
                     if (bestCost < bestCosts[probIdx][combIdx]) {
 
@@ -143,8 +143,8 @@ class LS_VND {
         }
     }
 
-    private void createInitSol(PHMLRP phmlrp) {
-        InitialSolutions initialSolutions = new InitialSolutions(phmlrp, params.getDataset(),
+    private void createInitSol(PHCRP PHCRP) {
+        InitialSolutions initialSolutions = new InitialSolutions(PHCRP, params.getDataset(),
                 params.getCollectionCostCFactor());
         if (params.getInitSol().equals("greedy")) {
             initialSolutions.greedySolution();
@@ -152,10 +152,10 @@ class LS_VND {
             initialSolutions.randomSolution();
         }
 
-        phmlrp.calculateCost(PHMLRP.CostType.NORMAL);
+        PHCRP.calculateCost(PHCRP.CostType.NORMAL);
     }
 
-    private PHMLRP newPHMLRPInstance(String problemInstance) {
+    private PHCRP newPHMLRPInstance(String problemInstance) {
         return Utils.newPHMLRPInstance(problemInstance, this.params);
     }
 }

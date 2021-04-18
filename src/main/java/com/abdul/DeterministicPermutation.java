@@ -12,21 +12,21 @@ import java.util.ArrayList;
 import java.util.List;
 
 class DeterministicPermutation {
-    private final PHMLRP phmlrp;
+    private final PHCRP PHCRP;
     private Permutation[] bestPermutations;
     private double bestPermutationCost;
     private ArrayList<List<Integer>> initVehiclesList;
     private final double initMaxCost;
 
-    DeterministicPermutation(PHMLRP phmlrp) {
-        this.phmlrp = phmlrp;
-        initMaxCost = phmlrp.getMaxCost();
-        bestPermutationCost = phmlrp.getMaxCost();
+    DeterministicPermutation(PHCRP PHCRP) {
+        this.PHCRP = PHCRP;
+        initMaxCost = PHCRP.getMaxCost();
+        bestPermutationCost = PHCRP.getMaxCost();
     }
 
     void deterministicOperationOrder(XSSFWorkbook workbook, XSSFSheet spreadsheet) throws IOException {
         initVehiclesList = new ArrayList<>();
-        for (List<Integer> list : phmlrp.getVehiclesList()) {
+        for (List<Integer> list : PHCRP.getVehiclesList()) {
             List<Integer> innerList = new ArrayList<>(list);
             initVehiclesList.add(innerList);
         }
@@ -128,20 +128,20 @@ class DeterministicPermutation {
     private Permutation executePermutation(int[] arr) {
         counter++;
         int iterationsForEachPermutation = 1000;
-        double bestCost = phmlrp.getMaxCost();
+        double bestCost = PHCRP.getMaxCost();
         int[] bestOrder = new int[arr.length];
         for (int iter = 0; iter < iterationsForEachPermutation; iter++) {
             for (int operationIdx : arr) {
-                phmlrp.callOperation(operationIdx);
+                PHCRP.callOperation(operationIdx);
             }
-            if (phmlrp.getMaxCost() < bestCost) {
-                bestCost = phmlrp.getMaxCost();
+            if (PHCRP.getMaxCost() < bestCost) {
+                bestCost = PHCRP.getMaxCost();
                 bestOrder = arr;
             }
         }
-        Permutation permutation = new Permutation(bestOrder, bestCost, phmlrp.getHubsArr(), phmlrp.getVehiclesList());
-        phmlrp.setMaxCost(initMaxCost);
-        phmlrp.resetVehiclesList(initVehiclesList);
+        Permutation permutation = new Permutation(bestOrder, bestCost, PHCRP.getHubsArr(), PHCRP.getVehiclesList());
+        PHCRP.setMaxCost(initMaxCost);
+        PHCRP.resetVehiclesList(initVehiclesList);
         return permutation;
     }
 }

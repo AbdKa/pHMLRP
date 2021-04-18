@@ -7,21 +7,19 @@ import org.json.simple.parser.ParseException;
 
 import java.io.*;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 
 class Gurobi {
 
     private final static String pyGorubiBasePath = "python" + File.separator + "hubRoutingCenter.py";
     private final static String jsonPath = "results" + File.separator;
     private static final String python = System.getProperty("os.name").contains("Mac OS X") ? "python3" : "python";
-    private final PHMLRP phmlrp;
+    private final PHCRP PHCRP;
     private final DS dataset;
     private final int numNodes, numHubs, numVehicles;
     private final float alpha;
 
-    Gurobi(PHMLRP phmlrp, DS dataset, int numNodes, int numHubs, int numVehicles, float alpha) {
-        this.phmlrp = phmlrp;
+    Gurobi(PHCRP PHCRP, DS dataset, int numNodes, int numHubs, int numVehicles, float alpha) {
+        this.PHCRP = PHCRP;
         this.dataset = dataset;
         this.numNodes = numNodes;
         this.numHubs = numHubs;

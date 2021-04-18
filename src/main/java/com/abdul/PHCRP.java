@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-class PHMLRP {
+class PHCRP {
     private double maxCost, maxNonMinEdgeCost, maxCostAfterOperation = 0;
     private final DS dataset;
     private final int numNodes, numHubs, numVehiclesPerHub;
@@ -31,9 +31,9 @@ class PHMLRP {
     /**
      * Constructor
      */
-    PHMLRP(DS dataset, int numNodes, int numHubs, int numVehicles,
-           float collectionCostCFactor, float distributionCostCFactor, float hubToHubCFactor,
-           float removalPercentage) {
+    PHCRP(DS dataset, int numNodes, int numHubs, int numVehicles,
+          float collectionCostCFactor, float distributionCostCFactor, float hubToHubCFactor,
+          float removalPercentage) {
         this.dataset = dataset;
         this.numNodes = numNodes;
         this.numHubs = numHubs;
@@ -438,24 +438,24 @@ class PHMLRP {
     }
 
     private boolean calledNodesRemoveAndGreedyInsert() {
-        PHMLRP copyPHMLRP = new PHMLRP(dataset, numNodes, numHubs, numVehiclesPerHub,
+        PHCRP copyPHCRP = new PHCRP(dataset, numNodes, numHubs, numVehiclesPerHub,
                 collectionCostCFactor, distributionCostCFactor, hubToHubCFactor,
                 removalPercentage);
-        copyPHMLRP.setMaxCost(maxCost);
-        copyPHMLRP.setHubsArr(hubsArr);
-        copyPHMLRP.setIsVisitedCity(isVisitedCity);
-        copyPHMLRP.resetVehiclesList(vehiclesList);
+        copyPHCRP.setMaxCost(maxCost);
+        copyPHCRP.setHubsArr(hubsArr);
+        copyPHCRP.setIsVisitedCity(isVisitedCity);
+        copyPHCRP.resetVehiclesList(vehiclesList);
 
-        Operations operations = new Operations(copyPHMLRP);
+        Operations operations = new Operations(copyPHCRP);
         operations.nodesRemoveAndGreedyInsert(removalPercentage);
 
-        if (copyPHMLRP.getMaxCost() >= maxCost) {
+        if (copyPHCRP.getMaxCost() >= maxCost) {
             return false;
         }
 
-        setMaxCost(copyPHMLRP.getMaxCost());
-        setHubsArr(copyPHMLRP.getHubsArr());
-        resetVehiclesList(copyPHMLRP.getVehiclesList());
+        setMaxCost(copyPHCRP.getMaxCost());
+        setHubsArr(copyPHCRP.getHubsArr());
+        resetVehiclesList(copyPHCRP.getVehiclesList());
         return true;
     }
 

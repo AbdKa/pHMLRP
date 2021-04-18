@@ -15,13 +15,13 @@ class Extra {
         long[] CPUs = new long[instances.length];
         for (int i = 0; i <instances.length; i++) {
             long time = System.currentTimeMillis();
-            PHMLRP phmlrp = Utils.newPHMLRPInstance(instances[i], params);
-            InitialSolutions initialSolutions = new InitialSolutions(phmlrp, params.getDataset(),
+            PHCRP PHCRP = Utils.newPHMLRPInstance(instances[i], params);
+            InitialSolutions initialSolutions = new InitialSolutions(PHCRP, params.getDataset(),
                     params.getCollectionCostCFactor());
             initialSolutions.greedyPickHubs();
             StringBuilder hubsSB = new StringBuilder();
-            Arrays.sort(phmlrp.getHubsArr());
-            for (int hub : phmlrp.getHubsArr()) {
+            Arrays.sort(PHCRP.getHubsArr());
+            for (int hub : PHCRP.getHubsArr()) {
                 hubsSB.append(hub).append(", ");
             }
             hubs[i] = hubsSB.toString();

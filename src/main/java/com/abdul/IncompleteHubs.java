@@ -9,7 +9,7 @@ import java.util.stream.Collectors;
 
 class IncompleteHubs {
 
-    private final PHMLRP phmlrp;
+    private final PHCRP PHCRP;
     private int numHubs;
     private final List<Integer> hubsList;
     private final List<Double> collectionCostArr;
@@ -32,19 +32,19 @@ class IncompleteHubs {
     private String tempStr = "";
     private int numVehiclesPerHub;
 
-    IncompleteHubs(PHMLRP phmlrp, String resultPath, int numLinks, FileWriter myWriter) {
-        this.phmlrp = phmlrp;
-        numHubs = phmlrp.getNumHubs();
+    IncompleteHubs(PHCRP PHCRP, String resultPath, int numLinks, FileWriter myWriter) {
+        this.PHCRP = PHCRP;
+        numHubs = PHCRP.getNumHubs();
         this.numLinks = numLinks;
         hubsMaxCosts = new ArrayList<>(numHubs);
         this.path = resultPath;
-        this.numVehiclesPerHub = phmlrp.getNumVehiclesPerHub();
+        this.numVehiclesPerHub = PHCRP.getNumVehiclesPerHub();
 
         links = new String[numLinks];
 
-        hubsList = Arrays.stream(phmlrp.getHubsArr()).boxed().collect(Collectors.toList());
-        collectionCostArr = Arrays.stream(phmlrp.getCollectionCostArr()).boxed().collect(Collectors.toList());
-        distributionCostArr = Arrays.stream(phmlrp.getDistributionCostArr()).boxed().collect(Collectors.toList());
+        hubsList = Arrays.stream(PHCRP.getHubsArr()).boxed().collect(Collectors.toList());
+        collectionCostArr = Arrays.stream(PHCRP.getCollectionCostArr()).boxed().collect(Collectors.toList());
+        distributionCostArr = Arrays.stream(PHCRP.getDistributionCostArr()).boxed().collect(Collectors.toList());
 
         sort();
 
@@ -120,23 +120,23 @@ class IncompleteHubs {
     }
 
     void calculateBHCost() {
-//        Arrays.sort(phmlrp.getHubsArr());
+//        Arrays.sort(PHCRP.getHubsArr());
         double[] betweenHubs = new double[numHubs];
         double bestHubCost = Integer.MAX_VALUE;
 //        System.out.println("Hubs Enumeration:");
         // loop on the hubs
         for (int h = 0; h < numHubs; h++) {
-//            System.out.println("Hub " + phmlrp.getHubsArr()[h]);
+//            System.out.println("Hub " + PHCRP.getHubsArr()[h]);
             // loop through other hubs
             for (int hh = 0; hh < numHubs; hh++) {
                 // skipping current hub
                 if (h == hh) continue;
 
                 // calculateCost between hubs
-                double betweenTwoHubs = phmlrp.getDistance(
-                        phmlrp.getHubsArr()[h], phmlrp.getHubsArr()[hh]) * phmlrp.getHubToHubCFactor();
+                double betweenTwoHubs = PHCRP.getDistance(
+                        PHCRP.getHubsArr()[h], PHCRP.getHubsArr()[hh]) * PHCRP.getHubToHubCFactor();
                 betweenHubs[h] += betweenTwoHubs;
-//                System.out.println(phmlrp.getHubsArr()[h] + " - " + phmlrp.getHubsArr()[hh] +
+//                System.out.println(PHCRP.getHubsArr()[h] + " - " + PHCRP.getHubsArr()[hh] +
 //                        " => " + betweenTwoHubs);
             }
 
@@ -147,7 +147,7 @@ class IncompleteHubs {
 //            System.out.println("Sum = " + betweenHubs[h]);
         }
 
-//        System.out.print("Minimum Hub Index is : " + phmlrp.getHubsArr()[middleHubIdx]);
+//        System.out.print("Minimum Hub Index is : " + PHCRP.getHubsArr()[middleHubIdx]);
 //        System.out.println(" Sum is : " + bestHubCost);
 
         createLinks();
@@ -246,7 +246,7 @@ class IncompleteHubs {
                     if (h == hh) continue;
 
                     // calculateCost between hubs
-                    double betweenHubs = phmlrp.getDistance(hubsList.get(h), hubsList.get(hh));
+                    double betweenHubs = PHCRP.getDistance(hubsList.get(h), hubsList.get(hh));
 
                     if (h < hh && !tempStrArr.contains(h + "" + hh)) {
                         tempStrArr.add(h + "" + hh);
@@ -341,9 +341,9 @@ class IncompleteHubs {
 
 //        try {
 //            Utils.createExcelFile(workbook,
-//                    path + "/" + phmlrp.getNumNodes() + "_" +
-//                            phmlrp.getNumHubs() + "_" +
-//                            phmlrp.getNumVehiclesPerHub() + "_" +
+//                    path + "/" + PHCRP.getNumNodes() + "_" +
+//                            PHCRP.getNumHubs() + "_" +
+//                            PHCRP.getNumVehiclesPerHub() + "_" +
 //                            numLinks);
 //        } catch (IOException e) {
 //            e.printStackTrace();
@@ -354,7 +354,7 @@ class IncompleteHubs {
         // First hub collection cost
         double fCollectionCost = collectionCostArr.get(vf);
         // calculateCost between first and middle hubs
-        double fmBetweenHubs = phmlrp.getDistance(first, mid) * phmlrp.getHubToHubCFactor();
+        double fmBetweenHubs = PHCRP.getDistance(first, mid) * PHCRP.getHubToHubCFactor();
         // between middle and last hub
         double mlBetweenHubs = 0;
         double distributionCost;
@@ -366,7 +366,7 @@ class IncompleteHubs {
             distributionCost = distributionCostArr.get(vm);
         } else {
             // calculateCost between middle and last hub
-            mlBetweenHubs = phmlrp.getDistance(mid, last) * phmlrp.getHubToHubCFactor();
+            mlBetweenHubs = PHCRP.getDistance(mid, last) * PHCRP.getHubToHubCFactor();
             // Last hub distribution cost
             distributionCost = distributionCostArr.get(vl);
         }
@@ -398,7 +398,7 @@ class IncompleteHubs {
     }
 
     private void removeCollectionAndDistribution(int h) {
-        int numVehiclesPerHub = phmlrp.getNumVehiclesPerHub();
+        int numVehiclesPerHub = PHCRP.getNumVehiclesPerHub();
         for (int i = ((h + 1) * numVehiclesPerHub) - 1; i >= h * numVehiclesPerHub; i--) {
             collectionCostArr.remove(i);
             distributionCostArr.remove(i);
@@ -407,7 +407,7 @@ class IncompleteHubs {
 
 //    private double getVehiclesCollections(int h) {
 //        double collection = 0;
-//        int numVehiclesPerHub = phmlrp.getNumVehiclesPerHub();
+//        int numVehiclesPerHub = PHCRP.getNumVehiclesPerHub();
 //        for (int i = h * numVehiclesPerHub; i < ((h + 1) * numVehiclesPerHub); i++) {
 //            collection += collectionCostArr.get(i);
 //            Utils.writeToTextFile(myWriter, h + " collection " + collection);
@@ -418,7 +418,7 @@ class IncompleteHubs {
 //
 //    private double getVehiclesDistributions(int h) {
 //        double distribution = 0;
-//        int numVehiclesPerHub = phmlrp.getNumVehiclesPerHub();
+//        int numVehiclesPerHub = PHCRP.getNumVehiclesPerHub();
 //        for (int i = h * numVehiclesPerHub; i < ((h + 1) * numVehiclesPerHub); i++) {
 //            distribution += distributionCostArr.get(i);
 //            Utils.writeToTextFile(myWriter, h + " distribution " + distribution);
@@ -436,35 +436,35 @@ class IncompleteHubs {
 //        System.out.println("Links Creation:");
 //        // loop on the hubs (first hub in link)
 //        for (int m = 0; m < numHubs; m++) {
-//            int mid = phmlrp.getHubsArr()[m];
+//            int mid = PHCRP.getHubsArr()[m];
 ////            System.out.println("Hub " + mid);
 //            XSSFRow hRow = spreadsheet.createRow(rowCount);
 //            hRow.createCell(0, CellType.STRING).setCellValue("Mid-Hub " + mid);
 //            rowCount++;
 //            // loop on the hubs (first hub in link)
 //            for (int f = 0; f < numHubs; f++) {
-//                int first = phmlrp.getHubsArr()[f];
+//                int first = PHCRP.getHubsArr()[f];
 //
 //                // skipping middle hub
 //                if (first == mid) continue;
 //
 //                // loop on the hubs (last hub in link)
 //                for (int l = 0; l < numHubs; l++) {
-//                    int last = phmlrp.getHubsArr()[l];
+//                    int last = PHCRP.getHubsArr()[l];
 //
 //                    // skipping current hub and middle hub
 //                    if (first == last || mid == last) continue;
 //
 //                    // First hub collection cost
-//                    int fCollectionCost = phmlrp.getCollectionCostArr()[f];
+//                    int fCollectionCost = PHCRP.getCollectionCostArr()[f];
 //                    // calculateCost between first and middle hubs
-//                    double fmBetweenHubs = phmlrp.getDistance(first, mid) * phmlrp.getHubToHubCFactor();
+//                    double fmBetweenHubs = PHCRP.getDistance(first, mid) * PHCRP.getHubToHubCFactor();
 //                    // Middle hub collection cost
-//                    int mCollectionCost = phmlrp.getCollectionCostArr()[m];
+//                    int mCollectionCost = PHCRP.getCollectionCostArr()[m];
 //                    // calculateCost between middle and second hubs
-//                    double mlBetweenHubs = phmlrp.getDistance(mid, last) * phmlrp.getHubToHubCFactor();
+//                    double mlBetweenHubs = PHCRP.getDistance(mid, last) * PHCRP.getHubToHubCFactor();
 //                    // Last hub distribution cost
-//                    int lDistributionCost = phmlrp.getDistributionCostArr()[l];
+//                    int lDistributionCost = PHCRP.getDistributionCostArr()[l];
 //
 //                    double linkCost = fCollectionCost + fmBetweenHubs +
 //                            mCollectionCost + mlBetweenHubs + lDistributionCost;
@@ -492,9 +492,9 @@ class IncompleteHubs {
 //
 //        try {
 //            Utils.createExcelFile(workbook,
-//                    "incompleteHubResults_" + path + "/" + phmlrp.getNumNodes() + "_" +
-//                            phmlrp.getNumHubs() + "_" +
-//                            phmlrp.getNumVehiclesPerHub());
+//                    "incompleteHubResults_" + path + "/" + PHCRP.getNumNodes() + "_" +
+//                            PHCRP.getNumHubs() + "_" +
+//                            PHCRP.getNumVehiclesPerHub());
 //        } catch (IOException e) {
 //            e.printStackTrace();
 //        }
@@ -511,9 +511,9 @@ class IncompleteHubs {
 //    private void prepareExcel() {
 //        workbook = new XSSFWorkbook();
 //        spreadsheet = workbook.createSheet(
-//                phmlrp.getNumNodes() + "." +
-//                        phmlrp.getNumHubs() + "." +
-//                        phmlrp.getNumVehiclesPerHub());
+//                PHCRP.getNumNodes() + "." +
+//                        PHCRP.getNumHubs() + "." +
+//                        PHCRP.getNumVehiclesPerHub());
 //        createFirstRow(spreadsheet);
 //    }
 

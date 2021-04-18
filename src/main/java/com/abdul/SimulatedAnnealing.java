@@ -15,7 +15,7 @@ class SimulatedAnnealing {
 
     private final Random random = new Random();
 
-    private final PHMLRP phmlrp;
+    private final PHCRP PHCRP;
     private final Params params;
     private final boolean silent;
 
@@ -44,10 +44,10 @@ class SimulatedAnnealing {
     private String hubs;
     private String routes;
 
-    SimulatedAnnealing(PHMLRP phmlrp, Params params) {
-        this.phmlrp = phmlrp;
+    SimulatedAnnealing(PHCRP PHCRP, Params params) {
+        this.PHCRP = PHCRP;
         this.params = params;
-        setBestVehiclesList(phmlrp.getVehiclesList());
+        setBestVehiclesList(PHCRP.getVehiclesList());
         this.silent = params.getSilent();
     }
 
@@ -62,13 +62,13 @@ class SimulatedAnnealing {
     void applySA() {
         long startTime = System.nanoTime();
         // Global minimum
-        double minCost = phmlrp.getMaxCost();
+        double minCost = PHCRP.getMaxCost();
         // new solution initialization
         ArrayList<List<Integer>> newSol;
 
-        phmlrp.print();
+        PHCRP.print();
 
-        phmlrp.setSimulatedAnnealing(true);
+        PHCRP.setSimulatedAnnealing(true);
 
         // Continues annealing until reaching minimum
         // temperature
@@ -79,8 +79,8 @@ class SimulatedAnnealing {
 
             for (int i = 0; i < numIterations; i++) {
                 int operationNum = doRandomOperation();
-                newSol = phmlrp.getVehiclesList();
-                double newCost = phmlrp.getSaOperationCost();
+                newSol = PHCRP.getVehiclesList();
+                double newCost = PHCRP.getSaOperationCost();
                 double difference = minCost - newCost;
 
                 addValuesToLists(counter, operationNum, newCost, difference);
@@ -120,12 +120,12 @@ class SimulatedAnnealing {
         // Capture the desired output by saving standard error to a file.
         // Later of you can open this dump with excel and apply text to columns.
         // You can create pivot tables, analyse results, min, max, average, compare algorithms etc.
-        System.err.println(uniqueFileName + "\t" + phmlrp.getSaOperationCost());
+        System.err.println(uniqueFileName + "\t" + PHCRP.getSaOperationCost());
 
-        phmlrp.setSimulatedAnnealing(false);
+        PHCRP.setSimulatedAnnealing(false);
 
-        phmlrp.resetVehiclesList(bestSol);
-        phmlrp.print();
+        PHCRP.resetVehiclesList(bestSol);
+        PHCRP.print();
 //        System.out.println(counter);
     }
 
@@ -135,8 +135,8 @@ class SimulatedAnnealing {
         differences.add(counter, difference);
         operationNums.add(counter, operationNum);
 
-        hubs = phmlrp.getHubsString();
-        routes = phmlrp.getVehiclesListString();
+        hubs = PHCRP.getHubsString();
+        routes = PHCRP.getVehiclesListString();
         hubsList.add(counter, hubs);
         routesList.add(counter, routes);
     }
@@ -162,7 +162,7 @@ class SimulatedAnnealing {
 
         int randOpr = random.nextInt(7);
 
-        Operations operations = new Operations(phmlrp);
+        Operations operations = new Operations(PHCRP);
 
         switch (randOpr) {
             case 0:

@@ -44,10 +44,10 @@ class VND {
     //    8, swapHubWithNode
     private List<List<Integer>> combinations;
 
-//    private List<List<List<List<PHMLRP>>>> bestReplicas = new ArrayList<>(problemInstances.length);
+//    private List<List<List<List<PHCRP>>>> bestReplicas = new ArrayList<>(problemInstances.length);
 
     private double[][] bestCosts;
-    private PHMLRP[][] bestSolutions;
+    private PHCRP[][] bestSolutions;
 
     private final boolean silent;
 
@@ -56,7 +56,7 @@ class VND {
         this.silent = params.getSilent();
         combinations = Utils.getCombinations("Combinations");
 
-        bestSolutions = new PHMLRP[problemInstances.length][combinations.size()];
+        bestSolutions = new PHCRP[problemInstances.length][combinations.size()];
         bestCosts = new double[problemInstances.length][combinations.size()];
         for (double[] arr : bestCosts) {
             Arrays.fill(arr, Integer.MAX_VALUE);
@@ -123,10 +123,10 @@ class VND {
         for (int probIdx = 0; probIdx < problemInstances.length; probIdx++) {
             // for each problem instance
 //            long probStartTime = System.nanoTime();
-//            List<List<List<PHMLRP>>> repPerProbList = new ArrayList<>(replicasPerProb);
+//            List<List<List<PHCRP>>> repPerProbList = new ArrayList<>(replicasPerProb);
             for (int replicaIdx = 0; replicaIdx < replicasPerProb; replicaIdx++) {
                 // run each problem instance n number of replicas
-//                List<List<PHMLRP>> combList = new ArrayList<>(combinations.size());
+//                List<List<PHCRP>> combList = new ArrayList<>(combinations.size());
                 XSSFRow[] rows = new XSSFRow[replicasPerCombination];
                 for (int row = 0; row < rows.length; row++) {
 //                            int rowNum = row + (i * replicaIdx * replicasPerCombination) + 1;
@@ -138,15 +138,15 @@ class VND {
 
                 for (int combIdx = 0; combIdx < combinations.size(); combIdx++) {
                     // run on every combination
-//                    List<PHMLRP> repPerCombList = new ArrayList<>(replicasPerCombination);
+//                    List<PHCRP> repPerCombList = new ArrayList<>(replicasPerCombination);
                     for (int repPerCombinationIdx = 0; repPerCombinationIdx < replicasPerCombination; repPerCombinationIdx++) {
                         // run each problem instance n number of replicas
 
                         long combStartTime = System.nanoTime();
 
-                        PHMLRP phmlrp = newPHMLRPInstance(problemInstances[probIdx]);
-                        phmlrp.setSilent(silent);
-                        createInitSol(phmlrp);
+                        PHCRP PHCRP = newPHMLRPInstance(problemInstances[probIdx]);
+                        PHCRP.setSilent(silent);
+                        createInitSol(PHCRP);
                         for (int k : combinations.get(combIdx)) {
                             // for each neighborhood
                             if (!silent)
@@ -159,14 +159,14 @@ class VND {
 
                             while (true) {
                                 // change neighborhood until no better solution, jump to next one
-                                if (!phmlrp.callOperation(k)) {
+                                if (!PHCRP.callOperation(k)) {
                                     // if doesn't give a better solution, break and jump to next neighborhood
                                     break;
                                 }
                             }
                         }
 
-                        double bestCost = phmlrp.getMaxCost();
+                        double bestCost = PHCRP.getMaxCost();
                         rows[repPerCombinationIdx].createCell(combIdx, CellType.NUMERIC).setCellValue(bestCost);
 
                         if (bestCost < bestCosts[probIdx][combIdx]) {
@@ -174,10 +174,10 @@ class VND {
                             timeSum[probIdx][combIdx] = diff / 1000;
                             bestCosts[probIdx][combIdx] = bestCost;
 
-                            bestSolutions[probIdx][combIdx] = phmlrp;
+                            bestSolutions[probIdx][combIdx] = PHCRP;
                         }
 
-//                        repPerCombList.add(phmlrp);
+//                        repPerCombList.add(PHCRP);
                     }
 
 //                    combList.add(repPerCombList);
@@ -275,14 +275,14 @@ class VND {
         }
     }
 
-    private void createInitSol(PHMLRP phmlrp) {
-        InitialSolutions initialSolutions = new InitialSolutions(phmlrp, params.getDataset(),
+    private void createInitSol(PHCRP PHCRP) {
+        InitialSolutions initialSolutions = new InitialSolutions(PHCRP, params.getDataset(),
                 params.getCollectionCostCFactor());
         initialSolutions.randomSolution();
-        phmlrp.calculateCost(PHMLRP.CostType.NORMAL);
+        PHCRP.calculateCost(PHCRP.CostType.NORMAL);
     }
 
-    private PHMLRP newPHMLRPInstance(String problemInstance) {
+    private PHCRP newPHMLRPInstance(String problemInstance) {
         return Utils.newPHMLRPInstance(problemInstance, this.params);
     }
 }
