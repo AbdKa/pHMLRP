@@ -1,9 +1,14 @@
 package com.abdul;
 
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.Random;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
+
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.*;
 
 class InitialSolutions {
 
@@ -45,12 +50,52 @@ class InitialSolutions {
         greedilyAssignNonHubsToVehicles();
     }
 
-    void greedyGurobiSolution() {
-        // 1- greedily pick hubs, after calculating the average distances for each node
-        greedyPickHubs();
-        // assign non-hub nodes to hubs through Gurobi
-        Gurobi gurobi = new Gurobi(phmlrp, dataset, numNodes, numHubs, numVehiclesPerHub, collectionCostCFactor);
-        gurobi.getSolGivenHubs();
+    void gurobiSolution(IS initSol) {
+        final String jsonPath = "results" + File.separator;
+
+        int[] hubsArr = new int[numHubs];
+        JSONParser parser = new JSONParser();
+        String jsonPrefix = initSol == IS.GRB ? "GRB" : "HUBS_GRB";
+        try {
+            JSONObject a = (JSONObject) parser.parse(new FileReader(jsonPath + jsonPrefix +
+                    "_" + dataset.toString() + "_" + numNodes + "_" + numHubs + "_" + numVehiclesPerHub + ".json"));
+            JSONArray routesJson = (JSONArray) a.get("routes");
+            int i = 0;
+            int h = 0;
+            for (Object routeObj : routesJson) {
+                int j = 0;
+                String[] route = routeObj.toString().split(",");
+                ArrayList<Integer> r = new ArrayList<>();
+                for (String nodeObj : route) {
+                    if (j < route.length - 1) {
+                        int node = Math.toIntExact((long) Long.valueOf(nodeObj));
+                        if (j == 0 && i % numVehiclesPerHub == 0) {
+                            hubsArr[h] = node;
+                            h++;
+                        } else if (j != 0) {
+                            r.add(node);
+                        }
+                    }
+                    j++;
+                }
+                phmlrp.setRouteInVehiclesList(i, r);
+                i++;
+            }
+            phmlrp.setHubsArr(hubsArr);
+        } catch (IOException e) {
+            System.out.println("Exception: " + e);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+
+        System.out.println("hubs:");
+        System.out.print(Arrays.toString(phmlrp.getHubsArr()));
+
+        for (List<Integer> route :
+                phmlrp.getVehiclesList()) {
+            System.out.print(route);
+            System.out.println();
+        }
     }
 
     void greedySolution() {

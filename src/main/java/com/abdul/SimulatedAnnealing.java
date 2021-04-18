@@ -37,6 +37,12 @@ class SimulatedAnnealing {
     private final double alpha = 0.95;
     // Number of iterations of annealing before decreasing temperature
     private final int numIterations = 10;
+    private double solCPU;
+    private int bestIteration;
+    private String bestHubs;
+    private String bestRoutes;
+    private StringBuilder hubs;
+    private StringBuilder routes;
 
     SimulatedAnnealing(PHMLRP phmlrp, Params params) {
         this.phmlrp = phmlrp;
@@ -54,6 +60,7 @@ class SimulatedAnnealing {
     }
 
     void applySA() {
+        long startTime = System.nanoTime();
         // Global minimum
         double minCost = phmlrp.getMaxCost();
         // new solution initialization
@@ -87,6 +94,9 @@ class SimulatedAnnealing {
                 if (difference > 0) {
                     setBestVehiclesList(newSol);
                     minCost = newCost;
+                    bestIteration = counter-1;
+                    bestHubs = hubs.toString();
+                    bestRoutes = routes.toString();
 
                     continue;
                 }
@@ -101,6 +111,10 @@ class SimulatedAnnealing {
 
             T *= alpha; // Decreases T, cooling phase
         }
+
+        solCPU = (System.nanoTime() - startTime) / 1e6;
+
+        setGeneralValues(minCost);
 
         String uniqueFileName = params.getDataset() + "." + params.getNumNodes() + "." + params.getNumHubs() + "." +
                 params.getNumVehicles() + "-" + params.getInitSol() + "-SA" + "-" +
@@ -119,9 +133,24 @@ class SimulatedAnnealing {
 //        System.out.println(counter);
     }
 
+    private void setGeneralValues(double minCost) {
+//        get the index of the current solution
+        int solIdx = GeneralResults.getIndex(params);
+        double generalCost = GeneralResults.objectives[solIdx];
+        if (minCost < generalCost) {
+            GeneralResults.initials[solIdx] = params.getInitSol();
+            GeneralResults.algorithms[solIdx] = params.getAlgorithm();
+            GeneralResults.objectives[solIdx] = minCost;
+            GeneralResults.CPUs[solIdx] = solCPU;
+            GeneralResults.iterations[solIdx] = bestIteration;
+            GeneralResults.hubsArr[solIdx] = bestHubs;
+            GeneralResults.routesArr[solIdx] = bestRoutes;
+        }
+    }
+
     private void addHubsAndRoutesStr(int counter) {
-        StringBuilder hubs = new StringBuilder();
-        StringBuilder routes = new StringBuilder();
+        hubs = new StringBuilder();
+        routes = new StringBuilder();
         for (int hub : phmlrp.getHubsArr()) {
             hubs.append(hub).append(", ");
         }
@@ -180,13 +209,13 @@ class SimulatedAnnealing {
 
         for (int i = 0; i < temps.size(); i++) {
             XSSFRow row = spreadsheet.createRow(i + 1);
-            row.createCell(0, CellType.NUMERIC).setCellValue(temps.get(i));
-            row.createCell(1, CellType.NUMERIC).setCellValue(i + 1);
-            row.createCell(2, CellType.NUMERIC).setCellValue(costs.get(i));
-            row.createCell(3, CellType.NUMERIC).setCellValue(differences.get(i));
-            row.createCell(4, CellType.NUMERIC).setCellValue(hubsList.get(i));
-            row.createCell(5, CellType.NUMERIC).setCellValue(routesList.get(i));
-            row.createCell(6, CellType.NUMERIC).setCellValue(operationNums.get(i));
+//            row.createCell(0, CellType.NUMERIC).setCellValue(temps.get(i));
+            row.createCell(0, CellType.NUMERIC).setCellValue(i + 1);
+            row.createCell(1, CellType.NUMERIC).setCellValue(costs.get(i));
+//            row.createCell(3, CellType.NUMERIC).setCellValue(differences.get(i));
+            row.createCell(2, CellType.NUMERIC).setCellValue(hubsList.get(i));
+            row.createCell(3, CellType.NUMERIC).setCellValue(routesList.get(i));
+//            row.createCell(6, CellType.NUMERIC).setCellValue(operationNums.get(i));
         }
 
         try {
@@ -198,12 +227,12 @@ class SimulatedAnnealing {
 
     private static void createSaFirstRow(XSSFSheet saSpreadsheet) {
         XSSFRow row = saSpreadsheet.createRow(0);
-        row.createCell(0, CellType.STRING).setCellValue("Temp");
-        row.createCell(1, CellType.STRING).setCellValue("Iteration#");
-        row.createCell(2, CellType.STRING).setCellValue("Solution Cost");
-        row.createCell(3, CellType.STRING).setCellValue("Difference");
-        row.createCell(4, CellType.STRING).setCellValue("hubs");
-        row.createCell(5, CellType.STRING).setCellValue("routes");
-        row.createCell(6, CellType.STRING).setCellValue("Executed Operation");
+//        row.createCell(0, CellType.STRING).setCellValue("Temp");
+        row.createCell(0, CellType.STRING).setCellValue("Iteration#");
+        row.createCell(1, CellType.STRING).setCellValue("Solution Cost");
+//        row.createCell(3, CellType.STRING).setCellValue("Difference");
+        row.createCell(2, CellType.STRING).setCellValue("hubs");
+        row.createCell(3, CellType.STRING).setCellValue("routes");
+//        row.createCell(6, CellType.STRING).setCellValue("Executed Operation");
     }
 }
