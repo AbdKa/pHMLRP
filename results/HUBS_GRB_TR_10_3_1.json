@@ -1,0 +1,27 @@
+{
+    "CPU": 0.02798195695504546,
+    "dataset": "TR",
+    "N": 10,
+    "hubs": [
+        2,
+        5,
+        4
+    ],
+    "routes": [
+        "2,0,6,9,2",
+        "5,8,1,5",
+        "4,7,3,4"
+    ],
+    "pHubCenterObjective": 2884.0,
+    "pHubCenterStatus": "OPTIMAL",
+    "objectives": {
+        "2": 1963.0,
+        "5": 2583.0,
+        "4": 1833.0
+    },
+    "statuses": {
+        "2": "OPTIMAL",
+        "5": "OPTIMAL",
+        "4": "OPTIMAL"
+    }
+}
