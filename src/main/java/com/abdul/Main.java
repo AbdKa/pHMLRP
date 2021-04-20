@@ -33,11 +33,11 @@ public class Main {
 
         // TODO: remove this if statement after preparing VNS
         if (params.getAlgorithm() == ALGO.SA) {
-            PHCRP PHCRP = new PHCRP(params.getDataset(), params.getNumNodes(), params.getNumHubs(), params.getNumVehicles(),
+            PHCRP pHCRP = new PHCRP(params.getDataset(), params.getNumNodes(), params.getNumHubs(), params.getNumVehicles(),
                     params.getCollectionCostCFactor(), params.getDistributionCostCFactor(), params.getHubToHubCFactor(),
                     params.getRemovalPercentage());
-            PHCRP.setSilent(params.getSilent());
-            InitialSolutions initialSolutions = new InitialSolutions(PHCRP, params.getDataset(),
+            pHCRP.setSilent(params.getSilent());
+            InitialSolutions initialSolutions = new InitialSolutions(pHCRP, params.getDataset(),
                     params.getCollectionCostCFactor());
 
             switch (params.getInitSol()) {
@@ -62,15 +62,15 @@ public class Main {
                     break;
             }
 
-            PHCRP.calculateCost(PHCRP.CostType.NORMAL);
+            pHCRP.calculateCost(PHCRP.CostType.NORMAL);
 //            add initial solution's hubs and routes to the general results
             int solIdx = GeneralResults.getIndex(params);
-            GeneralResults.hubsArr[solIdx] = PHCRP.getHubsString();
-            GeneralResults.routesArr[solIdx] = PHCRP.getVehiclesListString();
+            GeneralResults.hubsArr[solIdx] = pHCRP.getHubsString();
+            GeneralResults.routesArr[solIdx] = pHCRP.getVehiclesListString();
 
             switch (params.getAlgorithm()) {
                 case SA:
-                    SimulatedAnnealing simulatedAnnealing = new SimulatedAnnealing(PHCRP, params);
+                    SimulatedAnnealing simulatedAnnealing = new SimulatedAnnealing(pHCRP, params);
                     simulatedAnnealing.applySA();
                     break;
                 case VNS:

@@ -157,7 +157,7 @@ class Utils {
             e.printStackTrace();
         }
 
-        PHCRP PHCRP = new PHCRP(
+        PHCRP pHCRP = new PHCRP(
                 DS.valueOf(dataset),
                 N,
                 hubsList.size(),
@@ -168,22 +168,22 @@ class Utils {
                 0.2f);
 
         int[] hubsArr = hubsList.stream().mapToInt(i -> i).toArray();
-        PHCRP.setHubsArr(hubsArr);
-        PHCRP.resetVehiclesList(vehiclesList);
+        pHCRP.setHubsArr(hubsArr);
+        pHCRP.resetVehiclesList(vehiclesList);
 
         System.out.println("hubs:");
         for (int h :
-                PHCRP.getHubsArr()) {
+                pHCRP.getHubsArr()) {
             System.out.print(h + ", ");
         }
         System.out.println();
         for (List<Integer> route :
-                PHCRP.getVehiclesList()) {
+                pHCRP.getVehiclesList()) {
             route.forEach(node -> System.out.print(node + ", "));
             System.out.println();
         }
 
-        return PHCRP;
+        return pHCRP;
     }
 
     static PHCRP newPHMLRPInstance(String problemInstance, Params params) {
