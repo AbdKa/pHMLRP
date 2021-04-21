@@ -143,8 +143,8 @@ class LS_VND {
         }
     }
 
-    private void createInitSol(PHCRP PHCRP) {
-        InitialSolutions initialSolutions = new InitialSolutions(PHCRP, params.getDataset(),
+    private void createInitSol(PHCRP pHCRP) {
+        InitialSolutions initialSolutions = new InitialSolutions(pHCRP, params.getDataset(),
                 params.getCollectionCostCFactor());
         if (params.getInitSol().equals("greedy")) {
             initialSolutions.greedySolution();
@@ -152,7 +152,7 @@ class LS_VND {
             initialSolutions.randomSolution();
         }
 
-        PHCRP.calculateCost(PHCRP.CostType.NORMAL);
+        pHCRP.calculateCost(PHCRP.CostType.NORMAL);
     }
 
     private PHCRP newPHMLRPInstance(String problemInstance) {

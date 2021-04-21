@@ -6,6 +6,9 @@ import java.util.Map;
 class Consts {
 
     static final String[] instances = new String[]{
+            "TR16.16.3.1", "TR16.16.3.2", "TR16.16.3.3",
+            "TR16.16.4.1", "TR16.16.4.2", "TR16.16.4.3",
+            "TR16.16.5.1", "TR16.16.5.2",
             "TR.10.2.1", "TR.10.2.2", "TR.10.3.1",
             "TR.15.2.1", "TR.15.2.2",
             "TR.25.2.1", "TR.25.2.5", "TR.25.5.1", "TR.25.5.2",
