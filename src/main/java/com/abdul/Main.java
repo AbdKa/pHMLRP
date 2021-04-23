@@ -18,16 +18,6 @@ public class Main {
             return;
         }
 
-        // creating results paths
-        String currentPath = System.getProperty("user.dir");
-        String path = currentPath + File.separator + params.getResultPath();
-
-        try {
-            Files.createDirectories(Paths.get(path));
-        } catch (IOException ioe) {
-            throw new RuntimeException(ioe);
-        }
-
         // call this to create greedy hubs for each problem instance
 //        Extra.getGreedyHubs(params);
 
@@ -63,10 +53,9 @@ public class Main {
             }
 
             pHCRP.calculateCost(PHCRP.CostType.NORMAL);
-//            add initial solution's hubs and routes to the general results
-            int solIdx = GeneralResults.getIndex(params);
-            GeneralResults.hubsArr[solIdx] = pHCRP.getHubsString();
-            GeneralResults.routesArr[solIdx] = pHCRP.getVehiclesListString();
+
+            AlgoResults.setInitValues(params, pHCRP);
+            GeneralResults.setInitValues(params, pHCRP);
 
             switch (params.getAlgorithm()) {
                 case SA:

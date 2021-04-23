@@ -52,4 +52,13 @@ class Extra {
             e.printStackTrace();
         }
     }
+
+//    print objective functions for gurobi json files
+    //            String jsonPrefix = params.getInitSol() == IS.GRB ? "GRB" : "HUBS_GRB";
+//            String instance = jsonPrefix + "_" +
+//                    params.getDataset().toString() + "_" +
+//                    params.getNumNodes() + "_" +
+//                    params.getNumHubs() + "_" +
+//                    params.getNumVehicles();
+//            System.out.format("%25s%25s%n", instance, pHCRP.getMaxCost());
 }

@@ -5,6 +5,7 @@ import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -15,7 +16,7 @@ class SimulatedAnnealing {
 
     private final Random random = new Random();
 
-    private final PHCRP PHCRP;
+    private final PHCRP pHCRP;
     private final Params params;
     private final boolean silent;
 
@@ -45,7 +46,7 @@ class SimulatedAnnealing {
     private String routes;
 
     SimulatedAnnealing(PHCRP PHCRP, Params params) {
-        this.PHCRP = PHCRP;
+        this.pHCRP = PHCRP;
         this.params = params;
         setBestVehiclesList(PHCRP.getVehiclesList());
         this.silent = params.getSilent();
@@ -62,13 +63,13 @@ class SimulatedAnnealing {
     void applySA() {
         long startTime = System.nanoTime();
         // Global minimum
-        double minCost = PHCRP.getMaxCost();
+        double minCost = pHCRP.getMaxCost();
         // new solution initialization
         ArrayList<List<Integer>> newSol;
 
-        PHCRP.print();
+        pHCRP.print();
 
-        PHCRP.setSimulatedAnnealing(true);
+        pHCRP.setSimulatedAnnealing(true);
 
         // Continues annealing until reaching minimum
         // temperature
@@ -79,8 +80,8 @@ class SimulatedAnnealing {
 
             for (int i = 0; i < numIterations; i++) {
                 int operationNum = doRandomOperation();
-                newSol = PHCRP.getVehiclesList();
-                double newCost = PHCRP.getSaOperationCost();
+                newSol = pHCRP.getVehiclesList();
+                double newCost = pHCRP.getSaOperationCost();
                 double difference = minCost - newCost;
 
                 addValuesToLists(counter, operationNum, newCost, difference);
@@ -90,7 +91,7 @@ class SimulatedAnnealing {
                 if (difference > 0) {
                     setBestVehiclesList(newSol);
                     minCost = newCost;
-                    bestIteration = counter-1;
+                    bestIteration = counter;
                     bestHubs = hubs;
                     bestRoutes = routes;
 
@@ -110,7 +111,10 @@ class SimulatedAnnealing {
 
         solCPU = (System.nanoTime() - startTime) / 1e6;
 
-        setGeneralValues(minCost);
+//        set values of the solution resulted from this algorithm into the arrays
+//        at AlgoResults (contains best results) GeneralResults (contains best of the best results)
+        AlgoResults.setAlgoValues(params, minCost, solCPU, bestIteration, bestHubs, bestRoutes);
+        GeneralResults.setGeneralValues(params, minCost, solCPU, bestIteration, bestHubs, bestRoutes);
 
         String uniqueFileName = params.getDataset() + "." + params.getNumNodes() + "." + params.getNumHubs() + "." +
                 params.getNumVehicles() + "-" + params.getInitSol() + "-SA" + "-" +
@@ -120,12 +124,12 @@ class SimulatedAnnealing {
         // Capture the desired output by saving standard error to a file.
         // Later of you can open this dump with excel and apply text to columns.
         // You can create pivot tables, analyse results, min, max, average, compare algorithms etc.
-        System.err.println(uniqueFileName + "\t" + PHCRP.getSaOperationCost());
+        System.err.println(uniqueFileName + "\t" + pHCRP.getSaOperationCost());
 
-        PHCRP.setSimulatedAnnealing(false);
+        pHCRP.setSimulatedAnnealing(false);
 
-        PHCRP.resetVehiclesList(bestSol);
-        PHCRP.print();
+        pHCRP.resetVehiclesList(bestSol);
+        pHCRP.print();
 //        System.out.println(counter);
     }
 
@@ -135,34 +139,17 @@ class SimulatedAnnealing {
         differences.add(counter, difference);
         operationNums.add(counter, operationNum);
 
-        hubs = PHCRP.getHubsString();
-        routes = PHCRP.getVehiclesListString();
+        hubs = pHCRP.getHubsString();
+        routes = pHCRP.getVehiclesListString();
         hubsList.add(counter, hubs);
         routesList.add(counter, routes);
-    }
-
-    private void setGeneralValues(double minCost) {
-//        get the index of the current solution
-        int solIdx = GeneralResults.getIndex(params);
-        double generalCost = GeneralResults.objectives[solIdx];
-        if (minCost < generalCost) {
-            GeneralResults.initials[solIdx] = params.getInitSol();
-            GeneralResults.algorithms[solIdx] = params.getAlgorithm();
-            GeneralResults.objectives[solIdx] = minCost;
-            GeneralResults.CPUs[solIdx] = solCPU;
-            GeneralResults.iterations[solIdx] = bestIteration;
-            if (bestHubs != null) {
-                GeneralResults.hubsArr[solIdx] = bestHubs;
-                GeneralResults.routesArr[solIdx] = bestRoutes;
-            }
-        }
     }
 
     private int doRandomOperation() {
 
         int randOpr = random.nextInt(7);
 
-        Operations operations = new Operations(PHCRP);
+        Operations operations = new Operations(pHCRP);
 
         switch (randOpr) {
             case 0:
@@ -213,7 +200,8 @@ class SimulatedAnnealing {
         }
 
         try {
-            Utils.createExcelFile(saWorkbook, params.getResultPath() + "/" + uniqueFileName);
+            Utils.createExcelFile(saWorkbook, params.getResultPath() +
+                    File.separator + params.getAlgorithm().toString() + File.separator + uniqueFileName);
         } catch (IOException e) {
             e.printStackTrace();
         }
