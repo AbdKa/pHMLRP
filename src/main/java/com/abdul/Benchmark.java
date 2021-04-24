@@ -6,11 +6,16 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.stream.IntStream;
 
+import static com.abdul.Consts.instances;
+import static com.abdul.Utils.execution;
+
 public class Benchmark {
 
     private final static int numOfRuns = 10;
 
     public static void main(String[] args) {
+
+        final long start = System.nanoTime();
 
         // creating results paths
         String currentPath = System.getProperty("user.dir");
@@ -30,7 +35,6 @@ public class Benchmark {
 
         IntStream.range(0, numOfRuns).boxed().parallel().forEach(v ->
         {
-            String[] instances = Consts.instances;
             for (int i = 0; i < instances.length; i++) {
                 String s = instances[i];
 
@@ -55,5 +59,8 @@ public class Benchmark {
 
         GeneralResults.printFinalResults();
         AlgoResults.printAlgoResults();
+
+
+        System.out.println("Total " + instances.length * numOfRuns + " problem instances are processed in " + execution(start));
     }
 }

@@ -12,6 +12,8 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
+import org.apache.commons.lang3.time.DurationFormatUtils;
 
 class Utils {
 
@@ -197,5 +199,15 @@ class Utils {
                 params.getDistributionCostCFactor(),
                 params.getHubToHubCFactor(),
                 params.getRemovalPercentage());
+    }
+
+    /**
+     * Human readable execution time information
+     *
+     * @param startNano start of the task
+     * @return human readable message
+     */
+    public static String execution(long startNano) {
+        return DurationFormatUtils.formatDuration(TimeUnit.MILLISECONDS.convert(System.nanoTime() - startNano, TimeUnit.NANOSECONDS), "HH:mm:ss");
     }
 }
