@@ -1,8 +1,9 @@
 package com.abdul;
 
 import java.io.BufferedReader;
-import java.io.FileReader;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -20,8 +21,7 @@ class Dataset {
     private static final List<List<Double>> CABdistances = new ArrayList<>();
 
     private static void load(String dataset, List<List<Double>> distances) {
-        try {
-            BufferedReader CSVFile = new BufferedReader(new FileReader("db/" + dataset + ".csv"));
+        try (BufferedReader CSVFile = Files.newBufferedReader(Paths.get("db/" + dataset + ".csv"))) {
             String dataRow = CSVFile.readLine();
 //            dataRow = CSVFile.readLine();
 //            dataRow = CSVFile.readLine();
