@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Random;
 
 class PHCRP {
+    private double initCPU;
     private double maxCost, maxNonMinEdgeCost, maxCostAfterOperation = 0;
     private final DS dataset;
     private final int numNodes, numHubs, numVehiclesPerHub;
@@ -24,8 +25,16 @@ class PHCRP {
 
     private boolean silent = false;
 
-    public void setSilent(boolean silent) {
+    void setSilent(boolean silent) {
         this.silent = silent;
+    }
+
+    public double getInitCPU() {
+        return initCPU;
+    }
+
+    public void setInitCPU(double initCPU) {
+        this.initCPU = initCPU;
     }
 
     /**

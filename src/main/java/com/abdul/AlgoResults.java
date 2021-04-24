@@ -55,6 +55,7 @@ class AlgoResults {
 
         initSols[solIdx] = params.getInitSol();
         algorithms[solIdx] = params.getAlgorithm();
+//        initObjectives[solIdx] = initObj;
         objectives[solIdx] = minCost;
         CPUs[solIdx] = solCPU;
         iterations[solIdx] = bestIteration;
@@ -104,7 +105,7 @@ class AlgoResults {
         row.createCell(2, CellType.STRING).setCellValue("init sol");
         row.createCell(3, CellType.STRING).setCellValue("init obj");
         row.createCell(4, CellType.STRING).setCellValue("obj");
-        row.createCell(5, CellType.STRING).setCellValue("CPU (ms)");
+        row.createCell(5, CellType.STRING).setCellValue("CPU (seconds)");
         row.createCell(6, CellType.STRING).setCellValue("best iteration");
         row.createCell(7, CellType.STRING).setCellValue("hubs");
         row.createCell(8, CellType.STRING).setCellValue("routes");
@@ -113,9 +114,13 @@ class AlgoResults {
     static void setInitValues(Params params, PHCRP pHCRP) {
         // add initial solution's values to the results arrays
         int solIdx = getSolIndex(params);
-        AlgoResults.initObjectives[solIdx] = pHCRP.getMaxCost();
-        AlgoResults.objectives[solIdx] = pHCRP.getMaxCost();
-        AlgoResults.hubsArr[solIdx] = pHCRP.getHubsString();
-        AlgoResults.routesArr[solIdx] = pHCRP.getVehiclesListString();
+        initSols[solIdx] = params.getInitSol();
+        algorithms[solIdx] = params.getAlgorithm();
+        initObjectives[solIdx] = pHCRP.getMaxCost();
+        objectives[solIdx] = pHCRP.getMaxCost();
+        CPUs[solIdx] = pHCRP.getInitCPU();
+        iterations[solIdx] = 0;
+        hubsArr[solIdx] = pHCRP.getHubsString();
+        routesArr[solIdx] = pHCRP.getVehiclesListString();
     }
 }

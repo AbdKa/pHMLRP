@@ -8,7 +8,7 @@ import java.util.stream.IntStream;
 
 public class Benchmark {
 
-    private final static int numOfRuns = 10;
+    private final static int numOfRuns = 1;
 
     public static void main(String[] args) {
 

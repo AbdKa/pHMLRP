@@ -12,98 +12,66 @@ import java.util.*;
 
 class InitialSolutions {
 
-    private final PHCRP PHCRP;
+    private final PHCRP pHCRP;
     private DS dataset;
     private final int numNodes, numHubs, numVehiclesPerHub;
     private float collectionCostCFactor;
 
-    InitialSolutions(PHCRP PHCRP, DS dataset, float collectionCostCFactor) {
-        this.PHCRP = PHCRP;
+    InitialSolutions(PHCRP pHCRP, DS dataset, float collectionCostCFactor) {
+        this.pHCRP = pHCRP;
         this.dataset = dataset;
-        this.numNodes = PHCRP.getNumNodes();
-        this.numHubs = PHCRP.getNumHubs();
-        this.numVehiclesPerHub = PHCRP.getNumVehiclesPerHub();
+        this.numNodes = pHCRP.getNumNodes();
+        this.numHubs = pHCRP.getNumHubs();
+        this.numVehiclesPerHub = pHCRP.getNumVehiclesPerHub();
         this.collectionCostCFactor = collectionCostCFactor;
     }
 
+//    #1 RND
     void randomSolution() {
+        long startTime = System.nanoTime();
         // 1- pick hubs randomly
         randomlyPickHubs();
         // 2- assign non-hub nodes to hubs randomly
         // 3- distribute non-hubs on the vehicles
         randomlyAssignNonHubsToVehicles();
+        double cpu = (System.nanoTime() - startTime) / 1e9;
+        pHCRP.setInitCPU(cpu);
     }
 
+//    #2 GREEDY
+    void greedySolution() {
+        long startTime = System.nanoTime();
+        // 1- greedily pick hubs, after calculating the average distances for each node
+        greedyPickHubs();
+        // 2- greedily assign non-hub nodes to hubs
+        // 3- distribute non-hubs on the vehicles
+        greedilyAssignNonHubsToVehicles();
+        double cpu = (System.nanoTime() - startTime) / 1e9;
+        pHCRP.setInitCPU(cpu);
+    }
+
+//    #3 GREEDY_RND
     void greedyRandomSolution() {
+        long startTime = System.nanoTime();
         // 1- greedily pick hubs, after calculating the average distances for each node
         greedyPickHubs();
         // 2- greedily assign non-hub nodes to hubs
         // 3- distribute non-hubs on the vehicles
         randomlyAssignNonHubsToVehicles();
+        double cpu = (System.nanoTime() - startTime) / 1e9;
+        pHCRP.setInitCPU(cpu);
     }
 
+//    #4 RND_GREEDY
     void randomGreedySolution() {
+        long startTime = System.nanoTime();
         // 1- greedily pick hubs, after calculating the average distances for each node
         randomlyPickHubs();
         // 2- greedily assign non-hub nodes to hubs
         // 3- distribute non-hubs on the vehicles
         greedilyAssignNonHubsToVehicles();
-    }
-
-    void gurobiSolution(IS initSol) {
-        final String jsonPath = "results" + File.separator;
-
-        int[] hubsArr = new int[numHubs];
-        JSONParser parser = new JSONParser();
-        String jsonPrefix = initSol == IS.GRB ? "GRB" : "HUBS_GRB";
-        try {
-            JSONObject a = (JSONObject) parser.parse(new FileReader(jsonPath + jsonPrefix +
-                    "_" + dataset.toString() + "_" + numNodes + "_" + numHubs + "_" + numVehiclesPerHub + ".json"));
-            JSONArray routesJson = (JSONArray) a.get("routes");
-            int i = 0;
-            int h = 0;
-            for (Object routeObj : routesJson) {
-                int j = 0;
-                String[] route = routeObj.toString().split(",");
-                ArrayList<Integer> r = new ArrayList<>();
-                for (String nodeObj : route) {
-                    if (j < route.length - 1) {
-                        int node = Math.toIntExact((long) Long.valueOf(nodeObj));
-                        if (j == 0 && i % numVehiclesPerHub == 0) {
-                            hubsArr[h] = node;
-                            h++;
-                        } else if (j != 0) {
-                            r.add(node);
-                        }
-                    }
-                    j++;
-                }
-                PHCRP.setRouteInVehiclesList(i, r);
-                i++;
-            }
-            PHCRP.setHubsArr(hubsArr);
-        } catch (IOException e) {
-            System.out.println("Exception: " + e);
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
-
-//        System.out.println("hubs:");
-//        System.out.print(Arrays.toString(PHCRP.getHubsArr()));
-
-//        for (List<Integer> route :
-//                PHCRP.getVehiclesList()) {
-//            System.out.print(route);
-//            System.out.println();
-//        }
-    }
-
-    void greedySolution() {
-        // 1- greedily pick hubs, after calculating the average distances for each node
-        greedyPickHubs();
-        // 2- greedily assign non-hub nodes to hubs
-        // 3- distribute non-hubs on the vehicles
-        greedilyAssignNonHubsToVehicles();
+        double cpu = (System.nanoTime() - startTime) / 1e9;
+        pHCRP.setInitCPU(cpu);
     }
 
     /**
@@ -114,13 +82,13 @@ class InitialSolutions {
             Random rand = new Random();
             int randomNode = rand.nextInt(numNodes); // random node index
 
-            if (PHCRP.getIsVisitedCity()[randomNode]) {
+            if (pHCRP.getIsVisitedCity()[randomNode]) {
                 i--;
                 continue;
             }
 
-            PHCRP.getHubsArr()[i] = randomNode;
-            PHCRP.getIsVisitedCity()[randomNode] = true;
+            pHCRP.getHubsArr()[i] = randomNode;
+            pHCRP.getIsVisitedCity()[randomNode] = true;
         }
     }
 
@@ -129,7 +97,7 @@ class InitialSolutions {
         for (int i = 0; i < numNodes; i++) {
             int sum = 0;
             for (int j = 0; j < numNodes; j++) {
-                sum += PHCRP.getDistance(i, j);
+                sum += pHCRP.getDistance(i, j);
             }
             nodesDistanceAvg.put(i, sum / numNodes);
         }
@@ -139,8 +107,8 @@ class InitialSolutions {
         int h = 0;
         for (Map.Entry<Integer, Integer> node : nodesDistanceAvg.entrySet()) {
             if (h >= numHubs) break;
-            PHCRP.getHubsArr()[h] = node.getKey();
-            PHCRP.getIsVisitedCity()[PHCRP.getHubsArr()[h]] = true;
+            pHCRP.getHubsArr()[h] = node.getKey();
+            pHCRP.getIsVisitedCity()[pHCRP.getHubsArr()[h]] = true;
             h++;
         }
     }
@@ -153,10 +121,10 @@ class InitialSolutions {
         int remainingNodes = numNodes - numHubs;
 
         // loop through vehicles lists
-        for (int i = 0; i < PHCRP.getVehiclesList().size(); i++) {
+        for (int i = 0; i < pHCRP.getVehiclesList().size(); i++) {
             Random random = new Random();
             int numOfNodesForVehicle = random.nextInt(maxNumOfNodesInVehicle) + minNumOfNodesInVehicle;
-            int remainingVehicles = PHCRP.getVehiclesList().size() - i;
+            int remainingVehicles = pHCRP.getVehiclesList().size() - i;
 
             // this condition ensures that we do not run out of nodes
             if (remainingNodes - numOfNodesForVehicle >= remainingVehicles - 1) {
@@ -171,13 +139,13 @@ class InitialSolutions {
                 // filling in a vehicle's list with nodes
                 for (int j = 0; j < numOfNodesForVehicle; j++) {
                     int randomNode = random.nextInt(numNodes);
-                    if (PHCRP.getIsVisitedCity()[randomNode]) {
+                    if (pHCRP.getIsVisitedCity()[randomNode]) {
                         j--;
                         continue;
                     }
 
-                    PHCRP.getVehiclesList().get(i).add(j, randomNode);
-                    PHCRP.getIsVisitedCity()[randomNode] = true;
+                    pHCRP.getVehiclesList().get(i).add(j, randomNode);
+                    pHCRP.getIsVisitedCity()[randomNode] = true;
                 }
             } else {
                 i--;
@@ -195,7 +163,7 @@ class InitialSolutions {
         // a hash map of the hub-to-node distances
         Map<Integer, Double> nodesToHubDistance = new LinkedHashMap<>();
         // loop through vehicles lists
-        for (int i = 0; i < PHCRP.getVehiclesList().size(); i++) {
+        for (int i = 0; i < pHCRP.getVehiclesList().size(); i++) {
             // if it's a new hub
             if (i % numVehiclesPerHub == 0) {
                 // create a hash map of the hub-to-node distances
@@ -204,15 +172,15 @@ class InitialSolutions {
                 for (int node = 0; node < numNodes; node++) {
                     // loop through node and get distances to the current hub
                     // only if the node is non-hub
-                    if (!PHCRP.getIsVisitedCity()[node])
-                        nodesToHubDistance.put(node, PHCRP.getDistance(PHCRP.getHubsArr()[currentHub], node));
+                    if (!pHCRP.getIsVisitedCity()[node])
+                        nodesToHubDistance.put(node, pHCRP.getDistance(pHCRP.getHubsArr()[currentHub], node));
                 }
                 nodesToHubDistance = Utils.sortByValue(nodesToHubDistance);
             }
 
             Random random = new Random();
             int numOfNodesForVehicle = random.nextInt(maxNumOfNodesInVehicle) + minNumOfNodesInVehicle;
-            int remainingVehicles = PHCRP.getVehiclesList().size() - i;
+            int remainingVehicles = pHCRP.getVehiclesList().size() - i;
 
             // this condition ensures that we do not run out of nodes
             if (remainingNodes - numOfNodesForVehicle >= remainingVehicles - 1) {
@@ -228,13 +196,13 @@ class InitialSolutions {
                 for (int j = 0; j < numOfNodesForVehicle; j++) {
                     Map.Entry<Integer, Double> entry = nodesToHubDistance.entrySet().iterator().next();
                     int closestNode = entry.getKey();
-                    if (PHCRP.getIsVisitedCity()[closestNode]) {
+                    if (pHCRP.getIsVisitedCity()[closestNode]) {
                         j--;
                         continue;
                     }
 
-                    PHCRP.getVehiclesList().get(i).add(j, closestNode);
-                    PHCRP.getIsVisitedCity()[closestNode] = true;
+                    pHCRP.getVehiclesList().get(i).add(j, closestNode);
+                    pHCRP.getIsVisitedCity()[closestNode] = true;
                     // remove the visited node, because already added to a hub
                     nodesToHubDistance.remove(closestNode);
                 }
@@ -245,18 +213,20 @@ class InitialSolutions {
         }
     }
 
+//    #5 PROP
     /**
      * generate a probabilistic initial solution
      * pick hubs using roulette wheel
      **/
     void probabilisticInitSol() {
+        long startTime = System.nanoTime();
         ArrayList<Integer> nodesDistancesSum = new ArrayList<>(numNodes);
         int totalSum = 0;
         // timeSum nodes distances and the total of all the summations
         for (int i = 0; i < numNodes; i++) {
             int sum = 0;
             for (int j = 0; j < numNodes; j++) {
-                sum += PHCRP.getDistance(i, j);
+                sum += pHCRP.getDistance(i, j);
             }
             nodesDistancesSum.add(sum);
             totalSum += sum;
@@ -320,9 +290,11 @@ class InitialSolutions {
             }
         }
 
-        PHCRP.setHubsArr(hubsArr);
-        PHCRP.setIsVisitedCity(isVisitedCity);
+        pHCRP.setHubsArr(hubsArr);
+        pHCRP.setIsVisitedCity(isVisitedCity);
         assignNodesRouletteWheel(isVisitedCity);
+        double cpu = (System.nanoTime() - startTime) / 1e9;
+        pHCRP.setInitCPU(cpu);
     }
 
     /**
@@ -338,10 +310,10 @@ class InitialSolutions {
         // a hash map of the hub-to-node distances
         Map<Integer, Double> normalizedDistances = new LinkedHashMap<>();
         // loop through vehicles lists
-        for (int i = 0; i < PHCRP.getVehiclesList().size(); i++) {
+        for (int i = 0; i < pHCRP.getVehiclesList().size(); i++) {
             Random random = new Random();
             int numOfNodesForVehicle = random.nextInt(maxNumOfNodesInVehicle) + minNumOfNodesInVehicle;
-            int remainingVehicles = PHCRP.getVehiclesList().size() - i;
+            int remainingVehicles = pHCRP.getVehiclesList().size() - i;
 
             // current hub
             int currentHub = i / numVehiclesPerHub;
@@ -349,7 +321,7 @@ class InitialSolutions {
             int distancesSum = 0;
             for (int node = 0; node < numNodes; node++) {
                 // distancesSum hub to node distances
-                distancesSum += PHCRP.getDistance(currentHub, node);
+                distancesSum += pHCRP.getDistance(currentHub, node);
             }
 
             // if it's a new hub
@@ -359,7 +331,7 @@ class InitialSolutions {
                     // loop through node and get distances to the current hub
                     // only if the node is non-hub
                     if (!isVisitedCity[node]) {
-                        double prob = (double) PHCRP.getDistance(PHCRP.getHubsArr()[currentHub], node) / distancesSum;
+                        double prob = (double) pHCRP.getDistance(pHCRP.getHubsArr()[currentHub], node) / distancesSum;
                         normalizedDistances.put(node, prob);
                     }
                 }
@@ -400,7 +372,7 @@ class InitialSolutions {
 //                            System.out.println("randomProb " + randomProb + " nodeProb " + n.getValue() +
 //                                    " node " + node + " totalSum " + distancesSum);
 
-                            PHCRP.getVehiclesList().get(i).add(j, node);
+                            pHCRP.getVehiclesList().get(i).add(j, node);
                             isVisitedCity[node] = true;
                             int oldDistancesSum = distancesSum;
                             distancesSum -= (distancesSum * n.getValue());
@@ -429,5 +401,56 @@ class InitialSolutions {
                 i--;
             }
         }
+    }
+
+    //    #6 GRB & #7 GREEDY_GRB
+    void gurobiSolution(IS initSol) {
+        final String jsonPath = "results" + File.separator;
+
+        int[] hubsArr = new int[numHubs];
+        JSONParser parser = new JSONParser();
+        String jsonPrefix = initSol == IS.GRB ? "GRB" : "HUBS_GRB";
+        try {
+            JSONObject a = (JSONObject) parser.parse(new FileReader(jsonPath + jsonPrefix +
+                    "_" + dataset.toString() + "_" + numNodes + "_" + numHubs + "_" + numVehiclesPerHub + ".json"));
+            double cpu = (Double) a.get("CPU");
+            pHCRP.setInitCPU(cpu);
+            JSONArray routesJson = (JSONArray) a.get("routes");
+            int i = 0;
+            int h = 0;
+            for (Object routeObj : routesJson) {
+                int j = 0;
+                String[] route = routeObj.toString().split(",");
+                ArrayList<Integer> r = new ArrayList<>();
+                for (String nodeObj : route) {
+                    if (j < route.length - 1) {
+                        int node = Math.toIntExact((long) Long.valueOf(nodeObj));
+                        if (j == 0 && i % numVehiclesPerHub == 0) {
+                            hubsArr[h] = node;
+                            h++;
+                        } else if (j != 0) {
+                            r.add(node);
+                        }
+                    }
+                    j++;
+                }
+                pHCRP.setRouteInVehiclesList(i, r);
+                i++;
+            }
+            pHCRP.setHubsArr(hubsArr);
+        } catch (IOException e) {
+            System.out.println("Exception: " + e);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+
+//        System.out.println("hubs:");
+//        System.out.print(Arrays.toString(pHCRP.getHubsArr()));
+
+//        for (List<Integer> route :
+//                pHCRP.getVehiclesList()) {
+//            System.out.print(route);
+//            System.out.println();
+//        }
     }
 }

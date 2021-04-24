@@ -35,9 +35,11 @@ class SimulatedAnnealing {
     // Temperature at which iteration terminates
     private final double minT = .0000001;
     // Decrease in temperature
-    private final double alpha = 0.95;
+    private final double alpha = 0.99;
     // Number of iterations of annealing before decreasing temperature
     private final int numIterations = 10;
+    private double initObj;
+    private double initCPU;
     private double solCPU;
     private int bestIteration;
     private String bestHubs;
@@ -63,7 +65,8 @@ class SimulatedAnnealing {
     void applySA() {
         long startTime = System.nanoTime();
         // Global minimum
-        double minCost = pHCRP.getMaxCost();
+        double minObj = pHCRP.getMaxCost();
+        initObj = minObj;
         // new solution initialization
         ArrayList<List<Integer>> newSol;
 
@@ -82,7 +85,7 @@ class SimulatedAnnealing {
                 int operationNum = doRandomOperation();
                 newSol = pHCRP.getVehiclesList();
                 double newCost = pHCRP.getSaOperationCost();
-                double difference = minCost - newCost;
+                double difference = minObj - newCost;
 
                 addValuesToLists(counter, operationNum, newCost, difference);
                 counter++;
@@ -90,10 +93,11 @@ class SimulatedAnnealing {
                 // Reassigns global minimum accordingly
                 if (difference > 0) {
                     setBestVehiclesList(newSol);
-                    minCost = newCost;
+                    minObj = newCost;
                     bestIteration = counter;
                     bestHubs = hubs;
                     bestRoutes = routes;
+                    initCPU = pHCRP.getInitCPU();
 
                     continue;
                 }
@@ -109,12 +113,13 @@ class SimulatedAnnealing {
             T *= alpha; // Decreases T, cooling phase
         }
 
-        solCPU = (System.nanoTime() - startTime) / 1e6;
+        solCPU = (System.nanoTime() - startTime) / 1e9;
+        solCPU += initCPU;
 
 //        set values of the solution resulted from this algorithm into the arrays
 //        at AlgoResults (contains best results) GeneralResults (contains best of the best results)
-        AlgoResults.setAlgoValues(params, minCost, solCPU, bestIteration, bestHubs, bestRoutes);
-        GeneralResults.setGeneralValues(params, minCost, solCPU, bestIteration, bestHubs, bestRoutes);
+        AlgoResults.setAlgoValues(params, minObj, solCPU, bestIteration, bestHubs, bestRoutes);
+        GeneralResults.setGeneralValues(params, initObj, minObj, solCPU, bestIteration, bestHubs, bestRoutes);
 
         String uniqueFileName = params.getDataset() + "." + params.getNumNodes() + "." + params.getNumHubs() + "." +
                 params.getNumVehicles() + "-" + params.getInitSol() + "-SA" + "-" +
@@ -147,7 +152,7 @@ class SimulatedAnnealing {
 
     private int doRandomOperation() {
 
-        int randOpr = random.nextInt(7);
+        int randOpr = random.nextInt(8);
 
         Operations operations = new Operations(pHCRP);
 
@@ -170,15 +175,17 @@ class SimulatedAnnealing {
             case 5:
                 operations.edgeOptWithinRoutes(true, -1, -1, -1, -1);
                 break;
+//          two chances for swap hub with node
             case 6:
+            case 7:
                 operations.swapHubWithNode(true, -1, -1, -1);
                 break;
         }
 
-//        operations.localSearchInsertion();
-//        operations.localSearchSwapHubWithNode();
-//        operations.localSearchSwap();
-//        operations.localSearchEdgeOpt();
+        operations.localSearchInsertion();
+        operations.localSearchSwapHubWithNode();
+        operations.localSearchSwap();
+        operations.localSearchEdgeOpt();
 
         return randOpr;
     }

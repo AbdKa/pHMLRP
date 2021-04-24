@@ -62,10 +62,10 @@ public class Main {
                     SimulatedAnnealing simulatedAnnealing = new SimulatedAnnealing(pHCRP, params);
                     simulatedAnnealing.applySA();
                     break;
-                case VNS:
-                    VND vnd = new VND(params);
-                    vnd.runVND();
-                    break;
+//                case VNS:
+//                    VND vnd = new VND(params);
+//                    vnd.runVND();
+//                    break;
             }
         }
     }

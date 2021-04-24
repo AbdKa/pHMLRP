@@ -11,6 +11,7 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Arrays;
 
 class GeneralResults {
     static IS[] initSols;
@@ -30,7 +31,9 @@ class GeneralResults {
         initSols = new IS[arrLength];
         algorithms = new ALGO[arrLength];
         initObjectives = new double[arrLength];
+        Arrays.fill(initObjectives, Double.MAX_VALUE);
         objectives = new double[arrLength];
+        Arrays.fill(objectives, Double.MAX_VALUE);
         CPUs = new double[arrLength];
         iterations = new int[arrLength];
         hubsArr = new String[arrLength];
@@ -43,7 +46,7 @@ class GeneralResults {
         return runIdx * Consts.instances.length + instanceIdx;
     }
 
-    static void setGeneralValues(Params params, double minCost, double solCPU,
+    static void setGeneralValues(Params params, double initObj, double minCost, double solCPU,
                                  int bestIteration, String bestHubs, String bestRoutes) {
 //        get the index of the current solution
         int solIdx = getSolIndex(params);
@@ -51,6 +54,7 @@ class GeneralResults {
         if (minCost < generalCost) {
             initSols[solIdx] = params.getInitSol();
             algorithms[solIdx] = params.getAlgorithm();
+            initObjectives[solIdx] = initObj;
             objectives[solIdx] = minCost;
             CPUs[solIdx] = solCPU;
             iterations[solIdx] = bestIteration;
@@ -97,7 +101,7 @@ class GeneralResults {
         row.createCell(3, CellType.STRING).setCellValue("algo");
         row.createCell(4, CellType.STRING).setCellValue("init obj");
         row.createCell(5, CellType.STRING).setCellValue("obj");
-        row.createCell(6, CellType.STRING).setCellValue("CPU (ms)");
+        row.createCell(6, CellType.STRING).setCellValue("CPU (seconds)");
         row.createCell(7, CellType.STRING).setCellValue("best iteration");
         row.createCell(8, CellType.STRING).setCellValue("hubs");
         row.createCell(9, CellType.STRING).setCellValue("routes");
@@ -106,9 +110,15 @@ class GeneralResults {
     static void setInitValues(Params params, PHCRP pHCRP) {
         // add initial solution's hubs and routes to the general results
         int solIdx = getSolIndex(params);
-        GeneralResults.initObjectives[solIdx] = pHCRP.getMaxCost();
-        GeneralResults.objectives[solIdx] = pHCRP.getMaxCost();
-        GeneralResults.hubsArr[solIdx] = pHCRP.getHubsString();
-        GeneralResults.routesArr[solIdx] = pHCRP.getVehiclesListString();
+        if (pHCRP.getMaxCost() < objectives[solIdx]) {
+            initSols[solIdx] = params.getInitSol();
+            algorithms[solIdx] = params.getAlgorithm();
+            initObjectives[solIdx] = pHCRP.getMaxCost();
+            objectives[solIdx] = pHCRP.getMaxCost();
+            CPUs[solIdx] = pHCRP.getInitCPU();
+            iterations[solIdx] = 0;
+            hubsArr[solIdx] = pHCRP.getHubsString();
+            routesArr[solIdx] = pHCRP.getVehiclesListString();
+        }
     }
 }
