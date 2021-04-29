@@ -53,15 +53,22 @@ public class Summary {
         best = Collections.min(list);
         System.out.println(best);
 
+        System.out.println("General Results");
+        summary.generalResults();
     }
 
     public void generalResults() {
         for (String instance : instances) {
             for (IS is : IS.values()) {
-                // this is the best of 10 runs
+
                 List<IterSolution> list = traverse(instance, is, ALGO.SA);
-                for (IterSolution s : list)
-                    System.out.println(s);
+
+                if (list.size() != numOfRuns) {
+                    System.out.println("found " + list.size() + " many instances for " + instance);
+                }
+                // this is the best of 10 runs
+                IterSolution best = Collections.min(list);
+                System.out.println(best);
             }
         }
     }
