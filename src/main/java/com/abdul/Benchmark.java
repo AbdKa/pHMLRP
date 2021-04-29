@@ -11,7 +11,7 @@ import static com.abdul.Utils.execution;
 
 public class Benchmark {
 
-    private final static int numOfRuns = 10;
+     final static int numOfRuns = 10;
 
     public static void main(String[] args) {
 
