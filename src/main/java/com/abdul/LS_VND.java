@@ -1,9 +1,5 @@
 package com.abdul;
 
-import org.apache.poi.ss.usermodel.CellType;
-import org.apache.poi.xssf.usermodel.XSSFRow;
-import org.apache.poi.xssf.usermodel.XSSFSheet;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.json.simple.JSONArray;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
@@ -115,32 +111,32 @@ class LS_VND {
     }
 
     private void writeBCtoExcel() {
-        XSSFWorkbook bcWorkbook = new XSSFWorkbook();
-
-        for (int j = 0; j < bestCosts.length; j++) {
-            XSSFSheet bcSheet = bcWorkbook.createSheet(problemInstances[j]);
-            XSSFRow row = bcSheet.createRow(0);
-            row.createCell(0, CellType.STRING).setCellValue("LS Combination");
-            row.createCell(1, CellType.STRING).setCellValue("IterationNumber");
-            row.createCell(2, CellType.STRING).setCellValue("bestCost");
-            row.createCell(3, CellType.STRING).setCellValue("CPUTime (micro)");
-
-            for (int k = 0; k < bestCosts[j].length; k++) {
-                row = bcSheet.createRow(k + 1);
-                row.createCell(0, CellType.NUMERIC).setCellValue(
-                        Utils.createCombinationStr(combinations.get(k)));
-                row.createCell(1, CellType.NUMERIC).setCellValue(bestIterations[j][k]);
-                row.createCell(2, CellType.NUMERIC).setCellValue(bestCosts[j][k]);
-                row.createCell(3, CellType.NUMERIC).setCellValue(bestTimes[j][k]);
-            }
-        }
-
-        try {
-            Utils.createExcelFile(bcWorkbook,
-                    params.getResultPath() + "/LS_VND_" + combinations.size() + "_combinations");
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+//        XSSFWorkbook bcWorkbook = new XSSFWorkbook();
+//
+//        for (int j = 0; j < bestCosts.length; j++) {
+//            XSSFSheet bcSheet = bcWorkbook.createSheet(problemInstances[j]);
+//            XSSFRow row = bcSheet.createRow(0);
+//            row.createCell(0, CellType.STRING).setCellValue("LS Combination");
+//            row.createCell(1, CellType.STRING).setCellValue("IterationNumber");
+//            row.createCell(2, CellType.STRING).setCellValue("bestCost");
+//            row.createCell(3, CellType.STRING).setCellValue("CPUTime (micro)");
+//
+//            for (int k = 0; k < bestCosts[j].length; k++) {
+//                row = bcSheet.createRow(k + 1);
+//                row.createCell(0, CellType.NUMERIC).setCellValue(
+//                        Utils.createCombinationStr(combinations.get(k)));
+//                row.createCell(1, CellType.NUMERIC).setCellValue(bestIterations[j][k]);
+//                row.createCell(2, CellType.NUMERIC).setCellValue(bestCosts[j][k]);
+//                row.createCell(3, CellType.NUMERIC).setCellValue(bestTimes[j][k]);
+//            }
+//        }
+//
+//        try {
+//            Utils.createExcelFile(bcWorkbook,
+//                    params.getResultPath() + "/LS_VND_" + combinations.size() + "_combinations");
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
     }
 
     private void createInitSol(PHCRP pHCRP) {

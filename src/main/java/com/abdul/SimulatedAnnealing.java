@@ -1,9 +1,6 @@
 package com.abdul;
 
-import org.apache.poi.ss.usermodel.CellType;
-import org.apache.poi.xssf.usermodel.XSSFRow;
-import org.apache.poi.xssf.usermodel.XSSFSheet;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import jdk.jshell.execution.Util;
 
 import java.io.File;
 import java.io.IOException;
@@ -11,6 +8,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import java.util.UUID;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 class SimulatedAnnealing {
 
@@ -44,8 +43,6 @@ class SimulatedAnnealing {
     private int bestIteration;
     private String bestHubs;
     private String bestRoutes;
-    private String hubs;
-    private String routes;
 
     SimulatedAnnealing(PHCRP PHCRP, Params params) {
         this.pHCRP = PHCRP;
@@ -74,6 +71,8 @@ class SimulatedAnnealing {
 
         pHCRP.setSimulatedAnnealing(true);
 
+        doLS();
+
         // Continues annealing until reaching minimum
         // temperature
         int counter = 0;
@@ -87,17 +86,23 @@ class SimulatedAnnealing {
                 double newCost = pHCRP.getSaOperationCost();
                 double difference = minObj - newCost;
 
-                addValuesToLists(counter, operationNum, newCost, difference);
-                counter++;
-
-                // Reassigns global minimum accordingly
-                if (difference > 0) {
-                    setBestVehiclesList(newSol);
-                    minObj = newCost;
+                if (difference <= 0) {
+//                    add values to lists if greater than or equal to minObj otherwise add after doLS()
+                    addValuesToLists(counter, operationNum, newCost, difference);
+                    counter++;
+                } else {
+                    // Reassigns global minimum accordingly
+                    doLS();
+                    newCost = pHCRP.getSaOperationCost();
+                    setBestVehiclesList(pHCRP.getVehiclesList());
+                    minObj = pHCRP.getSaOperationCost();
                     bestIteration = counter;
-                    bestHubs = hubs;
-                    bestRoutes = routes;
+                    bestHubs = pHCRP.getHubsString();
+                    bestRoutes = pHCRP.getVehiclesListString();
                     initCPU = pHCRP.getInitCPU();
+//                   add values to lists after doLS()
+                    addValuesToLists(counter, operationNum, newCost, difference);
+                    counter++;
 
                     continue;
                 }
@@ -118,18 +123,16 @@ class SimulatedAnnealing {
 
 //        set values of the solution resulted from this algorithm into the arrays
 //        at AlgoResults (contains best results) GeneralResults (contains best of the best results)
-        AlgoResults.setAlgoValues(params, minObj, solCPU, bestIteration, bestHubs, bestRoutes);
-        GeneralResults.setGeneralValues(params, initObj, minObj, solCPU, bestIteration, bestHubs, bestRoutes);
+//        AlgoResults.setAlgoValues(params, minObj, solCPU, bestIteration, bestHubs, bestRoutes);
+//        GeneralResults.setGeneralValues(params, initObj, minObj, solCPU, bestIteration, bestHubs, bestRoutes);
 
-        String uniqueFileName = params.getDataset() + "." + params.getNumNodes() + "." + params.getNumHubs() + "." +
-                params.getNumVehicles() + "-" + params.getInitSol() + "-SA" + "-" +
-                UUID.randomUUID().toString().replaceAll("-", "");
-        printResultsExcel(uniqueFileName);
+        String uniqueFileName = Utils.getUniqueFileName(params);
+        printResultsCSV(uniqueFileName);
 
         // Capture the desired output by saving standard error to a file.
-        // Later of you can open this dump with excel and apply text to columns.
+        // Later of you can open this dump with CSV and apply text to columns.
         // You can create pivot tables, analyse results, min, max, average, compare algorithms etc.
-        System.err.println(uniqueFileName + "\t" + pHCRP.getSaOperationCost());
+        System.err.println(uniqueFileName + "\t" + minObj);
 
         pHCRP.setSimulatedAnnealing(false);
 
@@ -144,8 +147,8 @@ class SimulatedAnnealing {
         differences.add(counter, difference);
         operationNums.add(counter, operationNum);
 
-        hubs = pHCRP.getHubsString();
-        routes = pHCRP.getVehiclesListString();
+        String hubs = pHCRP.getHubsString();
+        String routes = pHCRP.getVehiclesListString();
         hubsList.add(counter, hubs);
         routesList.add(counter, routes);
     }
@@ -182,46 +185,29 @@ class SimulatedAnnealing {
                 break;
         }
 
+        return randOpr;
+    }
+
+    private void doLS() {
+        Operations operations = new Operations(pHCRP);
         operations.localSearchInsertion();
         operations.localSearchSwapHubWithNode();
         operations.localSearchSwap();
         operations.localSearchEdgeOpt();
-
-        return randOpr;
     }
 
-    private void printResultsExcel(String uniqueFileName) {
-        XSSFWorkbook saWorkbook = new XSSFWorkbook();
-        XSSFSheet spreadsheet = saWorkbook.createSheet("SA Temps");
-        createSaFirstRow(spreadsheet);
-
-        for (int i = 0; i < temps.size(); i++) {
-            XSSFRow row = spreadsheet.createRow(i + 1);
-//            row.createCell(0, CellType.NUMERIC).setCellValue(temps.get(i));
-            row.createCell(0, CellType.NUMERIC).setCellValue(i + 1);
-            row.createCell(1, CellType.NUMERIC).setCellValue(costs.get(i));
-//            row.createCell(3, CellType.NUMERIC).setCellValue(differences.get(i));
-            row.createCell(2, CellType.NUMERIC).setCellValue(hubsList.get(i));
-            row.createCell(3, CellType.NUMERIC).setCellValue(routesList.get(i));
-//            row.createCell(6, CellType.NUMERIC).setCellValue(operationNums.get(i));
-        }
+    private void printResultsCSV(String uniqueFileName) {
+//        just a range from 1 to temps.size() to input in CSV
+        List<Integer> iterations = IntStream.rangeClosed(1, temps.size())
+                .boxed().collect(Collectors.toList());
 
         try {
-            Utils.createExcelFile(saWorkbook, params.getResultPath() +
-                    File.separator + params.getAlgorithm().toString() + File.separator + uniqueFileName);
+            Utils.createCSVFile(params.getResultPath() +
+                            File.separator + params.getAlgorithm().toString() + File.separator + uniqueFileName,
+                    "Iteration#, Solution Cost, hubs, routes",
+                    iterations, costs, hubsList, routesList);
         } catch (IOException e) {
             e.printStackTrace();
         }
-    }
-
-    private static void createSaFirstRow(XSSFSheet saSpreadsheet) {
-        XSSFRow row = saSpreadsheet.createRow(0);
-//        row.createCell(0, CellType.STRING).setCellValue("Temp");
-        row.createCell(0, CellType.STRING).setCellValue("Iteration#");
-        row.createCell(1, CellType.STRING).setCellValue("Solution Cost");
-//        row.createCell(3, CellType.STRING).setCellValue("Difference");
-        row.createCell(2, CellType.STRING).setCellValue("hubs");
-        row.createCell(3, CellType.STRING).setCellValue("routes");
-//        row.createCell(6, CellType.STRING).setCellValue("Executed Operation");
     }
 }

@@ -3,11 +3,6 @@ package com.abdul;
 import com.lexicalscope.jewel.cli.ArgumentValidationException;
 import com.lexicalscope.jewel.cli.CliFactory;
 
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-
 public class Main {
     public static void main(String[] args) {
         Params params;
@@ -54,8 +49,8 @@ public class Main {
 
             pHCRP.calculateCost(PHCRP.CostType.NORMAL);
 
-            AlgoResults.setInitValues(params, pHCRP);
-            GeneralResults.setInitValues(params, pHCRP);
+//            AlgoResults.setInitValues(params, pHCRP);
+//            GeneralResults.setInitValues(params, pHCRP);
 
             switch (params.getAlgorithm()) {
                 case SA:

@@ -1,13 +1,5 @@
 package com.abdul;
 
-import org.apache.poi.ss.usermodel.CellType;
-import org.apache.poi.xssf.usermodel.XSSFRow;
-import org.apache.poi.xssf.usermodel.XSSFSheet;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -24,42 +16,42 @@ class DeterministicPermutation {
         bestPermutationCost = PHCRP.getMaxCost();
     }
 
-    void deterministicOperationOrder(XSSFWorkbook workbook, XSSFSheet spreadsheet) throws IOException {
-        initVehiclesList = new ArrayList<>();
-        for (List<Integer> list : PHCRP.getVehiclesList()) {
-            List<Integer> innerList = new ArrayList<>(list);
-            initVehiclesList.add(innerList);
-        }
-
-        int numOfSolutions = 30;
-        bestPermutations = new Permutation[numOfSolutions];
-        int[] operationsIndices = {0, 1, 2, 3};
-        int numberOfOperations = operationsIndices.length;
-
-        for (int sol = 0; sol < numOfSolutions; sol++) {
-            heapPermutation(operationsIndices, numberOfOperations, sol);
-            bestPermutationCost = initMaxCost;
-        }
-
-        XSSFRow row;
-        System.out.println("counter : " + counter);
-        for (int i = 0; i < bestPermutations.length; i++) {
-            row = spreadsheet.createRow(i + 1);
-            row.createCell(0, CellType.NUMERIC).setCellValue(i + 1);
-            String orderStr = buildOrderStr(bestPermutations[i].getOperationOrder());
-            row.createCell(1, CellType.STRING).setCellValue(orderStr);
-            row.createCell(2, CellType.NUMERIC).setCellValue(bestPermutations[i].getCost());
-            bestPermutations[i].printHubsAndRoutesToExcel(row);
-        }
-
-        //Write the workbook in file system
-        FileOutputStream out = new FileOutputStream(
-                new File("permutation_results.xlsx"));
-
-        workbook.write(out);
-        out.close();
-        System.out.println("xlsx written successfully");
-    }
+//    void deterministicOperationOrder(XSSFWorkbook workbook, XSSFSheet spreadsheet) throws IOException {
+//        initVehiclesList = new ArrayList<>();
+//        for (List<Integer> list : PHCRP.getVehiclesList()) {
+//            List<Integer> innerList = new ArrayList<>(list);
+//            initVehiclesList.add(innerList);
+//        }
+//
+//        int numOfSolutions = 30;
+//        bestPermutations = new Permutation[numOfSolutions];
+//        int[] operationsIndices = {0, 1, 2, 3};
+//        int numberOfOperations = operationsIndices.length;
+//
+//        for (int sol = 0; sol < numOfSolutions; sol++) {
+//            heapPermutation(operationsIndices, numberOfOperations, sol);
+//            bestPermutationCost = initMaxCost;
+//        }
+//
+//        XSSFRow row;
+//        System.out.println("counter : " + counter);
+//        for (int i = 0; i < bestPermutations.length; i++) {
+//            row = spreadsheet.createRow(i + 1);
+//            row.createCell(0, CellType.NUMERIC).setCellValue(i + 1);
+//            String orderStr = buildOrderStr(bestPermutations[i].getOperationOrder());
+//            row.createCell(1, CellType.STRING).setCellValue(orderStr);
+//            row.createCell(2, CellType.NUMERIC).setCellValue(bestPermutations[i].getCost());
+//            bestPermutations[i].printHubsAndRoutesToExcel(row);
+//        }
+//
+//        //Write the workbook in file system
+//        FileOutputStream out = new FileOutputStream(
+//                new File("permutation_results.xlsx"));
+//
+//        workbook.write(out);
+//        out.close();
+//        System.out.println("xlsx written successfully");
+//    }
 
     private String buildOrderStr(int[] operationOrder) {
         StringBuilder str = new StringBuilder();
@@ -175,19 +167,19 @@ class Permutation {
         }
     }
 
-    void printHubsAndRoutesToExcel(XSSFRow row) {
-        StringBuilder hubs = new StringBuilder();
-        StringBuilder routes = new StringBuilder();
-        for (int hub : this.hubsArr) {
-            hubs.append(hub).append(", ");
-        }
-        for (List<Integer> route : this.vehiclesList) {
-            for (int node : route) {
-                routes.append(node).append(", ");
-            }
-            routes.append("; ");
-        }
-        row.createCell(3, CellType.STRING).setCellValue(hubs.toString());
-        row.createCell(4, CellType.STRING).setCellValue(routes.toString());
-    }
+//    void printHubsAndRoutesToExcel(XSSFRow row) {
+//        StringBuilder hubs = new StringBuilder();
+//        StringBuilder routes = new StringBuilder();
+//        for (int hub : this.hubsArr) {
+//            hubs.append(hub).append(", ");
+//        }
+//        for (List<Integer> route : this.vehiclesList) {
+//            for (int node : route) {
+//                routes.append(node).append(", ");
+//            }
+//            routes.append("; ");
+//        }
+//        row.createCell(3, CellType.STRING).setCellValue(hubs.toString());
+//        row.createCell(4, CellType.STRING).setCellValue(routes.toString());
+//    }
 }

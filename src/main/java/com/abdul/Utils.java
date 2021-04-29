@@ -1,23 +1,22 @@
 package com.abdul;
 
-import org.apache.poi.xssf.usermodel.XSSFSheet;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
+import org.apache.commons.lang3.time.DurationFormatUtils;
 
 import java.io.*;
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.InvalidPathException;
+import java.nio.file.NoSuchFileException;
+import java.nio.file.StandardOpenOption;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
-import org.apache.commons.lang3.time.DurationFormatUtils;
+import java.util.zip.GZIPOutputStream;
 
 class Utils {
 
     static double CPU = 0;
+
+    private static final int BUFFER_SIZE = 1 << 16; // 64K
 
     static List<List<Integer>> getCombinations(String fileName) {
         Map<String, Integer> hashMap;
@@ -52,18 +51,6 @@ class Utils {
         return combinationsList;
     }
 
-    static XSSFSheet[] createSheets(XSSFWorkbook workbook, List<List<Integer>> combinations) {
-        XSSFSheet[] list = new XSSFSheet[combinations.size()];
-        for (List<Integer> comb : combinations) {
-            StringBuilder sheetName = new StringBuilder();
-            for (Integer nbhd : comb) {
-                sheetName.append(Consts.neighborhoodsStr.getOrDefault(nbhd, ""));
-                sheetName.append(".");
-            }
-        }
-        return list;
-    }
-
     static String createCombinationStr(List<Integer> combination) {
         StringBuilder combinationStr = new StringBuilder();
         for (Integer ls : combination) {
@@ -84,14 +71,33 @@ class Utils {
         return result;
     }
 
-    static void createExcelFile(XSSFWorkbook workbook, String fileName) throws IOException {
-        //Write the workbook in file system
-        FileOutputStream out = new FileOutputStream(
-                new File(fileName + ".xlsx"));
+    /**
+     * creates a CSV file
+     * @param header is the first row in CSV
+     * @param lists any type and number of lists
+    * */
+    static void createCSVFile(String fileName, String header, List... lists) throws IOException {
+        //Write csv file
+        try {
+            File csvOutputFile = new File(fileName + ".csv");
+            OutputStream stream = new GZIPOutputStream(Files.newOutputStream(csvOutputFile.toPath(), StandardOpenOption.WRITE,
+                    StandardOpenOption.CREATE), BUFFER_SIZE);
+            PrintWriter out = new PrintWriter(new OutputStreamWriter(stream, StandardCharsets.UTF_8));
+            out.println(header);
+            for (int i = 0; i < lists[0].size(); i++) {
+                for (List arr : lists) {
+                    out.print(arr.get(i));
+                    out.print(", ");
+                }
+                out.println();
+            }
+            out.flush();
 
-        workbook.write(out);
-        out.close();
-        System.out.println(fileName + ".xlsx written successfully");
+        } catch (FileNotFoundException | InvalidPathException e) {
+            throw new IOException("Failed to open ", e);
+        }
+
+        System.out.println(fileName + ".csv written successfully");
     }
 
     static void createTextFile() {
@@ -119,75 +125,6 @@ class Utils {
         }
     }
 
-    static PHCRP getJsonInitSol(String fileName) {
-        // TODO: change this to match the new output json
-        String dataset = "";
-        int N = 0;
-        List<Integer> hubsList = new ArrayList<>();
-        ArrayList<List<Integer>> vehiclesList = new ArrayList<>();
-        JSONParser parser = new JSONParser();
-        try {
-            JSONObject a = (JSONObject) parser.parse(new FileReader("python/results/pHC_MTSP_" +
-                    fileName + ".json"));
-            JSONArray routesJson = (JSONArray) a.get("routes");
-            dataset = (String) a.get("dataset");
-            N = Math.toIntExact((long) a.get("N"));
-            CPU = (double) a.get("CPU");
-            System.out.println("Routes:");
-
-            for (Object routeObj : routesJson) {
-                String routeStr = (String) routeObj;
-                System.out.println(routeStr);
-                String[] route = routeStr.split(",");
-                List<Integer> r = new ArrayList<>();
-                for (int k = 0; k < route.length; k++) {
-                    int node = Integer.parseInt(route[k]);
-                    if (k == 0) {
-                        if (hubsList.contains(node))
-                            continue;
-                        hubsList.add(node);
-                        continue;
-                    }
-                    r.add(node);
-                }
-
-                vehiclesList.add(r);
-            }
-        } catch (IOException e) {
-            System.out.println("Exception: " + e);
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
-
-        PHCRP pHCRP = new PHCRP(
-                DS.valueOf(dataset),
-                N,
-                hubsList.size(),
-                1,
-                1,
-                1,
-                1,
-                0.2f);
-
-        int[] hubsArr = hubsList.stream().mapToInt(i -> i).toArray();
-        pHCRP.setHubsArr(hubsArr);
-        pHCRP.resetVehiclesList(vehiclesList);
-
-        System.out.println("hubs:");
-        for (int h :
-                pHCRP.getHubsArr()) {
-            System.out.print(h + ", ");
-        }
-        System.out.println();
-        for (List<Integer> route :
-                pHCRP.getVehiclesList()) {
-            route.forEach(node -> System.out.print(node + ", "));
-            System.out.println();
-        }
-
-        return pHCRP;
-    }
-
     static PHCRP newPHMLRPInstance(String problemInstance, Params params) {
 
         return new PHCRP(
@@ -207,7 +144,13 @@ class Utils {
      * @param startNano start of the task
      * @return human readable message
      */
-    public static String execution(long startNano) {
+    static String execution(long startNano) {
         return DurationFormatUtils.formatDuration(TimeUnit.MILLISECONDS.convert(System.nanoTime() - startNano, TimeUnit.NANOSECONDS), "HH:mm:ss");
+    }
+
+    static String getUniqueFileName(Params params) {
+        return params.getRunNum() + "-" + params.getDataset() + "." + params.getNumNodes() + "." + params.getNumHubs() + "." +
+                params.getNumVehicles() + "-" + params.getInitSol() + "-SA" + "-" +
+                UUID.randomUUID().toString().replaceAll("-", "");
     }
 }

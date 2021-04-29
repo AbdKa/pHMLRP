@@ -340,7 +340,7 @@ class IncompleteHubs {
         }
 
 //        try {
-//            Utils.createExcelFile(workbook,
+//            Utils.createCSVFile(workbook,
 //                    path + "/" + PHCRP.getNumNodes() + "_" +
 //                            PHCRP.getNumHubs() + "_" +
 //                            PHCRP.getNumVehiclesPerHub() + "_" +
@@ -491,7 +491,7 @@ class IncompleteHubs {
 //        }
 //
 //        try {
-//            Utils.createExcelFile(workbook,
+//            Utils.createCSVFile(workbook,
 //                    "incompleteHubResults_" + path + "/" + PHCRP.getNumNodes() + "_" +
 //                            PHCRP.getNumHubs() + "_" +
 //                            PHCRP.getNumVehiclesPerHub());

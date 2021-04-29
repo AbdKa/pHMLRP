@@ -95,10 +95,10 @@ class PHCRP {
     String getHubsString() {
         StringBuilder hubs = new StringBuilder();
         for (int hub : hubsArr) {
-            hubs.append(hub).append(", ");
+            hubs.append(hub).append(";");
         }
 
-        return hubs.toString();
+        return hubs.substring(0, hubs.length()-1);
     }
 
     ArrayList<List<Integer>> getVehiclesList() {
@@ -126,10 +126,10 @@ class PHCRP {
         for (int i = 0; i < vehiclesList.size(); i++) {
             List<Integer> route = vehiclesList.get(i);
             int hub = hubsArr[i / numVehiclesPerHub];
-            routes.append(hub).append(", ");
+            routes.append(hub).append("-");
 
             for (int node : route) {
-                routes.append(node).append(", ");
+                routes.append(node).append("-");
             }
             routes.append(hub).append("; ");
         }
@@ -137,7 +137,7 @@ class PHCRP {
         return routes.toString();
     }
 
-    public boolean[] getIsVisitedCity() {
+    boolean[] getIsVisitedCity() {
         return isVisitedCity;
     }
 

@@ -30,22 +30,16 @@ public class Benchmark {
             throw new RuntimeException(ioe);
         }
 
-        new GeneralResults(numOfRuns);
-        new AlgoResults(numOfRuns);
-
         IntStream.range(0, numOfRuns).boxed().parallel().forEach(v ->
         {
-            for (int i = 0; i < instances.length; i++) {
-                String s = instances[i];
-
+            for (String s : instances) {
                 String[] parts = s.split("\\.");
 
                 for (IS is : IS.values())
                     for (ALGO algo : ALGO.values()) {
 //                        System.out.println(v + " " + s + " " + is + " " + algo);
                         Main.main(new String[]{
-                                "--run", v.toString(),
-                                "--instance", String.valueOf(i),
+                                "--run", String.valueOf(v+1),
                                 "--dataset", parts[0],
                                 "--nodes", parts[1],
                                 "--hubs", parts[2],
@@ -57,10 +51,7 @@ public class Benchmark {
             }
         });
 
-        GeneralResults.printFinalResults();
-        AlgoResults.printAlgoResults();
-
-
-        System.out.println("Total " + instances.length * numOfRuns + " problem instances are processed in " + execution(start));
+        System.out.println("Total " + numOfRuns * instances.length * IS.values().length * ALGO.values().length +
+                " problem instances are processed in " + execution(start));
     }
 }
