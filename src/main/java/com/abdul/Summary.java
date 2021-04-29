@@ -16,6 +16,7 @@ import java.util.stream.Stream;
 import java.util.zip.GZIPInputStream;
 
 import static com.abdul.Benchmark.numOfRuns;
+import static com.abdul.Consts.instances;
 import static com.abdul.Utils.BUFFER_SIZE;
 
 public class Summary {
@@ -41,8 +42,8 @@ public class Summary {
         try (Stream<IterSolution> stream = list.stream()) {
 
             DoubleSummaryStatistics summaryStatistics = stream
-                            .mapToDouble(IterSolution::cost)
-                            .summaryStatistics();
+                    .mapToDouble(IterSolution::cost)
+                    .summaryStatistics();
 
             System.out.println(summaryStatistics);
         }
@@ -52,6 +53,17 @@ public class Summary {
         best = Collections.min(list);
         System.out.println(best);
 
+    }
+
+    public void generalResults() {
+        for (String instance : instances) {
+            for (IS is : IS.values()) {
+                // this is the best of 10 runs
+                List<IterSolution> list = traverse(instance, is, ALGO.SA);
+                for (IterSolution s : list)
+                    System.out.println(s);
+            }
+        }
     }
 
     public List<IterSolution> traverse(String prefix, ALGO algorithm) {
