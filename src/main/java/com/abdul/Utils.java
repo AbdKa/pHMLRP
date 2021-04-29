@@ -6,7 +6,7 @@ import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.InvalidPathException;
-import java.nio.file.NoSuchFileException;
+import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
@@ -16,18 +16,17 @@ class Utils {
 
     static double CPU = 0;
 
-    private static final int BUFFER_SIZE = 1 << 16; // 64K
+    static final int BUFFER_SIZE = 1 << 16; // 64K
 
     static List<List<Integer>> getCombinations(String fileName) {
-        Map<String, Integer> hashMap;
+        final Map<String, Integer> hashMap;
         if (fileName.equals("ls_combinations")) {
             hashMap = Consts.localSearchMap;
         } else {
             hashMap = Consts.neighborhoods;
         }
         List<List<Integer>> combinationsList = new ArrayList<>();
-        try {
-            BufferedReader CSVFile = new BufferedReader(new FileReader(fileName + ".csv"));
+        try (BufferedReader CSVFile = new BufferedReader(new FileReader(fileName + ".csv"))) {
             String dataRow = CSVFile.readLine();
             while (dataRow != null && !dataRow.equals("")) {
                 // converting comma separate String to array of neighborhoods
@@ -73,23 +72,25 @@ class Utils {
 
     /**
      * creates a CSV file
+     *
      * @param header is the first row in CSV
-     * @param lists any type and number of lists
-    * */
-    static void createCSVFile(String fileName, String header, List... lists) throws IOException {
+     * @param lists  any type and number of lists
+     */
+    static void createCSVFile(String fileName, String header, List<?>... lists) throws IOException {
         //Write csv file
-        try {
-            File csvOutputFile = new File(fileName + ".csv");
-            OutputStream stream = new GZIPOutputStream(Files.newOutputStream(csvOutputFile.toPath(), StandardOpenOption.WRITE,
-                    StandardOpenOption.CREATE), BUFFER_SIZE);
-            PrintWriter out = new PrintWriter(new OutputStreamWriter(stream, StandardCharsets.UTF_8));
+        try (OutputStream stream = new GZIPOutputStream(Files.newOutputStream(Paths.get(fileName + ".csv.gz"),
+                StandardOpenOption.WRITE, StandardOpenOption.CREATE), BUFFER_SIZE);
+             PrintWriter out = new PrintWriter(new OutputStreamWriter(stream, StandardCharsets.US_ASCII))) {
             out.println(header);
             for (int i = 0; i < lists[0].size(); i++) {
-                for (List arr : lists) {
+                for (List<?> arr : lists) {
                     out.print(arr.get(i));
                     out.print(", ");
+                    System.out.print(arr.get(i));
+                    System.out.print(", ");
                 }
                 out.println();
+                System.out.println();
             }
             out.flush();
 
@@ -97,7 +98,7 @@ class Utils {
             throw new IOException("Failed to open ", e);
         }
 
-        System.out.println(fileName + ".csv written successfully");
+        System.out.println(fileName + ".csv.gz written successfully");
     }
 
     static void createTextFile() {
@@ -149,8 +150,8 @@ class Utils {
     }
 
     static String getUniqueFileName(Params params) {
-        return params.getRunNum() + "-" + params.getDataset() + "." + params.getNumNodes() + "." + params.getNumHubs() + "." +
-                params.getNumVehicles() + "-" + params.getInitSol() + "-SA" + "-" +
+        return params.getDataset() + "." + params.getNumNodes() + "." + params.getNumHubs() + "." +
+                params.getNumVehicles() + "-" + params.getInitSol() + "-" + params.getAlgorithm() + "-" +
                 UUID.randomUUID().toString().replaceAll("-", "");
     }
 }

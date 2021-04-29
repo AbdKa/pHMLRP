@@ -8,8 +8,6 @@ import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 import java.util.zip.GZIPOutputStream;
 
 import static com.abdul.Utils.BUFFER_SIZE;
@@ -24,12 +22,14 @@ class SimulatedAnnealing {
 
     private ArrayList<List<Integer>> bestSol;
 
-    private final List<Double> temps = new ArrayList<>();
-    private final List<Double> costs = new ArrayList<>();
-    private final List<Double> differences = new ArrayList<>();
-    private final List<Integer> operationNums = new ArrayList<>();
-    private final List<String> hubsList = new ArrayList<>();
-    private final List<String> routesList = new ArrayList<>();
+    /**
+     * private final List<Double> temps = new ArrayList<>();
+     * private final List<Double> costs = new ArrayList<>();
+     * private final List<Double> differences = new ArrayList<>();
+     * private final List<Integer> operationNums = new ArrayList<>();
+     * private final List<String> hubsList = new ArrayList<>();
+     * private final List<String> routesList = new ArrayList<>();
+     **/
 
     // Simulated Annealing parameters
     // Initial temperature
@@ -41,11 +41,10 @@ class SimulatedAnnealing {
     // Number of iterations of annealing before decreasing temperature
     private final int numIterations = 10;
     private double initObj;
-    private double initCPU;
     private double solCPU;
     private int bestIteration = 0;
-    private String bestHubs;
-    private String bestRoutes;
+  //  private String bestHubs;
+  //  private String bestRoutes;
 
     SimulatedAnnealing(PHCRP PHCRP, Params params) {
         this.pHCRP = PHCRP;
@@ -136,9 +135,8 @@ class SimulatedAnnealing {
                     setBestVehiclesList(pHCRP.getVehiclesList());
                     minObj = pHCRP.getSaOperationCost();
                     bestIteration = counter;
-                    bestHubs = pHCRP.getHubsString();
-                    bestRoutes = pHCRP.getVehiclesListString();
-                    initCPU = pHCRP.getInitCPU(); //TODO if this is the initial solution's CPU, why are we updating it?
+//                    bestHubs = pHCRP.getHubsString();
+//                    bestRoutes = pHCRP.getVehiclesListString();
 //                   add values to lists after doLS()
 //                   addValuesToLists(counter, operationNum, newCost, difference);
                     printLine(out, counter, newCost);
@@ -159,7 +157,7 @@ class SimulatedAnnealing {
         }
 
         solCPU = (System.nanoTime() - startTime) / 1e9;
-        solCPU += initCPU;
+        solCPU += pHCRP.getInitCPU();
 
 //        set values of the solution resulted from this algorithm into the arrays
 //        at AlgoResults (contains best results) GeneralResults (contains best of the best results)
@@ -189,17 +187,19 @@ class SimulatedAnnealing {
 //        System.out.println(counter);
     }
 
-    private void addValuesToLists(int counter, int operationNum, double newCost, double difference) {
-        temps.add(counter, T);
-        costs.add(counter, newCost);
-        differences.add(counter, difference);
-        operationNums.add(counter, operationNum);
-
-        String hubs = pHCRP.getHubsString();
-        String routes = pHCRP.getVehiclesListString();
-        hubsList.add(counter, hubs);
-        routesList.add(counter, routes);
-    }
+    /**
+     * private void addValuesToLists(int counter, int operationNum, double newCost, double difference) {
+     * temps.add(counter, T);
+     * costs.add(counter, newCost);
+     * differences.add(counter, difference);
+     * operationNums.add(counter, operationNum);
+     * <p>
+     * String hubs = pHCRP.getHubsString();
+     * String routes = pHCRP.getVehiclesListString();
+     * hubsList.add(counter, hubs);
+     * routesList.add(counter, routes);
+     * }
+     */
 
     private int doRandomOperation() {
 
@@ -244,6 +244,7 @@ class SimulatedAnnealing {
         operations.localSearchEdgeOpt();
     }
 
+    /*
     private void printResultsCSV(String uniqueFileName) {
 //        just a range from 1 to temps.size() to input in CSV
         List<Integer> iterations = IntStream.rangeClosed(1, temps.size())
@@ -258,4 +259,5 @@ class SimulatedAnnealing {
             e.printStackTrace();
         }
     }
+     */
 }
