@@ -43,7 +43,7 @@ class SimulatedAnnealing {
     private double initObj;
     private double initCPU;
     private double solCPU;
-    private int bestIteration;
+    private int bestIteration = 0;
     private String bestHubs;
     private String bestRoutes;
 
@@ -102,7 +102,7 @@ class SimulatedAnnealing {
 
         //TODO is the correct way to capture the initial solution's statistics?
         // The zeroth iteration is the initial solution
-        printLine(out, 0, pHCRP.getMaxCost());
+        printLine(out, 0, initObj);
 
         pHCRP.setSimulatedAnnealing(true);
 
@@ -179,7 +179,8 @@ class SimulatedAnnealing {
         // Later of you can open this dump with CSV and apply text to columns.
         // You can create pivot tables, analyse results, min, max, average, compare algorithms etc.
         //TODO is this correct for capturing: initial solution's objective/CPU and SA's best solution's objective/CPU.
-        System.err.printf("%s\t%.2f\t%.2f\t%.2f\t%.2f\n", uniqueFileName, initObj, pHCRP.getInitCPU(), minObj, solCPU);
+        System.err.printf("%s\t%.2f\t%.2f\t%.2f\t%.2f\t%d\n",
+                uniqueFileName, initObj, pHCRP.getInitCPU(), minObj, solCPU, bestIteration);
 
         pHCRP.setSimulatedAnnealing(false);
 
