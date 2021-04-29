@@ -40,8 +40,6 @@ class SimulatedAnnealing {
     private final double alpha = 0.99;
     // Number of iterations of annealing before decreasing temperature
     private final int numIterations = 10;
-    private double initObj;
-    private double solCPU;
     private int bestIteration = 0;
   //  private String bestHubs;
   //  private String bestRoutes;
@@ -93,7 +91,7 @@ class SimulatedAnnealing {
 
         // Global minimum
         double minObj = pHCRP.getMaxCost();
-        initObj = minObj;
+        double initObj = minObj;
         // new solution initialization
         ArrayList<List<Integer>> newSol;
 
@@ -156,7 +154,7 @@ class SimulatedAnnealing {
             T *= alpha; // Decreases T, cooling phase
         }
 
-        solCPU = (System.nanoTime() - startTime) / 1e9;
+        double solCPU = (System.nanoTime() - startTime) / 1e9;
         solCPU += pHCRP.getInitCPU();
 
 //        set values of the solution resulted from this algorithm into the arrays
