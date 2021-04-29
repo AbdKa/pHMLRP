@@ -2,5 +2,8 @@
 *.java text
 *.py text
 *.json text
-
+*.csv text
 *.xlsx binary
+*.sh eol=lf
+*.bat eol=crlf
+

@@ -1,15 +1,18 @@
 package com.abdul;
 
-import jdk.jshell.execution.Util;
-
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
-import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
+import java.util.zip.GZIPOutputStream;
+
+import static com.abdul.Utils.BUFFER_SIZE;
 
 class SimulatedAnnealing {
 
@@ -59,8 +62,36 @@ class SimulatedAnnealing {
         }
     }
 
+    /**
+     * Prints a single line to the csv file.
+     */
+    private void printLine(PrintWriter out, int counter, double newCost) {
+        out.print(counter);
+        out.print(", ");
+        out.print(newCost);
+        out.print(", ");
+        out.print(pHCRP.getHubsString());
+        out.print(", ");
+        out.println(pHCRP.getVehiclesListString());
+    }
+
     void applySA() {
-        long startTime = System.nanoTime();
+
+        final String uniqueFileName = Utils.getUniqueFileName(params);
+        final String fileName = params.getResultPath() +
+                File.separator + params.getAlgorithm().toString() + File.separator + uniqueFileName;
+
+        OutputStream stream;
+        try {
+            stream = new GZIPOutputStream(Files.newOutputStream(Paths.get(fileName + ".csv.gz"),
+                    StandardOpenOption.WRITE, StandardOpenOption.CREATE), BUFFER_SIZE);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        PrintWriter out = new PrintWriter(new OutputStreamWriter(stream, StandardCharsets.US_ASCII));
+
+        out.println("iteration, cost, hubs, routes");
+
         // Global minimum
         double minObj = pHCRP.getMaxCost();
         initObj = minObj;
@@ -69,13 +100,19 @@ class SimulatedAnnealing {
 
         pHCRP.print();
 
+        //TODO is the correct way to capture the initial solution's statistics?
+        // The zeroth iteration is the initial solution
+        printLine(out, 0, pHCRP.getMaxCost());
+
         pHCRP.setSimulatedAnnealing(true);
+
+        final long startTime = System.nanoTime();
 
         doLS();
 
         // Continues annealing until reaching minimum
         // temperature
-        int counter = 0;
+        int counter = 1;
         while (T > minT) {
             if (!silent)
                 System.out.println("Temperature " + T);
@@ -88,7 +125,9 @@ class SimulatedAnnealing {
 
                 if (difference <= 0) {
 //                    add values to lists if greater than or equal to minObj otherwise add after doLS()
-                    addValuesToLists(counter, operationNum, newCost, difference);
+//                    addValuesToLists(counter, operationNum, newCost, difference);
+                    printLine(out, counter, newCost);
+
                     counter++;
                 } else {
                     // Reassigns global minimum accordingly
@@ -99,9 +138,10 @@ class SimulatedAnnealing {
                     bestIteration = counter;
                     bestHubs = pHCRP.getHubsString();
                     bestRoutes = pHCRP.getVehiclesListString();
-                    initCPU = pHCRP.getInitCPU();
+                    initCPU = pHCRP.getInitCPU(); //TODO if this is the initial solution's CPU, why are we updating it?
 //                   add values to lists after doLS()
-                    addValuesToLists(counter, operationNum, newCost, difference);
+//                   addValuesToLists(counter, operationNum, newCost, difference);
+                    printLine(out, counter, newCost);
                     counter++;
 
                     continue;
@@ -126,13 +166,20 @@ class SimulatedAnnealing {
 //        AlgoResults.setAlgoValues(params, minObj, solCPU, bestIteration, bestHubs, bestRoutes);
 //        GeneralResults.setGeneralValues(params, initObj, minObj, solCPU, bestIteration, bestHubs, bestRoutes);
 
-        String uniqueFileName = Utils.getUniqueFileName(params);
-        printResultsCSV(uniqueFileName);
+        // printResultsCSV(uniqueFileName);
+        out.flush();
+        out.close();
+        try {
+            stream.close();
+        } catch (IOException e) {
+            // NO-OP
+        }
 
         // Capture the desired output by saving standard error to a file.
         // Later of you can open this dump with CSV and apply text to columns.
         // You can create pivot tables, analyse results, min, max, average, compare algorithms etc.
-        System.err.println(uniqueFileName + "\t" + minObj);
+        //TODO is this correct for capturing: initial solution's objective/CPU and SA's best solution's objective/CPU.
+        System.err.printf("%s\t%.2f\t%.2f\t%.2f\t%.2f\n", uniqueFileName, initObj, pHCRP.getInitCPU(), minObj, solCPU);
 
         pHCRP.setSimulatedAnnealing(false);
 

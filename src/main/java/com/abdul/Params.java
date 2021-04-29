@@ -55,7 +55,4 @@ public interface Params {
 
     @Option(description = "replica per combination", shortName = "e", longName = "replicas", defaultValue = "10")
     int getNumReplicasPerCombination();
-
-    @Option(description = "run number", shortName = "z", longName = "run", defaultValue = "1")
-    String getRunNum();
 }

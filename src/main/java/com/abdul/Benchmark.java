@@ -39,7 +39,6 @@ public class Benchmark {
                     for (ALGO algo : ALGO.values()) {
 //                        System.out.println(v + " " + s + " " + is + " " + algo);
                         Main.main(new String[]{
-                                "--run", String.valueOf(v+1),
                                 "--dataset", parts[0],
                                 "--nodes", parts[1],
                                 "--hubs", parts[2],
