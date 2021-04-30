@@ -116,12 +116,12 @@ class SimulatedAnnealing {
 
             for (int i = 0; i < numIterations; i++) {
                 doRandomOperation();
-                double newCost = pHCRP.getSaOperationCost();
-                double difference = minObj - newCost;
+                double newObj = pHCRP.getSaOperationCost();
+                double difference = minObj - newObj;
 
                 if (difference <= 0) {
 //                    add values to lists if greater than or equal to minObj otherwise add after doLS()
-//                    addValuesToLists(counter, operationNum, newCost, difference);
+//                    addValuesToLists(counter, operationNum, newObj, difference);
 
                     double probability = Math.exp(difference / T);
                     if (probability > Math.random()) {
@@ -133,15 +133,15 @@ class SimulatedAnnealing {
                 } else {
                     // Reassigns global minimum accordingly
                     doLS();
-                    newCost = pHCRP.getSaOperationCost();
+                    newObj = pHCRP.getSaOperationCost();
                     setBestVehiclesList(pHCRP.getVehiclesList());
                     minObj = pHCRP.getSaOperationCost();
                     bestIteration = counter;
 //                    bestHubs = pHCRP.getHubsString();
 //                    bestRoutes = pHCRP.getVehiclesListString();
 //                   add values to lists after doLS()
-//                   addValuesToLists(counter, operationNum, newCost, difference);
-                    printLine(out, counter, newCost);
+//                   addValuesToLists(counter, operationNum, newObj, difference);
+                    printLine(out, counter, newObj);
                     counter++;
                 }
             }
