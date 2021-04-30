@@ -41,8 +41,8 @@ class SimulatedAnnealing {
     // Number of iterations of annealing before decreasing temperature
     private final int numIterations = 10;
     private int bestIteration = 0;
-  //  private String bestHubs;
-  //  private String bestRoutes;
+    //  private String bestHubs;
+    //  private String bestRoutes;
 
     SimulatedAnnealing(PHCRP PHCRP, Params params) {
         this.pHCRP = PHCRP;
@@ -115,16 +115,20 @@ class SimulatedAnnealing {
                 System.out.println("Temperature " + T);
 
             for (int i = 0; i < numIterations; i++) {
-                int operationNum = doRandomOperation();
-                newSol = pHCRP.getVehiclesList();
+                doRandomOperation();
                 double newCost = pHCRP.getSaOperationCost();
                 double difference = minObj - newCost;
 
                 if (difference <= 0) {
 //                    add values to lists if greater than or equal to minObj otherwise add after doLS()
 //                    addValuesToLists(counter, operationNum, newCost, difference);
-                    printLine(out, counter, newCost);
 
+                    double probability = Math.exp(difference / T);
+                    if (probability > Math.random()) {
+//                    System.out.println("temp: " + T + "\tdifference: " + difference);
+                        doLS();
+                        setBestVehiclesList(pHCRP.getVehiclesList());
+                    }
                     counter++;
                 } else {
                     // Reassigns global minimum accordingly
@@ -139,16 +143,7 @@ class SimulatedAnnealing {
 //                   addValuesToLists(counter, operationNum, newCost, difference);
                     printLine(out, counter, newCost);
                     counter++;
-
-                    continue;
                 }
-
-                double probability = Math.exp(difference / T);
-                if (probability > Math.random()) {
-//                    System.out.println("temp: " + T + "\tdifference: " + difference);
-                    setBestVehiclesList(newSol);
-                }
-
             }
 
             T *= alpha; // Decreases T, cooling phase
