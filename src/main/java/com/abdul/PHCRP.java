@@ -95,7 +95,7 @@ class PHCRP {
     String getHubsString() {
         StringBuilder hubs = new StringBuilder();
         for (int hub : hubsArr) {
-            hubs.append(hub).append(";");
+            hubs.append(hub+1).append(";");
         }
 
         return hubs.substring(0, hubs.length()-1);
@@ -126,12 +126,12 @@ class PHCRP {
         for (int i = 0; i < vehiclesList.size(); i++) {
             List<Integer> route = vehiclesList.get(i);
             int hub = hubsArr[i / numVehiclesPerHub];
-            routes.append(hub).append("-");
+            routes.append(hub+1).append("-");
 
             for (int node : route) {
-                routes.append(node).append("-");
+                routes.append(node+1).append("-");
             }
-            routes.append(hub).append("; ");
+            routes.append(hub+1).append("; ");
         }
 
         return routes.toString();
