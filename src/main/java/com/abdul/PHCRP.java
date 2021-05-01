@@ -84,6 +84,10 @@ class PHCRP {
         return saOperationCost;
     }
 
+    void setSaOperationCost(double cost) {
+        this.saOperationCost = cost;
+    }
+
     int getNumVehiclesPerHub() {
         return numVehiclesPerHub;
     }

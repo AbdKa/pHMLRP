@@ -92,8 +92,6 @@ class SimulatedAnnealing {
         // Global minimum
         double minObj = pHCRP.getMaxCost();
         double initObj = minObj;
-        // new solution initialization
-        ArrayList<List<Integer>> newSol;
 
         pHCRP.print();
 
@@ -107,6 +105,9 @@ class SimulatedAnnealing {
 
         doLS();
 
+//        TODO: the is just an example
+        int repeatEach = 1000 / pHCRP.getNumNodes();
+
         // Continues annealing until reaching minimum
         // temperature
         int counter = 1;
@@ -116,6 +117,9 @@ class SimulatedAnnealing {
 
             for (int i = 0; i < numIterations; i++) {
                 doRandomOperation();
+                if (i % repeatEach == 0) {
+                    doLS();
+                }
                 double newObj = pHCRP.getSaOperationCost();
                 double difference = minObj - newObj;
 
@@ -126,16 +130,16 @@ class SimulatedAnnealing {
                     double probability = Math.exp(difference / T);
                     if (probability > Math.random()) {
 //                    System.out.println("temp: " + T + "\tdifference: " + difference);
-                        doLS();
                         setBestVehiclesList(pHCRP.getVehiclesList());
                     }
                     counter++;
                 } else {
                     // Reassigns global minimum accordingly
-                    doLS();
+
                     newObj = pHCRP.getSaOperationCost();
                     setBestVehiclesList(pHCRP.getVehiclesList());
                     minObj = pHCRP.getSaOperationCost();
+
                     bestIteration = counter;
 //                    bestHubs = pHCRP.getHubsString();
 //                    bestRoutes = pHCRP.getVehiclesListString();
@@ -194,7 +198,7 @@ class SimulatedAnnealing {
      * }
      */
 
-    private int doRandomOperation() {
+    private void doRandomOperation() {
 
         int randOpr = random.nextInt(8);
 
@@ -225,16 +229,19 @@ class SimulatedAnnealing {
                 operations.swapHubWithNode(true, -1, -1, -1);
                 break;
         }
-
-        return randOpr;
     }
 
     private void doLS() {
+        pHCRP.setSimulatedAnnealing(false);
         Operations operations = new Operations(pHCRP);
         operations.localSearchInsertion();
         operations.localSearchSwapHubWithNode();
         operations.localSearchSwap();
         operations.localSearchEdgeOpt();
+
+        pHCRP.setSaOperationCost(pHCRP.getMaxCost());
+
+        pHCRP.setSimulatedAnnealing(true);
     }
 
     /*
