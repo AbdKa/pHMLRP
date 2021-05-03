@@ -1,22 +1,18 @@
 package com.abdul;
 
-import org.json.simple.JSONArray;
-import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
-
-import java.io.FileReader;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
+
+import static com.abdul.Utils.outputStream;
+import static com.abdul.Utils.printLine;
 
 class LS_VND {
     private final Params params;
     private final int replicasPerCombination;
-
-    private final float[][] bestTimes;
-
-    private String[] problemInstances;
 
     //    0, Insertion
     //    1, Swap
@@ -24,134 +20,81 @@ class LS_VND {
     //    3, EdgeOpt
     private final List<List<Integer>> combinations;
 
-    private final double[][] bestCosts;
-    private final int[][] bestIterations;
-
-    private void getProblemInstancesFromJson() {
-        JSONParser parser = new JSONParser();
-        try {
-            JSONArray arr = (JSONArray) parser.parse(new FileReader("problem_instances.json"));
-            List<String> list = new ArrayList<>();
-            for (Object probInstance : arr) {
-                list.add((String) probInstance);
-            }
-
-            problemInstances = new String[list.size()];
-            list.toArray(problemInstances);
-
-        } catch (IOException e) {
-            System.out.println("Exception: " + e);
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
-    }
+    private double initObj = Integer.MAX_VALUE;
+    private double minObj = Integer.MAX_VALUE;
+    private double initCPU = 0;
+    private int bestIteration = 0;
 
     LS_VND(Params params) {
         this.params = params;
-        getProblemInstancesFromJson();
         combinations = Utils.getCombinations("ls_combinations");
-
-        bestCosts = new double[problemInstances.length][combinations.size()];
-        for (double[] arr : bestCosts) {
-            Arrays.fill(arr, Integer.MAX_VALUE);
-        }
-
-        bestIterations = new int[problemInstances.length][combinations.size()];
-        bestTimes = new float[problemInstances.length][combinations.size()];
-
         replicasPerCombination = params.getNumReplicasPerCombination();
     }
 
     void runVND() {
-        System.out.println("*************************************************");
-        System.out.println("Local Search VND");
-        doRun();
-        writeBCtoExcel();
+        String uniqueFileName = Utils.getUniqueFileName(params);
 
-        System.out.println("*************************************************");
+        long startTime = System.nanoTime();
+        doRun(uniqueFileName);
+        double solCPU = Utils.getSolCPU(startTime);
+
+
+        System.err.printf("%s\t%.2f\t%.2f\t%.2f\t%.2f\t%d\n",
+                uniqueFileName, initObj, initCPU, minObj, solCPU, bestIteration);
     }
 
-    private void doRun() {
-        for (int probIdx = 0; probIdx < problemInstances.length; probIdx++) {
-            // for each problem instance
-            for (int combIdx = 0; combIdx < combinations.size(); combIdx++) {
-                int iteration = 0;
-                // run on every combination
-                for (int repPerCombinationIdx = 0; repPerCombinationIdx < replicasPerCombination; repPerCombinationIdx++) {
-                    // run each problem instance n number of replicas
+    private void doRun(String uniqueFileName) {
+        OutputStream stream = outputStream(params, uniqueFileName);
+        PrintWriter out = new PrintWriter(new OutputStreamWriter(stream, StandardCharsets.US_ASCII));
 
-                    long combStartTime = System.nanoTime();
+        out.println("iteration, cost, hubs, routes");
 
-                    PHCRP PHCRP = newPHMLRPInstance(problemInstances[probIdx]);
-                    createInitSol(PHCRP);
-                    Operations operations = new Operations(PHCRP);
-                    iteration++;
+        int iteration = 0;
+        for (int combIdx = 0; combIdx < combinations.size(); combIdx++) {
+            // run on every combination
+            for (int repPerCombinationIdx = 0; repPerCombinationIdx < replicasPerCombination; repPerCombinationIdx++) {
+                // run each problem instance n number of replicas
 
-                    for (int k : combinations.get(combIdx)) {
-                        // for each neighborhood
-                        System.out.println(
-                                problemInstances[probIdx] +
-                                        " " + combIdx +
-                                        " " + repPerCombinationIdx +
-                                        " " + k);
-                        operations.doLocalSearch(k);
-                    }
+                PHCRP pHCRP = Utils.newPHMLRPInstance(this.params);
+                createInitSol(pHCRP);
+                double currentInitObj = pHCRP.getMaxCost();
+                Operations operations = new Operations(pHCRP);
+                iteration++;
 
-                    double bestCost = PHCRP.getMaxCost();
+                for (int k : combinations.get(combIdx)) {
+                    // for each neighborhood
 
-                    if (bestCost < bestCosts[probIdx][combIdx]) {
+                    if (!params.getSilent())
+                        System.out.println(combIdx +
+                                " " + repPerCombinationIdx +
+                                " " + k);
+                    operations.doLocalSearch(k);
+                }
 
-                        bestTimes[probIdx][combIdx] = (float) (System.nanoTime() - combStartTime) / 1000;
-                        bestCosts[probIdx][combIdx] = bestCost;
-                        bestIterations[probIdx][combIdx] = iteration;
-                    }
+                double newObj = pHCRP.getMaxCost();
+
+                if (newObj < minObj) {
+                    initObj = currentInitObj;
+                    minObj = newObj;
+                    initCPU = pHCRP.getInitCPU();
+                    bestIteration = iteration;
+
+                    printLine(pHCRP, out, iteration, newObj);
                 }
             }
         }
-    }
 
-    private void writeBCtoExcel() {
-//        XSSFWorkbook bcWorkbook = new XSSFWorkbook();
-//
-//        for (int j = 0; j < bestCosts.length; j++) {
-//            XSSFSheet bcSheet = bcWorkbook.createSheet(problemInstances[j]);
-//            XSSFRow row = bcSheet.createRow(0);
-//            row.createCell(0, CellType.STRING).setCellValue("LS Combination");
-//            row.createCell(1, CellType.STRING).setCellValue("IterationNumber");
-//            row.createCell(2, CellType.STRING).setCellValue("bestCost");
-//            row.createCell(3, CellType.STRING).setCellValue("CPUTime (micro)");
-//
-//            for (int k = 0; k < bestCosts[j].length; k++) {
-//                row = bcSheet.createRow(k + 1);
-//                row.createCell(0, CellType.NUMERIC).setCellValue(
-//                        Utils.createCombinationStr(combinations.get(k)));
-//                row.createCell(1, CellType.NUMERIC).setCellValue(bestIterations[j][k]);
-//                row.createCell(2, CellType.NUMERIC).setCellValue(bestCosts[j][k]);
-//                row.createCell(3, CellType.NUMERIC).setCellValue(bestTimes[j][k]);
-//            }
-//        }
-//
-//        try {
-//            Utils.createExcelFile(bcWorkbook,
-//                    params.getResultPath() + "/LS_VND_" + combinations.size() + "_combinations");
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
+        out.flush();
+        out.close();
+        try {
+            stream.close();
+        } catch (IOException e) {
+            // NO-OP
+        }
     }
 
     private void createInitSol(PHCRP pHCRP) {
-        InitialSolutions initialSolutions = new InitialSolutions(pHCRP, params.getDataset(),
-                params.getCollectionCostCFactor());
-        if (params.getInitSol().equals("greedy")) {
-            initialSolutions.greedySolution();
-        } else {
-            initialSolutions.randomSolution();
-        }
-
+        InitialSolutions initialSolutions = new InitialSolutions(pHCRP, params, true);
         pHCRP.calculateCost(PHCRP.CostType.NORMAL);
-    }
-
-    private PHCRP newPHMLRPInstance(String problemInstance) {
-        return Utils.newPHMLRPInstance(problemInstance, this.params);
     }
 }

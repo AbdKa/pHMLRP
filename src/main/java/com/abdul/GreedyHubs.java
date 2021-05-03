@@ -29,14 +29,13 @@ public class GreedyHubs {
         long[] CPUs = new long[instances.length];
         for (int i = 0; i <instances.length; i++) {
             long time = System.currentTimeMillis();
-            PHCRP PHCRP = Utils.newPHMLRPInstance(instances[i], params);
-            InitialSolutions initialSolutions = new InitialSolutions(PHCRP, params.getDataset(),
-                    params.getCollectionCostCFactor());
+            PHCRP pHCRP = Utils.newPHMLRPInstance(instances[i], params);
+            InitialSolutions initialSolutions = new InitialSolutions(pHCRP, params, false);
             initialSolutions.greedyPickHubs();
             StringBuilder hubsSB = new StringBuilder();
-            Arrays.sort(PHCRP.getHubsArr());
-            for (int hub : PHCRP.getHubsArr()) {
-                hubsSB.append(hub).append("; ");
+            Arrays.sort(pHCRP.getHubsArr());
+            for (int hub : pHCRP.getHubsArr()) {
+                hubsSB.append(hub+1).append("; ");
             }
             hubs[i] = hubsSB.toString();
             CPUs[i] = System.currentTimeMillis() - time;

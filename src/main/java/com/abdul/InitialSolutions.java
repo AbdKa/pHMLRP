@@ -12,21 +12,52 @@ import java.util.*;
 
 class InitialSolutions {
 
-    private final PHCRP pHCRP;
+    private PHCRP pHCRP;
     private DS dataset;
-    private final int numNodes, numHubs, numVehiclesPerHub;
-    private float collectionCostCFactor;
+    private int numNodes;
+    private int numHubs;
+    private int numVehiclesPerHub;
 
-    InitialSolutions(PHCRP pHCRP, DS dataset, float collectionCostCFactor) {
+    InitialSolutions(PHCRP pHCRP, Params params, boolean doInit) {
+        init(pHCRP, params);
+
+        if (doInit)
+            doInitSol(params.getInitSol());
+    }
+
+    private void init(PHCRP pHCRP, Params params) {
         this.pHCRP = pHCRP;
-        this.dataset = dataset;
+        this.dataset = params.getDataset();
         this.numNodes = pHCRP.getNumNodes();
         this.numHubs = pHCRP.getNumHubs();
         this.numVehiclesPerHub = pHCRP.getNumVehiclesPerHub();
-        this.collectionCostCFactor = collectionCostCFactor;
     }
 
-//    #1 RND
+    private void doInitSol(IS initSol) {
+        switch (initSol) {
+            case RND:
+                randomSolution();
+                break;
+            case GREEDY:
+                greedySolution();
+                break;
+            case GREEDY_RND:
+                greedyRandomSolution();
+                break;
+            case RND_GREEDY:
+                randomGreedySolution();
+                break;
+            case PROB:
+                probabilisticInitSol();
+                break;
+            case GREEDY_GRB:
+            case GRB:
+                gurobiSolution(initSol);
+                break;
+        }
+    }
+
+    //    #1 RND
     void randomSolution() {
         long startTime = System.nanoTime();
         // 1- pick hubs randomly

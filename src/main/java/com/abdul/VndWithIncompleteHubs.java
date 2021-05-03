@@ -250,18 +250,7 @@ class VndWithIncompleteHubs {
     }
 
     private void createInitSol(PHCRP pHCRP) {
-        InitialSolutions initialSolutions = new InitialSolutions(pHCRP, params.getDataset(),
-                params.getCollectionCostCFactor());
-        switch (params.getInitSol()) {
-            case GREEDY:
-                initialSolutions.greedySolution();
-                break;
-            case RND:
-                initialSolutions.randomSolution();
-                break;
-            default:
-                throw new AssertionError("unrecognized initial solution construction " + params.getInitSol());
-        }
+        InitialSolutions initialSolutions = new InitialSolutions(pHCRP, params, true);
         pHCRP.calculateCost(PHCRP.CostType.NORMAL);
     }
 

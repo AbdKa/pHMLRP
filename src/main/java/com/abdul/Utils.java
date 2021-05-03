@@ -3,9 +3,7 @@ package com.abdul;
 import org.apache.commons.lang3.time.DurationFormatUtils;
 
 import java.io.*;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
-import java.nio.file.InvalidPathException;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.util.*;
@@ -71,34 +69,20 @@ class Utils {
     }
 
     /**
-     * creates a CSV file
-     *
-     * @param header is the first row in CSV
-     * @param lists  any type and number of lists
+     * @return OutputStream
      */
-    static void createCSVFile(String fileName, String header, List<?>... lists) throws IOException {
-        //Write csv file
-        try (OutputStream stream = new GZIPOutputStream(Files.newOutputStream(Paths.get(fileName + ".csv.gz"),
-                StandardOpenOption.WRITE, StandardOpenOption.CREATE), BUFFER_SIZE);
-             PrintWriter out = new PrintWriter(new OutputStreamWriter(stream, StandardCharsets.US_ASCII))) {
-            out.println(header);
-            for (int i = 0; i < lists[0].size(); i++) {
-                for (List<?> arr : lists) {
-                    out.print(arr.get(i));
-                    out.print(", ");
-                    System.out.print(arr.get(i));
-                    System.out.print(", ");
-                }
-                out.println();
-                System.out.println();
-            }
-            out.flush();
+    static OutputStream outputStream(Params params, String uniqueFileName) {
+        final String fileName = params.getResultPath() +
+                File.separator + params.getAlgorithm().toString() + File.separator + uniqueFileName;
 
-        } catch (FileNotFoundException | InvalidPathException e) {
-            throw new IOException("Failed to open ", e);
+        OutputStream stream;
+        try {
+            stream = new GZIPOutputStream(Files.newOutputStream(Paths.get(fileName + ".csv.gz"),
+                    StandardOpenOption.WRITE, StandardOpenOption.CREATE), BUFFER_SIZE);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
-
-        System.out.println(fileName + ".csv.gz written successfully");
+        return stream;
     }
 
     static void createTextFile() {
@@ -124,6 +108,20 @@ class Utils {
             System.out.println("An error occurred.");
             e.printStackTrace();
         }
+    }
+
+
+    static PHCRP newPHMLRPInstance(Params params) {
+
+        return new PHCRP(
+                params.getDataset(),
+                params.getNumNodes(),
+                params.getNumHubs(),
+                params.getNumVehicles(),
+                params.getCollectionCostCFactor(),
+                params.getDistributionCostCFactor(),
+                params.getHubToHubCFactor(),
+                params.getRemovalPercentage());
     }
 
     static PHCRP newPHMLRPInstance(String problemInstance, Params params) {
@@ -153,5 +151,22 @@ class Utils {
         return params.getDataset() + "." + params.getNumNodes() + "." + params.getNumHubs() + "." +
                 params.getNumVehicles() + "-" + params.getInitSol() + "-" + params.getAlgorithm() + "-" +
                 UUID.randomUUID().toString().replaceAll("-", "");
+    }
+
+    static double getSolCPU(long startTime) {
+        return (System.nanoTime() - startTime) / 1e9;
+    }
+
+    /**
+     * Prints a single line to the csv file.
+     */
+    static void printLine(PHCRP pHCRP, PrintWriter out, int counter, double newCost) {
+        out.print(counter);
+        out.print(", ");
+        out.print(newCost);
+        out.print(", ");
+        out.print(pHCRP.getHubsString());
+        out.print(", ");
+        out.println(pHCRP.getVehiclesListString());
     }
 }

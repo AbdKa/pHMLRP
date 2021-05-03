@@ -13,54 +13,28 @@ public class Main {
             return;
         }
 
-        // call this to create greedy hubs for each problem instance
-//        Extra.getGreedyHubs(params);
-
         // TODO: remove this if statement after preparing VNS
-        if (params.getAlgorithm() == ALGO.SA) {
+        if (params.getAlgorithm() == ALGO.VNS) {
             PHCRP pHCRP = new PHCRP(params.getDataset(), params.getNumNodes(), params.getNumHubs(), params.getNumVehicles(),
                     params.getCollectionCostCFactor(), params.getDistributionCostCFactor(), params.getHubToHubCFactor(),
                     params.getRemovalPercentage());
             pHCRP.setSilent(params.getSilent());
-            InitialSolutions initialSolutions = new InitialSolutions(pHCRP, params.getDataset(),
-                    params.getCollectionCostCFactor());
 
-            switch (params.getInitSol()) {
-                case RND:
-                    initialSolutions.randomSolution();
-                    break;
-                case GREEDY:
-                    initialSolutions.greedySolution();
-                    break;
-                case GREEDY_RND:
-                    initialSolutions.greedyRandomSolution();
-                    break;
-                case RND_GREEDY:
-                    initialSolutions.randomGreedySolution();
-                    break;
-                case PROB:
-                    initialSolutions.probabilisticInitSol();
-                    break;
-                case GREEDY_GRB:
-                case GRB:
-                    initialSolutions.gurobiSolution(params.getInitSol());
-                    break;
-            }
+//            do initial solution
+            InitialSolutions initialSolutions = new InitialSolutions(pHCRP, params, true);
 
             pHCRP.calculateCost(PHCRP.CostType.NORMAL);
 
-//            AlgoResults.setInitValues(params, pHCRP);
-//            GeneralResults.setInitValues(params, pHCRP);
-
+//            run algorithm
             switch (params.getAlgorithm()) {
                 case SA:
                     SimulatedAnnealing simulatedAnnealing = new SimulatedAnnealing(pHCRP, params);
                     simulatedAnnealing.applySA();
                     break;
-//                case VNS:
-//                    VND vnd = new VND(params);
-//                    vnd.runVND();
-//                    break;
+                case VNS:
+                    LS_VND vnd = new LS_VND(params);
+                    vnd.runVND();
+                    break;
             }
         }
     }

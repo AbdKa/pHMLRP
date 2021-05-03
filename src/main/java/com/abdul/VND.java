@@ -270,8 +270,7 @@ class VND {
     }
 
     private void createInitSol(PHCRP pHCRP) {
-        InitialSolutions initialSolutions = new InitialSolutions(pHCRP, params.getDataset(),
-                params.getCollectionCostCFactor());
+        InitialSolutions initialSolutions = new InitialSolutions(pHCRP, params, true);
         initialSolutions.randomSolution();
         pHCRP.calculateCost(PHCRP.CostType.NORMAL);
     }

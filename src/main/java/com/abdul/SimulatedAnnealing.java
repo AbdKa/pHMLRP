@@ -1,16 +1,16 @@
 package com.abdul;
 
-import java.io.*;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
-import java.util.zip.GZIPOutputStream;
 
-import static com.abdul.Utils.BUFFER_SIZE;
+import static com.abdul.Utils.outputStream;
+import static com.abdul.Utils.printLine;
 
 class SimulatedAnnealing {
 
@@ -59,32 +59,10 @@ class SimulatedAnnealing {
         }
     }
 
-    /**
-     * Prints a single line to the csv file.
-     */
-    private void printLine(PrintWriter out, int counter, double newCost) {
-        out.print(counter);
-        out.print(", ");
-        out.print(newCost);
-        out.print(", ");
-        out.print(pHCRP.getHubsString());
-        out.print(", ");
-        out.println(pHCRP.getVehiclesListString());
-    }
-
     void applySA() {
 
         final String uniqueFileName = Utils.getUniqueFileName(params);
-        final String fileName = params.getResultPath() +
-                File.separator + params.getAlgorithm().toString() + File.separator + uniqueFileName;
-
-        OutputStream stream;
-        try {
-            stream = new GZIPOutputStream(Files.newOutputStream(Paths.get(fileName + ".csv.gz"),
-                    StandardOpenOption.WRITE, StandardOpenOption.CREATE), BUFFER_SIZE);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        OutputStream stream = outputStream(params, uniqueFileName);
         PrintWriter out = new PrintWriter(new OutputStreamWriter(stream, StandardCharsets.US_ASCII));
 
         out.println("iteration, cost, hubs, routes");
@@ -97,7 +75,7 @@ class SimulatedAnnealing {
 
         //TODO is the correct way to capture the initial solution's statistics?
         // The zeroth iteration is the initial solution
-        printLine(out, 0, initObj);
+        printLine(pHCRP, out, 0, initObj);
 
         pHCRP.setSimulatedAnnealing(true);
 
@@ -145,7 +123,7 @@ class SimulatedAnnealing {
 //                    bestRoutes = pHCRP.getVehiclesListString();
 //                   add values to lists after doLS()
 //                   addValuesToLists(counter, operationNum, newObj, difference);
-                    printLine(out, counter, newObj);
+                    printLine(pHCRP, out, counter, newObj);
                     counter++;
                 }
             }
@@ -153,7 +131,7 @@ class SimulatedAnnealing {
             T *= alpha; // Decreases T, cooling phase
         }
 
-        double solCPU = (System.nanoTime() - startTime) / 1e9;
+        double solCPU = Utils.getSolCPU(startTime);
         solCPU += pHCRP.getInitCPU();
 
 //        set values of the solution resulted from this algorithm into the arrays
@@ -183,20 +161,6 @@ class SimulatedAnnealing {
         pHCRP.print();
 //        System.out.println(counter);
     }
-
-    /**
-     * private void addValuesToLists(int counter, int operationNum, double newCost, double difference) {
-     * temps.add(counter, T);
-     * costs.add(counter, newCost);
-     * differences.add(counter, difference);
-     * operationNums.add(counter, operationNum);
-     * <p>
-     * String hubs = pHCRP.getHubsString();
-     * String routes = pHCRP.getVehiclesListString();
-     * hubsList.add(counter, hubs);
-     * routesList.add(counter, routes);
-     * }
-     */
 
     private void doRandomOperation() {
 
@@ -243,21 +207,4 @@ class SimulatedAnnealing {
 
         pHCRP.setSimulatedAnnealing(true);
     }
-
-    /*
-    private void printResultsCSV(String uniqueFileName) {
-//        just a range from 1 to temps.size() to input in CSV
-        List<Integer> iterations = IntStream.rangeClosed(1, temps.size())
-                .boxed().collect(Collectors.toList());
-
-        try {
-            Utils.createCSVFile(params.getResultPath() +
-                            File.separator + params.getAlgorithm().toString() + File.separator + uniqueFileName,
-                    "Iteration#, Solution Cost, hubs, routes",
-                    iterations, costs, hubsList, routesList);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-     */
 }
