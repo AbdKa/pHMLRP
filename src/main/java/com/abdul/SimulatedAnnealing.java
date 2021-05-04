@@ -59,7 +59,7 @@ class SimulatedAnnealing {
         }
     }
 
-    void applySA() {
+    void runSA() {
 
         final String uniqueFileName = Utils.getUniqueFileName(params);
         OutputStream stream = outputStream(params, uniqueFileName);

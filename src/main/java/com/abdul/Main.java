@@ -29,11 +29,15 @@ public class Main {
             switch (params.getAlgorithm()) {
                 case SA:
                     SimulatedAnnealing simulatedAnnealing = new SimulatedAnnealing(pHCRP, params);
-                    simulatedAnnealing.applySA();
+                    simulatedAnnealing.runSA();
                     break;
                 case VNS:
-                    VND vnd = new VND(params);
-                    vnd.runVND();
+                    VNS vns = new VNS(params);
+                    vns.runVNS();
+                    break;
+                case GVNS:
+                    GVNS gVNS = new GVNS(params);
+                    gVNS.runGVNS();
                     break;
             }
         }

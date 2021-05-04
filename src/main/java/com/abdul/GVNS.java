@@ -9,7 +9,7 @@ import java.util.List;
 import static com.abdul.Utils.outputStream;
 import static com.abdul.Utils.printLine;
 
-class VND_LS {
+class GVNS {
     private final Params params;
     private int replicasPerProb = 10;
     private final int replicasPerCombination = 100;
@@ -25,23 +25,23 @@ class VND_LS {
     private double initCPU = 0;
     private int bestIteration = 0;
 
-    VND_LS(Params params) {
+    GVNS(Params params) {
         this.params = params;
         combinations = Utils.getCombinations("ls_combinations");
     }
 
-    void runVND() {
+    void runGVNS() {
         String uniqueFileName = Utils.getUniqueFileName(params);
 
         long startTime = System.nanoTime();
-        doVND(uniqueFileName);
+        doGVNS(uniqueFileName);
         double solCPU = Utils.getSolCPU(startTime);
 
         System.err.printf("%s\t%.2f\t%.2f\t%.2f\t%.2f\t%d\n",
                 uniqueFileName, initObj, initCPU, minObj, solCPU, bestIteration);
     }
 
-    private void doVND(String uniqueFileName) {
+    private void doGVNS(String uniqueFileName) {
         OutputStream stream = outputStream(params, uniqueFileName);
         PrintWriter out = new PrintWriter(new OutputStreamWriter(stream, StandardCharsets.US_ASCII));
 

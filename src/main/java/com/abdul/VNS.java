@@ -10,7 +10,7 @@ import java.util.List;
 import static com.abdul.Utils.outputStream;
 import static com.abdul.Utils.printLine;
 
-class VND {
+class VNS {
     private Params params;
     private int replicasPerProb = 100;
     private int replicasPerCombination = 100;
@@ -36,19 +36,19 @@ class VND {
 
     private PrintWriter out;
 
-    VND(Params params) {
+    VNS(Params params) {
         this.params = params;
         this.silent = params.getSilent();
         combinations = Utils.getCombinations("Combinations");
     }
 
-    void runVND() {
+    void runVNS() {
         String uniqueFileName = Utils.getUniqueFileName(params);
         OutputStream stream = outputStream(params, uniqueFileName);
         out = new PrintWriter(new OutputStreamWriter(stream, StandardCharsets.US_ASCII));
 
         long startTime = System.nanoTime();
-        doVND();
+        doVNS();
         doLS();
         double solCPU = Utils.getSolCPU(startTime);
 
@@ -64,7 +64,7 @@ class VND {
                 uniqueFileName, initObj, initCPU, minObj, solCPU, bestIteration);
     }
 
-    private void doVND() {
+    private void doVNS() {
 
         out.println("iteration, cost, hubs, routes");
 
