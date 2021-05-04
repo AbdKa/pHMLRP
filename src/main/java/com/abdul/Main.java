@@ -32,7 +32,7 @@ public class Main {
                     simulatedAnnealing.applySA();
                     break;
                 case VNS:
-                    LS_VND vnd = new LS_VND(params);
+                    VND vnd = new VND(params);
                     vnd.runVND();
                     break;
             }

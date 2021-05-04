@@ -23,6 +23,7 @@ class Consts {
     };
 
     static final Map<String, Integer> neighborhoods = new HashMap<>() {
+//        change the order of combination here, if needed
         {
             put("insertNodeBetweenRoutes", 0);
             put("edgeOptWithinRoutes", 1);

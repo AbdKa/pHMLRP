@@ -123,7 +123,7 @@ class SimulatedAnnealing {
 //                    bestRoutes = pHCRP.getVehiclesListString();
 //                   add values to lists after doLS()
 //                   addValuesToLists(counter, operationNum, newObj, difference);
-                    printLine(pHCRP, out, counter, newObj);
+                    printLine(pHCRP, out, counter, minObj);
                     counter++;
                 }
             }
