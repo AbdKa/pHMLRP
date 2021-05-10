@@ -111,9 +111,9 @@ class Utils {
     }
 
 
-    static PHCRP newPHMLRPInstance(Params params) {
+    static PHCRP newPHCRPInstance(Params params) {
 
-        return new PHCRP(
+        PHCRP pHCRP = new PHCRP(
                 params.getDataset(),
                 params.getNumNodes(),
                 params.getNumHubs(),
@@ -122,9 +122,15 @@ class Utils {
                 params.getDistributionCostCFactor(),
                 params.getHubToHubCFactor(),
                 params.getRemovalPercentage());
+        pHCRP.setSilent(params.getSilent());
+
+        InitialSolutions initialSolutions = new InitialSolutions(pHCRP, params, true);
+        pHCRP.calculateCost(PHCRP.CostType.NORMAL);
+
+        return pHCRP;
     }
 
-    static PHCRP newPHMLRPInstance(String problemInstance, Params params) {
+    static PHCRP newPHCRPInstance(String problemInstance, Params params) {
 
         return new PHCRP(
                 DS.valueOf(problemInstance.split("\\.")[0]),

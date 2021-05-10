@@ -29,7 +29,7 @@ public class GreedyHubs {
         long[] CPUs = new long[instances.length];
         for (int i = 0; i <instances.length; i++) {
             long time = System.currentTimeMillis();
-            PHCRP pHCRP = Utils.newPHMLRPInstance(instances[i], params);
+            PHCRP pHCRP = Utils.newPHCRPInstance(instances[i], params);
             InitialSolutions initialSolutions = new InitialSolutions(pHCRP, params, false);
             initialSolutions.greedyPickHubs();
             StringBuilder hubsSB = new StringBuilder();

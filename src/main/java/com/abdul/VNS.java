@@ -78,9 +78,7 @@ class VNS {
                      repPerCombinationIdx++) {
                     // run each combination n number of replicas
 
-                    PHCRP pHCRP = Utils.newPHMLRPInstance(this.params);
-                    pHCRP.setSilent(silent);
-                    createInitSol(pHCRP);
+                    PHCRP pHCRP = Utils.newPHCRPInstance(this.params);
                     double currentInitObj = pHCRP.getMaxCost();
 
                     for (int k : combinations.get(combIdx)) {
@@ -136,10 +134,5 @@ class VNS {
             minObj = bestPHCRP.getMaxCost();
             printLine(bestPHCRP, out, bestIteration + 1, minObj);
         }
-    }
-
-    private void createInitSol(PHCRP pHCRP) {
-        InitialSolutions initialSolutions = new InitialSolutions(pHCRP, params, true);
-        pHCRP.calculateCost(PHCRP.CostType.NORMAL);
     }
 }

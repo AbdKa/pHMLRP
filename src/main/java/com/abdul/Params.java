@@ -53,6 +53,11 @@ public interface Params {
     @Option(description = "number of runs", shortName = "r", longName = "runs", defaultValue = "100")
     int getNumRuns();
 
-    @Option(description = "replica per combination", shortName = "e", longName = "replicas", defaultValue = "10")
-    int getNumReplicasPerCombination();
+    //    SA variant
+    @Option(description = "use force", shortName = "e", longName = "force")
+    boolean isForce();
+
+    //    SA variant
+    @Option(description = "use the best after changing temperature", shortName = "k", longName = "best")
+    boolean isBest();
 }

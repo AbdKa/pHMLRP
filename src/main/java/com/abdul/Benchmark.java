@@ -4,6 +4,8 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.stream.IntStream;
 
 import static com.abdul.Consts.instances;
@@ -11,7 +13,7 @@ import static com.abdul.Utils.execution;
 
 public class Benchmark {
 
-     final static int numOfRuns = 10;
+    final static int numOfRuns = 10;
 
     public static void main(String[] args) {
 
@@ -37,15 +39,35 @@ public class Benchmark {
 
                 for (IS is : IS.values())
                     for (ALGO algo : ALGO.values()) {
-//                        System.out.println(v + " " + s + " " + is + " " + algo);
-                        Main.main(new String[]{
+                        System.out.println(v + " " + s + " " + is + " " + algo);
+
+/**                        String[] params = new String[]{
+ //                                "--dataset", parts[0],
+ //                                "--nodes", parts[1],
+ //                                "--hubs", parts[2],
+ //                                "--vehicles", parts[3],
+ //                                "--initial", is.toString(),
+ //                                "--algorithm", algo.toString(),
+ //                                "--silent"
+ //                        };*/
+
+                        ArrayList<String> params = new ArrayList<>(Arrays.asList(
                                 "--dataset", parts[0],
                                 "--nodes", parts[1],
                                 "--hubs", parts[2],
                                 "--vehicles", parts[3],
                                 "--initial", is.toString(),
                                 "--algorithm", algo.toString(),
-                                "--silent"});
+                                "--silent"));
+
+//                        add SA variants
+                        if (algo == ALGO.SA) {
+                            params.add("--best");
+                            params.add("--force");
+                        }
+
+                        Main.main(params.toArray(new String[0]));
+//                        Main.main(params);
                     }
             }
         });

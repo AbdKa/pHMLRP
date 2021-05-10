@@ -5,8 +5,6 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Random;
 
 import static com.abdul.Utils.outputStream;
@@ -14,22 +12,12 @@ import static com.abdul.Utils.printLine;
 
 class SimulatedAnnealing {
 
-    private final Random random = new Random();
+    //    2 hours
+//    private static final double MAX_RUN_TIME = 7.2e+12;
+    private static final double MAX_RUN_TIME = 6e+10;
 
-    private final PHCRP pHCRP;
     private final Params params;
     private final boolean silent;
-
-    private ArrayList<List<Integer>> bestSol;
-
-    /**
-     * private final List<Double> temps = new ArrayList<>();
-     * private final List<Double> costs = new ArrayList<>();
-     * private final List<Double> differences = new ArrayList<>();
-     * private final List<Integer> operationNums = new ArrayList<>();
-     * private final List<String> hubsList = new ArrayList<>();
-     * private final List<String> routesList = new ArrayList<>();
-     **/
 
     // Simulated Annealing parameters
     // Initial temperature
@@ -38,25 +26,14 @@ class SimulatedAnnealing {
     private final double minT = .0000001;
     // Decrease in temperature
     private final double alpha = 0.99;
-    // Number of iterations of annealing before decreasing temperature
-    private final int numIterations = 10;
     private int bestIteration = 0;
-    //  private String bestHubs;
-    //  private String bestRoutes;
 
-    SimulatedAnnealing(PHCRP PHCRP, Params params) {
-        this.pHCRP = PHCRP;
+    private PHCRP theBest;
+    private double bestObj;
+
+    SimulatedAnnealing(Params params) {
         this.params = params;
-        setBestVehiclesList(PHCRP.getVehiclesList());
         this.silent = params.getSilent();
-    }
-
-    private void setBestVehiclesList(ArrayList<List<Integer>> vehiclesList) {
-        this.bestSol = new ArrayList<>();
-        for (List<Integer> list : vehiclesList) {
-            List<Integer> innerList = new ArrayList<>(list);
-            this.bestSol.add(innerList);
-        }
     }
 
     void runSA() {
@@ -67,24 +44,19 @@ class SimulatedAnnealing {
 
         out.println("iteration, cost, hubs, routes");
 
-        // Global minimum
-        double minObj = pHCRP.getMaxCost();
-        double initObj = minObj;
+        theBest = Utils.newPHCRPInstance(params);
+        PHCRP current = Utils.newPHCRPInstance(params);
 
-        pHCRP.print();
+        // Global minimum
+        bestObj = theBest.getMaxCost();
+        double initObj = bestObj;
 
         //TODO is the correct way to capture the initial solution's statistics?
         // The zeroth iteration is the initial solution
-        printLine(pHCRP, out, 0, initObj);
+        printLine(theBest, out, 0, initObj);
 
-        pHCRP.setSimulatedAnnealing(true);
-
-        final long startTime = System.nanoTime();
-
-        doLS();
-
-//        TODO: the is just an example
-        int repeatEach = 1000 / pHCRP.getNumNodes();
+        final int L = params.isForce() ? theBest.getNumNodes() : theBest.getNumNodes() * 10;
+        final long start = System.nanoTime();
 
         // Continues annealing until reaching minimum
         // temperature
@@ -93,51 +65,58 @@ class SimulatedAnnealing {
             if (!silent)
                 System.out.println("Temperature " + T);
 
-            for (int i = 0; i < numIterations; i++) {
-                doRandomOperation();
-                if (i % repeatEach == 0) {
-                    doLS();
-                }
-                double newObj = pHCRP.getSaOperationCost();
-                double difference = minObj - newObj;
+            // SA variant: start with the best of the best for each new temperature value.
+            if (params.isBest()) current = new PHCRP(theBest);
 
-                if (difference <= 0) {
-//                    add values to lists if greater than or equal to minObj otherwise add after doLS()
-//                    addValuesToLists(counter, operationNum, newObj, difference);
+            int i = 1;
+            while (i < L && System.nanoTime() - start < MAX_RUN_TIME) {
 
-                    double probability = Math.exp(difference / T);
-                    if (probability > Math.random()) {
+                PHCRP temp = new PHCRP(current);
+                doRandomOperation(temp);
+
+                double difference = temp.getSaOperationCost() - current.getSaOperationCost();
+
+                if (difference > 0) {
+
+                    double probability = Math.exp(-difference / T);
+                    // accept/apply a bad solution (i.e. delta >= 0)
+                    if (probability >= Math.random()) {
 //                    System.out.println("temp: " + T + "\tdifference: " + difference);
-                        setBestVehiclesList(pHCRP.getVehiclesList());
+                        current = temp;
+                        i++;
+                    } else {
+                        // SA variant: increment the inner-loop counter when a bad solution is ignored.
+                        if (!params.isForce()) i++;
                     }
-                    counter++;
                 } else {
                     // Reassigns global minimum accordingly
-
-                    newObj = pHCRP.getSaOperationCost();
-                    setBestVehiclesList(pHCRP.getVehiclesList());
-                    minObj = pHCRP.getSaOperationCost();
-
-                    bestIteration = counter;
-//                    bestHubs = pHCRP.getHubsString();
-//                    bestRoutes = pHCRP.getVehiclesListString();
-//                   add values to lists after doLS()
-//                   addValuesToLists(counter, operationNum, newObj, difference);
-                    printLine(pHCRP, out, counter, minObj);
-                    counter++;
+                    current = temp;
                 }
+
+                // Update the best of the best
+                if (current.getSaOperationCost() < bestObj) {
+                    theBest = new PHCRP(current);
+                    setBestValues(out, counter);
+                }
+
+                counter++;
+            }
+
+            doLS();
+            if (theBest.getSaOperationCost() < bestObj) {
+                setBestValues(out, counter);
             }
 
             T *= alpha; // Decreases T, cooling phase
         }
 
-        double solCPU = Utils.getSolCPU(startTime);
-        solCPU += pHCRP.getInitCPU();
+        double solCPU = Utils.getSolCPU(start);
+        solCPU += theBest.getInitCPU();
 
 //        set values of the solution resulted from this algorithm into the arrays
 //        at AlgoResults (contains best results) GeneralResults (contains best of the best results)
-//        AlgoResults.setAlgoValues(params, minObj, solCPU, bestIteration, bestHubs, bestRoutes);
-//        GeneralResults.setGeneralValues(params, initObj, minObj, solCPU, bestIteration, bestHubs, bestRoutes);
+//        AlgoResults.setAlgoValues(params, bestObj, solCPU, bestIteration, bestHubs, bestRoutes);
+//        GeneralResults.setGeneralValues(params, initObj, bestObj, solCPU, bestIteration, bestHubs, bestRoutes);
 
         // printResultsCSV(uniqueFileName);
         out.flush();
@@ -153,17 +132,22 @@ class SimulatedAnnealing {
         // You can create pivot tables, analyse results, min, max, average, compare algorithms etc.
         //TODO is this correct for capturing: initial solution's objective/CPU and SA's best solution's objective/CPU.
         System.err.printf("%s\t%.2f\t%.2f\t%.2f\t%.2f\t%d\n",
-                uniqueFileName, initObj, pHCRP.getInitCPU(), minObj, solCPU, bestIteration);
-
-        pHCRP.setSimulatedAnnealing(false);
-
-        pHCRP.resetVehiclesList(bestSol);
-        pHCRP.print();
-//        System.out.println(counter);
+                uniqueFileName, initObj, theBest.getInitCPU(), bestObj, solCPU, bestIteration);
     }
 
-    private void doRandomOperation() {
+    private void setBestValues(PrintWriter out, int counter) {
+        bestObj = theBest.getSaOperationCost();
+        bestIteration = counter;
 
+        printLine(theBest, out, counter, bestObj);
+
+        if (!silent)
+            System.out.printf("the best updated!\tT = %.5f\n", T);
+    }
+
+    private void doRandomOperation(PHCRP pHCRP) {
+
+        Random random = new Random();
         int randOpr = random.nextInt(8);
 
         Operations operations = new Operations(pHCRP);
@@ -196,15 +180,12 @@ class SimulatedAnnealing {
     }
 
     private void doLS() {
-        pHCRP.setSimulatedAnnealing(false);
-        Operations operations = new Operations(pHCRP);
+        Operations operations = new Operations(theBest);
         operations.localSearchInsertion();
         operations.localSearchSwapHubWithNode();
         operations.localSearchSwap();
         operations.localSearchEdgeOpt();
 
-        pHCRP.setSaOperationCost(pHCRP.getMaxCost());
-
-        pHCRP.setSimulatedAnnealing(true);
+        theBest.setSaOperationCost(theBest.getMaxCost());
     }
 }

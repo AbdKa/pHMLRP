@@ -13,9 +13,7 @@ class PHCRP {
     private final float collectionCostCFactor, distributionCostCFactor, hubToHubCFactor, removalPercentage;
     private ArrayList<List<Integer>> vehiclesList;
     private boolean[] isVisitedCity;
-    private boolean isSimulatedAnnealing = false;
     private double saOperationCost;
-
     private double[] collectionCostArr;
     private double[] distributionCostArr;
 
@@ -59,8 +57,27 @@ class PHCRP {
         }
     }
 
-    void setSimulatedAnnealing(boolean simulatedAnnealing) {
-        isSimulatedAnnealing = simulatedAnnealing;
+    /**
+    * Copy a PHCRP object
+    * */
+    PHCRP(PHCRP pHCRP) {
+        this.dataset = pHCRP.getDataset();
+        this.numNodes = pHCRP.getNumNodes();
+        this.numHubs = pHCRP.getNumHubs();
+        this.numVehiclesPerHub = pHCRP.getNumVehiclesPerHub();
+        this.collectionCostCFactor = pHCRP.getCollectionCostCFactor();
+        this.distributionCostCFactor = pHCRP.getDistributionCostCFactor();
+        this.hubToHubCFactor = pHCRP.getHubToHubCFactor();
+        this.removalPercentage = pHCRP.getRemovalPercentage();
+        setHubsArr(pHCRP.getHubsArr());
+        setVehiclesList(pHCRP.getVehiclesList());
+        this.isVisitedCity = pHCRP.isVisitedCity.clone();
+        this.maxCost = pHCRP.getMaxCost();
+        this.saOperationCost = pHCRP.getSaOperationCost();
+    }
+
+    DS getDataset() {
+        return dataset;
     }
 
     int getNumNodes() {
@@ -99,10 +116,10 @@ class PHCRP {
     String getHubsString() {
         StringBuilder hubs = new StringBuilder();
         for (int hub : hubsArr) {
-            hubs.append(hub+1).append(";");
+            hubs.append(hub + 1).append(";");
         }
 
-        return hubs.substring(0, hubs.length()-1);
+        return hubs.substring(0, hubs.length() - 1);
     }
 
     ArrayList<List<Integer>> getVehiclesList() {
@@ -110,14 +127,14 @@ class PHCRP {
     }
 
     void setHubsArr(int[] hubsArr) {
-        this.hubsArr = hubsArr;
+        this.hubsArr = hubsArr.clone();
     }
 
     void setRouteInVehiclesList(int index, List<Integer> route) {
         vehiclesList.set(index, route);
     }
 
-    void resetVehiclesList(ArrayList<List<Integer>> vehiclesList) {
+    void setVehiclesList(ArrayList<List<Integer>> vehiclesList) {
         this.vehiclesList = new ArrayList<>();
         for (List<Integer> list : vehiclesList) {
             List<Integer> innerList = new ArrayList<>(list);
@@ -130,12 +147,12 @@ class PHCRP {
         for (int i = 0; i < vehiclesList.size(); i++) {
             List<Integer> route = vehiclesList.get(i);
             int hub = hubsArr[i / numVehiclesPerHub];
-            routes.append(hub+1).append("-");
+            routes.append(hub + 1).append("-");
 
             for (int node : route) {
-                routes.append(node+1).append("-");
+                routes.append(node + 1).append("-");
             }
-            routes.append(hub+1).append("; ");
+            routes.append(hub + 1).append("; ");
         }
 
         return routes.toString();
@@ -159,6 +176,10 @@ class PHCRP {
 
     public float getHubToHubCFactor() {
         return hubToHubCFactor;
+    }
+
+    public float getRemovalPercentage() {
+        return removalPercentage;
     }
 
     public double[] getCollectionCostArr() {
@@ -461,7 +482,7 @@ class PHCRP {
         copyPHCRP.setMaxCost(maxCost);
         copyPHCRP.setHubsArr(hubsArr);
         copyPHCRP.setIsVisitedCity(isVisitedCity);
-        copyPHCRP.resetVehiclesList(vehiclesList);
+        copyPHCRP.setVehiclesList(vehiclesList);
 
         Operations operations = new Operations(copyPHCRP);
         operations.nodesRemoveAndGreedyInsert(removalPercentage);
@@ -472,7 +493,7 @@ class PHCRP {
 
         setMaxCost(copyPHCRP.getMaxCost());
         setHubsArr(copyPHCRP.getHubsArr());
-        resetVehiclesList(copyPHCRP.getVehiclesList());
+        setVehiclesList(copyPHCRP.getVehiclesList());
         return true;
     }
 

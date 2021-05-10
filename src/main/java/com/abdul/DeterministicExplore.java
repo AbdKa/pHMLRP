@@ -30,7 +30,7 @@ class DeterministicExplore {
 //            // reset the hubsArr, vehicles list and maxCost
 //            if (i % numOfIterationForEachOne == 0 && i > 0 || i == 801000) {
 //                pHCRP.setHubsArr(initHubsArr.clone());
-//                pHCRP.resetVehiclesList(initVehiclesList);
+//                pHCRP.setVehiclesList(initVehiclesList);
 //                countsArr[operNum] = operName + "," + successCount + "," + pHCRP.getMaxCost();
 //                pHCRP.setMaxCost(initMaxCost);
 //                successCount = 0;

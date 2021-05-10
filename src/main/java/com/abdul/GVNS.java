@@ -55,8 +55,7 @@ class GVNS {
                 for (int repPerCombinationIdx = 0; repPerCombinationIdx < replicasPerCombination; repPerCombinationIdx++) {
                     // run each problem instance n number of replicas
 
-                    PHCRP pHCRP = Utils.newPHMLRPInstance(this.params);
-                    createInitSol(pHCRP);
+                    PHCRP pHCRP = Utils.newPHCRPInstance(this.params);
                     double currentInitObj = pHCRP.getMaxCost();
                     Operations operations = new Operations(pHCRP);
 
@@ -86,10 +85,5 @@ class GVNS {
                 }
             }
         }
-    }
-
-    private void createInitSol(PHCRP pHCRP) {
-        InitialSolutions initialSolutions = new InitialSolutions(pHCRP, params, true);
-        pHCRP.calculateCost(PHCRP.CostType.NORMAL);
     }
 }

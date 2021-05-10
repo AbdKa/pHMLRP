@@ -14,21 +14,11 @@ public class Main {
         }
 
         // TODO: remove this if statement after preparing VNS
-        if (params.getAlgorithm() == ALGO.VNS) {
-            PHCRP pHCRP = new PHCRP(params.getDataset(), params.getNumNodes(), params.getNumHubs(), params.getNumVehicles(),
-                    params.getCollectionCostCFactor(), params.getDistributionCostCFactor(), params.getHubToHubCFactor(),
-                    params.getRemovalPercentage());
-            pHCRP.setSilent(params.getSilent());
-
-//            do initial solution
-            InitialSolutions initialSolutions = new InitialSolutions(pHCRP, params, true);
-
-            pHCRP.calculateCost(PHCRP.CostType.NORMAL);
-
+        if (params.getAlgorithm() == ALGO.SA) {
 //            run algorithm
             switch (params.getAlgorithm()) {
                 case SA:
-                    SimulatedAnnealing simulatedAnnealing = new SimulatedAnnealing(pHCRP, params);
+                    SimulatedAnnealing simulatedAnnealing = new SimulatedAnnealing(params);
                     simulatedAnnealing.runSA();
                     break;
                 case VNS:

@@ -128,7 +128,7 @@ class VndWithIncompleteHubs {
 //                        PHCRP pHCRP;
 //                        double mtspCost = 0;
 //                        if (localSource) {
-//                            pHCRP = newPHMLRPInstance(problemInstances[probIdx]);
+//                            pHCRP = newPHCRPInstance(problemInstances[probIdx]);
 //                            createInitSol(pHCRP);
 //                        } else {
 //                            pHCRP = Utils.getJsonInitSol(problemInstances[probIdx].split("\\.")[1] +
@@ -252,9 +252,5 @@ class VndWithIncompleteHubs {
     private void createInitSol(PHCRP pHCRP) {
         InitialSolutions initialSolutions = new InitialSolutions(pHCRP, params, true);
         pHCRP.calculateCost(PHCRP.CostType.NORMAL);
-    }
-
-    private PHCRP newPHMLRPInstance(String problemInstance) {
-        return Utils.newPHMLRPInstance(problemInstance, this.params);
     }
 }
