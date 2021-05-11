@@ -12,9 +12,7 @@ import static com.abdul.Utils.printLine;
 
 class SimulatedAnnealing {
 
-    //    2 hours
-//    private static final double MAX_RUN_TIME = 7.2e+12;
-    private static final double MAX_RUN_TIME = 6e+10;
+    private double MAX_RUN_TIME;
 
     private final Params params;
     private final boolean silent;
@@ -34,6 +32,7 @@ class SimulatedAnnealing {
     SimulatedAnnealing(Params params) {
         this.params = params;
         this.silent = params.getSilent();
+        MAX_RUN_TIME = Utils.getMaxRunTime(params.getNumNodes());
     }
 
     void runSA() {

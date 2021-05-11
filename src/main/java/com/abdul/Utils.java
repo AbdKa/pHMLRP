@@ -175,4 +175,37 @@ class Utils {
         out.print(", ");
         out.println(pHCRP.getVehiclesListString());
     }
+
+    /**
+     * set MAX_RUN_TIME as per https://link.springer.com/article/10.1007/s00291-018-0526-2
+     * */
+    static double getMaxRunTime(int numNodes) {
+        int seconds = 0;
+        switch (numNodes) {
+            case 10:
+                seconds = 10;
+                break;
+            case 15:
+            case 16:
+                seconds = 30;
+                break;
+            case 25:
+                seconds = 60;
+                break;
+            case 50:
+                seconds = 270;
+                break;
+            case 81:
+                seconds = 1000;
+                break;
+            case 100:
+                seconds = 3600;
+                break;
+            case 200:
+                seconds = 7200;
+                break;
+        }
+
+        return seconds * 1e+9;
+    }
 }
