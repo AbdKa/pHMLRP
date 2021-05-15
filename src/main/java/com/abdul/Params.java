@@ -41,7 +41,7 @@ public interface Params {
     @Option(description = "use city names when displaying/printing", shortName = "j", longName = "verbose")
     boolean getVerbose();
 
-    @Option(description = "initial solution", shortName = "i", longName = "initial", defaultValue = "RND")
+    @Option(description = "initial solution", shortName = "i", longName = "initial", defaultValue = "GRB")
     IS getInitSol();
 
     @Option(description = "algorithm", shortName = "g", longName = "algorithm", defaultValue = "SA")

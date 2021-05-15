@@ -249,7 +249,7 @@ class InitialSolutions {
      * generate a probabilistic initial solution
      * pick hubs using roulette wheel
      **/
-    void probabilisticInitSol() {
+    private void probabilisticInitSol() {
         long startTime = System.nanoTime();
         ArrayList<Integer> nodesDistancesSum = new ArrayList<>(numNodes);
         int totalSum = 0;
@@ -387,7 +387,7 @@ class InitialSolutions {
                     // loop through probabilities HashMap
                     for (Map.Entry<Integer, Double> n : normalizedDistances.entrySet()) {
                         // if this is the last node but already visited
-                        if (x == normalizedDistances.size() - 1 && n.getValue() == -1.0) {
+                        if (x == normalizedDistances.size() - 2 && n.getValue() == -1.0) {
                             j--;
                             break;
                         }
@@ -412,9 +412,7 @@ class InitialSolutions {
                             normalizedDistances.remove(node);
 
                             // reset probabilities after changing the totalSum => distancesSum/new totalSum
-                            int ii = -1;
                             for (Map.Entry<Integer, Double> nn : normalizedDistances.entrySet()) {
-                                ii++;
                                 // if the node is already selected as a node, skip to the next
                                 if (nn.getValue() == -1.0) continue;
                                 // change the normalized sums. After the total change

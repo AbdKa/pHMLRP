@@ -69,7 +69,7 @@ class PHCRP {
         this.distributionCostCFactor = pHCRP.getDistributionCostCFactor();
         this.hubToHubCFactor = pHCRP.getHubToHubCFactor();
         this.removalPercentage = pHCRP.getRemovalPercentage();
-        setHubsArr(pHCRP.getHubsArr());
+        hubsArr = pHCRP.getHubsArr().clone();
         setVehiclesList(pHCRP.getVehiclesList());
         this.isVisitedCity = pHCRP.isVisitedCity.clone();
         this.maxCost = pHCRP.getMaxCost();
@@ -127,7 +127,7 @@ class PHCRP {
     }
 
     void setHubsArr(int[] hubsArr) {
-        this.hubsArr = hubsArr.clone();
+        this.hubsArr = hubsArr;
     }
 
     void setRouteInVehiclesList(int index, List<Integer> route) {
@@ -275,51 +275,6 @@ class PHCRP {
         }
     }
 
-    double costWithoutMinEdge() {
-        int cost;
-
-        // loop on the hubs
-        for (int h = 0; h < numHubs; h++) {
-            // loop through vehicles in a hub
-            for (int i = h * numVehiclesPerHub; i < ((h + 1) * numVehiclesPerHub); i++) {
-                int minEdgeFirstNode = getMinEdgeFirstNode(h, i);
-//                System.out.println(minEdgeFirstNode);
-                cost = getCollectionAndDistributionCostNoMinEdge(h, i, minEdgeFirstNode);
-//                System.out.println("Vehicle " + i + " costNoMin: " + cost);
-                if (cost > maxNonMinEdgeCost) {
-                    maxNonMinEdgeCost = cost;
-                }
-            }
-        }
-
-//        System.out.println();
-//        System.out.println("Max Cost without the minimum edge is: " + maxNonMinEdgeCost);
-        return maxNonMinEdgeCost;
-    }
-
-    private int getMinEdgeFirstNode(int h, int v) {
-        // between a hub and first node in a vehicle list
-        int minEdgeFirstNode = hubsArr[h];
-        double minEdge = getDistance(hubsArr[h], vehiclesList.get(v).get(0));
-        // loop on a vehicle's list and calculating the distribution calculateCost
-        for (int j = 0; j < vehiclesList.get(v).size() - 1; j++) {
-            double edgeCost = getDistance(vehiclesList.get(v).get(j), vehiclesList.get(v).get(j + 1));
-            if (edgeCost < minEdge) {
-                minEdge = edgeCost;
-                minEdgeFirstNode = vehiclesList.get(v).get(j);
-            }
-        }
-
-        int lastCityWithinVehicle = vehiclesList.get(v).get(vehiclesList.get(v).size() - 1);
-        // the collection calculateCost between the last city in a route (vehicle's list) and its hub
-        double lastEdge = getDistance(lastCityWithinVehicle, hubsArr[h]);
-        if (lastEdge < minEdge) {
-            minEdgeFirstNode = lastCityWithinVehicle;
-        }
-
-        return minEdgeFirstNode;
-    }
-
     private void fillCollectionDistributionCostsArr(double[] collectionCostArr, double[] distributionCostArr) {
         // calculate collection and distribution costs for vehicles and print them
         for (int h = 0; h < numHubs; h++) {
@@ -358,99 +313,11 @@ class PHCRP {
         return collectionCost;
     }
 
-    private int getCollectionAndDistributionCostNoMinEdge(int h, int v, int minEdgeFirstNode) {
-        int collectionCost = 0;
-        int distributionCost = 0;
-
-        int distributionStartIndex = 0;
-
-        if (hubsArr[h] != minEdgeFirstNode) {
-            // if first edge is not the minimum
-            // between a hub and first node in a vehicle list
-            collectionCost += getDistance(hubsArr[h], vehiclesList.get(v).get(0));
-            // loop on a vehicle's list and calculating the collection calculateCost
-            for (int j = 0; j < vehiclesList.get(v).size() - 1; j++) {
-                distributionStartIndex = j + 1;
-                if (vehiclesList.get(v).get(j) == minEdgeFirstNode) {
-                    break;
-                }
-                collectionCost += getDistance(vehiclesList.get(v).get(j), vehiclesList.get(v).get(j + 1));
-            }
-        }
-
-        // loop on a vehicle's list and calculating the distribution calculateCost
-        for (int j = distributionStartIndex; j < vehiclesList.get(v).size() - 1; j++) {
-            distributionCost += getDistance(vehiclesList.get(v).get(j), vehiclesList.get(v).get(j + 1));
-        }
-        int lastCityWithinVehicle = vehiclesList.get(v).get(vehiclesList.get(v).size() - 1);
-        if (lastCityWithinVehicle != minEdgeFirstNode) {
-            // if last edge is not the minimum
-            // the calculateCost between the last node in a route (vehicle's list) and its hub
-            distributionCost += getDistance(lastCityWithinVehicle, hubsArr[h]);
-        }
-
-        collectionCost = Math.round(collectionCost * collectionCostCFactor);
-        distributionCost = Math.round(distributionCost * distributionCostCFactor);
-
-        return collectionCost + distributionCost;
-    }
-
-    void randomOperation() {
-        // TODO: Ask?? In a specific operation, if the randomly selected route does not satisfy our criteria,
-        //  shall we reselect another one or just abort the operation then randomly select a new operation.
-        Random random = new Random();
-        int randOpr = random.nextInt(12);
-//        int randOpr = 7;
-
-        Operations operations = new Operations(this);
-
-        switch (randOpr) {
-            case 0:
-                operations.insertNodeInRoute(false, -1, -1, -1);
-                break;
-            case 1:
-                operations.insertNodeBetweenRoutes(false, -1, -1, -1, -1);
-                break;
-            case 2:
-                operations.swapNodeInRoute(false, -1, -1, -1);
-                break;
-            case 3:
-                operations.swapNodeWithinRoutes(false, -1, -1, -1, -1);
-                break;
-            case 4:
-                operations.edgeOptWithinRoutes(false, -1, -1, -1, -1);
-                break;
-            case 5:
-                operations.edgeOptInRoute(false, -1, -1, -1);
-                break;
-            case 6:
-                operations.swapHubWithNode(false, -1, -1, -1);
-                break;
-            case 7:
-                operations.twoOptAlgorithm();
-                break;
-            case 8:
-                operations.localSearchInsertion();
-                break;
-            case 9:
-                operations.localSearchSwap();
-                break;
-            case 10:
-                operations.insertTwoNodes(false);
-                break;
-            case 11:
-                operations.nodesRemoveAndGreedyInsert(removalPercentage);
-                break;
-        }
-
-        print();
-    }
-
-    boolean callOperation(int operationNumber) {
-        if (operationNumber == 7) {
-            // called NodesRemoveAndGreedyInsert operation
-            return calledNodesRemoveAndGreedyInsert();
-        }
+    boolean move(int operationNumber) {
+//        if (operationNumber == 7) {
+//            // called NodesRemoveAndGreedyInsert operation
+//            return calledNodesRemoveAndGreedyInsert();
+//        }
 
         Operations operations = new Operations(this);
         switch (operationNumber) {
@@ -468,7 +335,7 @@ class PHCRP {
                 return operations.swapNodeInRoute(false, -1, -1, -1);
             case 6:
                 return operations.swapNodeWithinRoutes(false, -1, -1, -1, -1);
-            case 8:
+            case 7:
                 return operations.swapHubWithNode(false, -1, -1, -1);
         }
 

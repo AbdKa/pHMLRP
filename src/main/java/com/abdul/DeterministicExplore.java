@@ -132,7 +132,7 @@ class DeterministicExplore {
 //        double priorCost = pHCRP.getMaxCost();
 //        //operation start time in milliseconds
 //        long startTime = System.nanoTime();
-//        pHCRP.callOperation(operationNum);
+//        pHCRP.move(operationNum);
 //        //operation end time in milliseconds
 //        long endTime = System.nanoTime();
 //        //time elapsed

@@ -30,8 +30,8 @@ class VndWithIncompleteHubs {
     //    4, insertNodeInRoute
     //    5, swapNodeInRoute
     //    6, swapNodeWithinRoutes
-    //    7, nodesRemoveAndGreedyInsert
-    //    8, swapHubWithNode
+    //    7, swapHubWithNode
+    //    nodesRemoveAndGreedyInsert
     private final List<List<Integer>> combinations;
 
     final int[] iterationCounts;
@@ -148,7 +148,7 @@ class VndWithIncompleteHubs {
 //
 //                            while (true) {
 //                                // change neighborhood until no better solution, jump to next one
-//                                if (!pHCRP.callOperation(k)) {
+//                                if (!pHCRP.move(k)) {
 //                                    // if doesn't give a better solution, break and jump to next neighborhood
 //                                    break;
 //                                }

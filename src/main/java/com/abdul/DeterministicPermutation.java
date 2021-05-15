@@ -124,7 +124,7 @@ class DeterministicPermutation {
         int[] bestOrder = new int[arr.length];
         for (int iter = 0; iter < iterationsForEachPermutation; iter++) {
             for (int operationIdx : arr) {
-                PHCRP.callOperation(operationIdx);
+                PHCRP.move(operationIdx);
             }
             if (PHCRP.getMaxCost() < bestCost) {
                 bestCost = PHCRP.getMaxCost();

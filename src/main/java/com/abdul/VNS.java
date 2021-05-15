@@ -11,6 +11,7 @@ import static com.abdul.Utils.outputStream;
 import static com.abdul.Utils.printLine;
 
 class VNS {
+    private double MAX_RUN_TIME;
     private Params params;
     private int replicasPerProb = 100;
     private int replicasPerCombination = 100;
@@ -40,6 +41,7 @@ class VNS {
         this.params = params;
         this.silent = params.getSilent();
         combinations = Utils.getCombinations("Combinations");
+        MAX_RUN_TIME = Utils.getMaxRunTime(params.getNumNodes());
     }
 
     void runVNS() {
@@ -47,10 +49,13 @@ class VNS {
         OutputStream stream = outputStream(params, uniqueFileName);
         out = new PrintWriter(new OutputStreamWriter(stream, StandardCharsets.US_ASCII));
 
-        long startTime = System.nanoTime();
-        doVNS();
-        doLS();
-        double solCPU = Utils.getSolCPU(startTime);
+        long start = System.nanoTime();
+        doVNS(start);
+        double currentObj = doLS(bestPHCRP);
+        if (currentObj < minObj) {
+            setValues(bestIteration+1, bestPHCRP, currentObj);
+        }
+        double solCPU = Utils.getSolCPU(start);
 
         out.flush();
         out.close();
@@ -64,56 +69,60 @@ class VNS {
                 uniqueFileName, initObj, initCPU, minObj, solCPU, bestIteration);
     }
 
-    private void doVNS() {
+    private void doVNS(long start) {
 
         out.println("iteration, cost, hubs, routes");
 
         int iteration = 0;
 
-        for (int replicaIdx = 0; replicaIdx < replicasPerProb; replicaIdx++) {
+        while (System.nanoTime() - start < MAX_RUN_TIME) {
             // run each problem instance n number of replicas
             for (int combIdx = 0; combIdx < combinations.size(); combIdx++) {
                 // run on every combination
-                for (int repPerCombinationIdx = 0; repPerCombinationIdx < replicasPerCombination;
-                     repPerCombinationIdx++) {
-                    // run each combination n number of replicas
 
-                    PHCRP pHCRP = Utils.newPHCRPInstance(this.params);
-                    double currentInitObj = pHCRP.getMaxCost();
+                PHCRP pHCRP = Utils.newPHCRPInstance(this.params);
+                double currentInitObj = pHCRP.getMaxCost();
 
-                    for (int k : combinations.get(combIdx)) {
-                        // for each neighborhood
-                        if (!silent)
-                            System.out.println(replicaIdx +
-                                    " " + combIdx +
-                                    " " + repPerCombinationIdx +
-                                    " " + k);
+                for (int k : combinations.get(combIdx)) {
+                    // for each neighborhood
+                    if (!silent)
+                        System.out.println(combIdx + " " + k);
 
-                        // if doesn't give a better solution, break and jump to next neighborhood
-                        while (pHCRP.callOperation(k)) {
-                            // change neighborhood until no better solution, jump to next one
-                            iteration++;
-                        }
+                    // if doesn't give a better solution or Maximum time reached,
+                    // break and jump to next neighborhood
+                    while (pHCRP.move(k) && System.nanoTime() - start < MAX_RUN_TIME) {
+                        // change neighborhood until no better solution, jump to next one
+                        iteration++;
                     }
 
-                    double newObj = pHCRP.getMaxCost();
-
-                    if (newObj < minObj) {
-                        bestPHCRP = pHCRP;
+                    double currentObj = pHCRP.getMaxCost();
+                    if (currentObj < minObj) {
                         initObj = currentInitObj;
-                        minObj = newObj;
-                        initCPU = pHCRP.getInitCPU();
-                        bestIteration = iteration;
+                        setValues(iteration, pHCRP, currentObj);
+                    }
 
-                        printLine(bestPHCRP, out, bestIteration, minObj);
+                    iteration++;
+                    currentObj = doLS(pHCRP);
+                    if (currentObj < minObj) {
+                        initObj = currentInitObj;
+                        setValues(iteration, pHCRP, currentObj);
                     }
                 }
             }
         }
     }
 
-    private void doLS() {
-        Operations operations = new Operations(bestPHCRP);
+    private void setValues(int iteration, PHCRP pHCRP, double currentObj) {
+        bestPHCRP = pHCRP;
+        minObj = currentObj;
+        initCPU = pHCRP.getInitCPU();
+        bestIteration = iteration;
+
+        printLine(bestPHCRP, out, bestIteration, minObj);
+    }
+
+    private double doLS(PHCRP pHCRP) {
+        Operations operations = new Operations(pHCRP);
 
         if (!silent)
             System.out.println("Insertion LS");
@@ -128,11 +137,6 @@ class VNS {
             System.out.println("EdgeOpt LS");
         operations.localSearchEdgeOpt();
 
-        double newObj = bestPHCRP.getMaxCost();
-
-        if (newObj < minObj) {
-            minObj = bestPHCRP.getMaxCost();
-            printLine(bestPHCRP, out, bestIteration + 1, minObj);
-        }
+        return pHCRP.getMaxCost();
     }
 }

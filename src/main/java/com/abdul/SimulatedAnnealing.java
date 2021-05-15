@@ -71,7 +71,7 @@ class SimulatedAnnealing {
             while (i < L && System.nanoTime() - start < MAX_RUN_TIME) {
 
                 PHCRP temp = new PHCRP(current);
-                doRandomOperation(temp);
+                randomMove(temp);
 
                 double difference = temp.getSaOperationCost() - current.getSaOperationCost();
 
@@ -144,7 +144,7 @@ class SimulatedAnnealing {
             System.out.printf("the best updated!\tT = %.5f\n", T);
     }
 
-    private void doRandomOperation(PHCRP pHCRP) {
+    private void randomMove(PHCRP pHCRP) {
 
         Random random = new Random();
         int randOpr = random.nextInt(8);
