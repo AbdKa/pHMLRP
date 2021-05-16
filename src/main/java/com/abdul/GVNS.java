@@ -60,10 +60,12 @@ class GVNS {
                 while (k < combinations.get(combIdx).size() && System.nanoTime() - start < MAX_RUN_TIME) {
                     // for each neighborhood
 
-                    if (!params.getSilent())
-                        System.out.println(combIdx + " " + k);
+                    int neighborhood = combinations.get(combIdx).get(k);
 
-                    operations.doLocalSearch(k);
+                    if (!params.getSilent())
+                        System.out.println(combIdx + " " + neighborhood);
+
+                    operations.doLocalSearch(neighborhood);
 
                     iteration++;
                     k++;
