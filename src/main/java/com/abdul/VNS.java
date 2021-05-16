@@ -13,8 +13,6 @@ import static com.abdul.Utils.printLine;
 class VNS {
     private double MAX_RUN_TIME;
     private Params params;
-    private int replicasPerProb = 100;
-    private int replicasPerCombination = 100;
 
     //    0, insertNodeBetweenRoutes
     //    1, edgeOptWithinRoutes
@@ -23,8 +21,8 @@ class VNS {
     //    4, insertNodeInRoute
     //    5, swapNodeInRoute
     //    6, swapNodeWithinRoutes
-    //    7, nodesRemoveAndGreedyInsert
-    //    8, swapHubWithNode
+    //    7, swapHubWithNode
+    //    , nodesRemoveAndGreedyInsert
     private List<List<Integer>> combinations;
 
     private PHCRP bestPHCRP;
@@ -76,7 +74,6 @@ class VNS {
         int iteration = 0;
 
         while (System.nanoTime() - start < MAX_RUN_TIME) {
-            // run each problem instance n number of replicas
             for (int combIdx = 0; combIdx < combinations.size(); combIdx++) {
                 // run on every combination
 

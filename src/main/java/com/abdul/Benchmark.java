@@ -62,7 +62,7 @@ public class Benchmark {
 
 //                        add SA variants
                         if (algo == ALGO.SA) {
-                            params.add("--best");
+//                            params.add("--best");
                             params.add("--force");
                         }
 

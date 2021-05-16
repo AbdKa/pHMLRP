@@ -13,23 +13,20 @@ public class Main {
             return;
         }
 
-        // TODO: remove this if statement after preparing VNS
-        if (params.getAlgorithm() == ALGO.SA) {
 //            run algorithm
-            switch (params.getAlgorithm()) {
-                case SA:
-                    SimulatedAnnealing simulatedAnnealing = new SimulatedAnnealing(params);
-                    simulatedAnnealing.runSA();
-                    break;
-                case VNS:
-                    VNS vns = new VNS(params);
-                    vns.runVNS();
-                    break;
-                case GVNS:
-                    GVNS gVNS = new GVNS(params);
-                    gVNS.runGVNS();
-                    break;
-            }
+        switch (params.getAlgorithm()) {
+            case SA:
+                SimulatedAnnealing simulatedAnnealing = new SimulatedAnnealing(params);
+                simulatedAnnealing.runSA();
+                break;
+            case VNS:
+                VNS vns = new VNS(params);
+                vns.runVNS();
+                break;
+            case GVNS:
+                GVNS gVNS = new GVNS(params);
+                gVNS.runGVNS();
+                break;
         }
     }
 }
