@@ -50,7 +50,7 @@ class SimulatedAnnealing {
         bestObj = theBest.getMaxCost();
         double initObj = bestObj;
 
-        //TODO is the correct way to capture the initial solution's statistics?
+        // TODO is the correct way to capture the initial solution's statistics?
         // The zeroth iteration is the initial solution
         printLine(theBest, out, 0, initObj);
 
@@ -60,7 +60,7 @@ class SimulatedAnnealing {
         // Continues annealing until reaching minimum
         // temperature
         int counter = 1;
-        while (T > minT) {
+        while (/*T > minT*/ System.nanoTime() - start < MAX_RUN_TIME) {
             if (!silent)
                 System.out.println("Temperature " + T);
 

@@ -124,7 +124,7 @@ class Utils {
                 params.getRemovalPercentage());
         pHCRP.setSilent(params.getSilent());
 
-        InitialSolutions initialSolutions = new InitialSolutions(pHCRP, params, true);
+        new InitialSolutions(pHCRP, params, true);
         pHCRP.calculateCost(PHCRP.CostType.NORMAL);
 
         return pHCRP;
@@ -154,8 +154,16 @@ class Utils {
     }
 
     static String getUniqueFileName(Params params) {
+
+        final String algorithm;
+
+        if (params.getAlgorithm() == ALGO.SA) {
+            algorithm = "SA" + (params.isBest() ? "1" : "0") + (params.isForce() ? "1" : "0");
+        } else
+            algorithm = params.getAlgorithm().toString();
+
         return params.getDataset() + "." + params.getNumNodes() + "." + params.getNumHubs() + "." +
-                params.getNumVehicles() + "-" + params.getInitSol() + "-" + params.getAlgorithm() + "-" +
+                params.getNumVehicles() + "-" + params.getInitSol() + "-" + algorithm + "-" +
                 UUID.randomUUID().toString().replaceAll("-", "");
     }
 
@@ -178,7 +186,7 @@ class Utils {
 
     /**
      * set MAX_RUN_TIME as per https://link.springer.com/article/10.1007/s00291-018-0526-2
-     * */
+     */
     static double getMaxRunTime(int numNodes) {
         int seconds = 0;
         switch (numNodes) {
