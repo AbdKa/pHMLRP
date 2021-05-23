@@ -39,7 +39,7 @@ public class Benchmark {
 
                 for (IS is : IS.values())
                   //  for (ALGO algo : ALGO.values())
-                    { ALGO algo = ALGO.VNS;
+                    { ALGO algo = ALGO.GVNS;
 //                        System.out.println(v + " " + s + " " + is + " " + algo);
 
 /**                        String[] params = new String[]{

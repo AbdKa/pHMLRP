@@ -6,9 +6,13 @@ import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
 import java.io.File;
-import java.io.FileReader;
 import java.io.IOException;
-import java.util.*;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.Random;
 
 class InitialSolutions {
 
@@ -69,7 +73,7 @@ class InitialSolutions {
         pHCRP.setInitCPU(cpu);
     }
 
-//    #2 GREEDY
+    //    #2 GREEDY
     void greedySolution() {
         long startTime = System.nanoTime();
         // 1- greedily pick hubs, after calculating the average distances for each node
@@ -81,7 +85,7 @@ class InitialSolutions {
         pHCRP.setInitCPU(cpu);
     }
 
-//    #3 GREEDY_RND
+    //    #3 GREEDY_RND
     void greedyRandomSolution() {
         long startTime = System.nanoTime();
         // 1- greedily pick hubs, after calculating the average distances for each node
@@ -93,7 +97,7 @@ class InitialSolutions {
         pHCRP.setInitCPU(cpu);
     }
 
-//    #4 RND_GREEDY
+    //    #4 RND_GREEDY
     void randomGreedySolution() {
         long startTime = System.nanoTime();
         // 1- greedily pick hubs, after calculating the average distances for each node
@@ -245,6 +249,7 @@ class InitialSolutions {
     }
 
 //    #5 PROP
+
     /**
      * generate a probabilistic initial solution
      * pick hubs using roulette wheel
@@ -439,9 +444,12 @@ class InitialSolutions {
         int[] hubsArr = new int[numHubs];
         JSONParser parser = new JSONParser();
         String jsonPrefix = initSol == IS.GRB ? "GRB" : "HUBS_GRB";
+
+
         try {
-            JSONObject a = (JSONObject) parser.parse(new FileReader(jsonPath + jsonPrefix +
+            String json = Files.readString(Paths.get(jsonPath + jsonPrefix +
                     "_" + dataset.toString() + "_" + numNodes + "_" + numHubs + "_" + numVehiclesPerHub + ".json"));
+            JSONObject a = (JSONObject) parser.parse(json);
             double cpu = (Double) a.get("CPU");
             pHCRP.setInitCPU(cpu);
             JSONArray routesJson = (JSONArray) a.get("routes");

@@ -12,8 +12,6 @@ import java.util.zip.GZIPOutputStream;
 
 class Utils {
 
-    static double CPU = 0;
-
     static final int BUFFER_SIZE = 1 << 16; // 64K
 
     static List<List<Integer>> getCombinations(String fileName) {
@@ -24,7 +22,7 @@ class Utils {
             hashMap = Consts.neighborhoods;
         }
         List<List<Integer>> combinationsList = new ArrayList<>();
-        try (BufferedReader CSVFile = new BufferedReader(new FileReader(fileName + ".csv"))) {
+        try (BufferedReader CSVFile = Files.newBufferedReader(Paths.get(fileName + ".csv"))) {
             String dataRow = CSVFile.readLine();
             while (dataRow != null && !dataRow.equals("")) {
                 // converting comma separate String to array of neighborhoods
@@ -99,17 +97,6 @@ class Utils {
             e.printStackTrace();
         }
     }
-
-    static void writeToTextFile(FileWriter myWriter, String line) {
-        try {
-            myWriter.write(line + "\n");
-
-        } catch (IOException e) {
-            System.out.println("An error occurred.");
-            e.printStackTrace();
-        }
-    }
-
 
     static PHCRP newPHCRPInstance(Params params) {
 
