@@ -1,5 +1,6 @@
 package com.abdul;
 
+import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
@@ -85,6 +86,14 @@ class GVNS {
                     printLine(pHCRP, out, iteration, minObj);
                 }
             }
+        }
+
+        out.flush();
+        out.close();
+        try {
+            stream.close();
+        } catch (IOException e) {
+            // NO-OP
         }
     }
 }
