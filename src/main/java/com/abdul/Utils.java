@@ -185,7 +185,7 @@ class Utils {
     }
 
     /**
-     * set MAX_RUN_TIME as per https://link.springer.com/article/10.1007/s00291-018-0526-2
+     * set MAX_RUN_TIME as per https://link.springer.com/article/10.1007/s00291-018-0526-2 and others
      */
     static double getMaxRunTime(int numNodes) {
         int seconds = 0;

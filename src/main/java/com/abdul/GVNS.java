@@ -52,10 +52,12 @@ class GVNS {
             for (int combIdx = 0; combIdx < combinations.size(); combIdx++) {
                 // run on every combination
 
+//              1) shaking
                 PHCRP pHCRP = Utils.newPHCRPInstance(this.params);
                 double currentInitObj = pHCRP.getMaxCost();
                 Operations operations = new Operations(pHCRP);
 
+//              2&3) VND & Neighborhood Change
                 int k = 0;
                 while (k < combinations.get(combIdx).size() && System.nanoTime() - start < MAX_RUN_TIME) {
                     // for each neighborhood
@@ -65,6 +67,7 @@ class GVNS {
                     if (!params.getSilent())
                         System.out.println(combIdx + " " + neighborhood);
 
+//                  VND (LS)
                     operations.doLocalSearch(neighborhood);
 
                     iteration++;
