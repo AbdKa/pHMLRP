@@ -7,6 +7,8 @@ import org.json.simple.parser.ParseException;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.Reader;
+import java.io.StringReader;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -449,7 +451,8 @@ class InitialSolutions {
         try {
             String json = Files.readString(Paths.get(jsonPath + jsonPrefix +
                     "_" + dataset.toString() + "_" + numNodes + "_" + numHubs + "_" + numVehiclesPerHub + ".json"));
-            JSONObject a = (JSONObject) parser.parse(json);
+            Reader reader = new StringReader(json);
+            JSONObject a = (JSONObject) parser.parse(reader);
             double cpu = (Double) a.get("CPU");
             pHCRP.setInitCPU(cpu);
             JSONArray routesJson = (JSONArray) a.get("routes");
@@ -475,6 +478,7 @@ class InitialSolutions {
                 i++;
             }
             pHCRP.setHubsArr(hubsArr);
+            reader.close();
         } catch (IOException e) {
             System.out.println("Exception: " + e);
         } catch (ParseException e) {
