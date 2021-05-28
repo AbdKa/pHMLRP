@@ -11,7 +11,7 @@ import static com.abdul.Utils.outputStream;
 import static com.abdul.Utils.printLine;
 
 class GVNS {
-    private double MAX_RUN_TIME;
+    private final long MAX_RUN_TIME;
     private final Params params;
 
     //    0, Insertion
@@ -42,7 +42,7 @@ class GVNS {
                 uniqueFileName, initObj, initCPU, minObj, solCPU, bestIteration);
     }
 
-    private void doGVNS(String uniqueFileName, long start) {
+    private void doGVNS(String uniqueFileName, final long start) {
         OutputStream stream = outputStream(params, uniqueFileName);
         PrintWriter out = new PrintWriter(new OutputStreamWriter(stream, StandardCharsets.US_ASCII));
 

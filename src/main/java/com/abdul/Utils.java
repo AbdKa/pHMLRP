@@ -174,8 +174,8 @@ class Utils {
     /**
      * set MAX_RUN_TIME as per https://link.springer.com/article/10.1007/s00291-018-0526-2 and others
      */
-    static double getMaxRunTime(int numNodes) {
-        int seconds = 0;
+    static long getMaxRunTime(int numNodes) {
+        long seconds = 0L;
         switch (numNodes) {
             case 10:
                 seconds = 10;
@@ -201,6 +201,6 @@ class Utils {
                 break;
         }
 
-        return seconds * 1e+9;
+        return seconds * 1_000_000_000L;
     }
 }

@@ -11,8 +11,8 @@ import static com.abdul.Utils.outputStream;
 import static com.abdul.Utils.printLine;
 
 class VNS {
-    private double MAX_RUN_TIME;
-    private Params params;
+    private final long MAX_RUN_TIME;
+    private final Params params;
 
     //    0, insertNodeBetweenRoutes
     //    1, edgeOptWithinRoutes
@@ -51,7 +51,7 @@ class VNS {
         doVNS(start);
         double currentObj = doLS(bestPHCRP);
         if (currentObj < minObj) {
-            setValues(bestIteration+1, bestPHCRP, currentObj);
+            setValues(bestIteration + 1, bestPHCRP, currentObj);
         }
         double solCPU = Utils.getSolCPU(start);
 
@@ -67,47 +67,48 @@ class VNS {
                 uniqueFileName, initObj, initCPU, minObj, solCPU, bestIteration);
     }
 
-    private void doVNS(long start) {
+    private void doVNS(final long start) {
 
         out.println("iteration, cost, hubs, routes");
 
         int iteration = 0;
 
-        while (System.nanoTime() - start < MAX_RUN_TIME) {
-            for (int combIdx = 0; combIdx < combinations.size(); combIdx++) {
-                // run on every combination
+        for (int combIdx = 0; combIdx < combinations.size() && System.nanoTime() - start < MAX_RUN_TIME; combIdx++) {
+            // run on every combination
 
 //              1) shaking
-                PHCRP pHCRP = Utils.newPHCRPInstance(this.params);
-                double currentInitObj = pHCRP.getMaxCost();
+            PHCRP pHCRP = Utils.newPHCRPInstance(this.params);
+            double currentInitObj = pHCRP.getMaxCost();
 
 //              2&3) Best improvement & Neighborhood Change
-                for (int k : combinations.get(combIdx)) {
-                    // for each neighborhood
-                    if (!silent)
-                        System.out.println(combIdx + " " + k);
+            for (int k : combinations.get(combIdx)) {
+                // for each neighborhood
+                if (!silent)
+                    System.out.println(combIdx + " " + k);
 
-                    // if doesn't give a better solution or Maximum time reached, (VND)
-                    // break and jump to next neighborhood (Neighborhood Change)
-                    while (pHCRP.move(k) && System.nanoTime() - start < MAX_RUN_TIME) {
-                        // change neighborhood until no better solution, jump to next one
-                        iteration++;
-                    }
+                // if doesn't give a better solution or Maximum time reached, (VND)
+                // break and jump to next neighborhood (Neighborhood Change)
+                while (pHCRP.move(k) && System.nanoTime() - start < MAX_RUN_TIME) {
+                    // change neighborhood until no better solution, jump to next one
+                    iteration++;
+                }
 
-                    double currentObj = pHCRP.getMaxCost();
-                    if (currentObj < minObj) {
-                        initObj = currentInitObj;
-                        setValues(iteration, pHCRP, currentObj);
-                    }
+                double currentObj = pHCRP.getMaxCost();
+                if (currentObj < minObj) {
+                    initObj = currentInitObj;
+                    setValues(iteration, pHCRP, currentObj);
+                }
 
 //                  LS part
-                    iteration++;
-                    currentObj = doLS(pHCRP);
-                    if (currentObj < minObj) {
-                        initObj = currentInitObj;
-                        setValues(iteration, pHCRP, currentObj);
-                    }
+                iteration++;
+                currentObj = doLS(pHCRP);
+                if (currentObj < minObj) {
+                    initObj = currentInitObj;
+                    setValues(iteration, pHCRP, currentObj);
                 }
+
+                if (System.nanoTime() - start >= MAX_RUN_TIME)
+                    break;
             }
         }
     }

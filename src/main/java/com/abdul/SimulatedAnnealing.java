@@ -12,7 +12,7 @@ import static com.abdul.Utils.printLine;
 
 class SimulatedAnnealing {
 
-    private double MAX_RUN_TIME;
+    private final long MAX_RUN_TIME;
 
     private final Params params;
     private final boolean silent;
