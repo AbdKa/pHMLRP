@@ -49,44 +49,44 @@ class GVNS {
         out.println("iteration, cost, hubs, routes");
 
         int iteration = 0;
-        while (System.nanoTime() - start < MAX_RUN_TIME) {
-            for (int combIdx = 0; combIdx < combinations.size(); combIdx++) {
-                // run on every combination
+
+        for (int combIdx = 0; combIdx < combinations.size() && System.nanoTime() - start < MAX_RUN_TIME; combIdx++) {
+            // run on every combination
 
 //              1) shaking
-                PHCRP pHCRP = Utils.newPHCRPInstance(this.params);
-                double currentInitObj = pHCRP.getMaxCost();
-                Operations operations = new Operations(pHCRP);
+            PHCRP pHCRP = Utils.newPHCRPInstance(this.params);
+            double currentInitObj = pHCRP.getMaxCost();
+            Operations operations = new Operations(pHCRP);
 
 //              2&3) VND & Neighborhood Change
-                int k = 0;
-                while (k < combinations.get(combIdx).size() && System.nanoTime() - start < MAX_RUN_TIME) {
-                    // for each neighborhood
+            int k = 0;
+            while (k < combinations.get(combIdx).size() && System.nanoTime() - start < MAX_RUN_TIME) {
+                // for each neighborhood
 
-                    int neighborhood = combinations.get(combIdx).get(k);
+                int neighborhood = combinations.get(combIdx).get(k);
 
-                    if (!params.getSilent())
-                        System.out.println(combIdx + " " + neighborhood);
+                if (!params.getSilent())
+                    System.out.println(combIdx + " " + neighborhood);
 
 //                  VND (LS)
-                    operations.doLocalSearch(neighborhood);
+                operations.doLocalSearch(neighborhood);
 
-                    iteration++;
-                    k++;
-                }
+                iteration++;
+                k++;
+            }
 
-                double newObj = pHCRP.getMaxCost();
+            double newObj = pHCRP.getMaxCost();
 
-                if (newObj < minObj) {
-                    initObj = currentInitObj;
-                    minObj = newObj;
-                    initCPU = pHCRP.getInitCPU();
-                    bestIteration = iteration;
+            if (newObj < minObj) {
+                initObj = currentInitObj;
+                minObj = newObj;
+                initCPU = pHCRP.getInitCPU();
+                bestIteration = iteration;
 
-                    printLine(pHCRP, out, iteration, minObj);
-                }
+                printLine(pHCRP, out, iteration, minObj);
             }
         }
+
 
         out.flush();
         out.close();
