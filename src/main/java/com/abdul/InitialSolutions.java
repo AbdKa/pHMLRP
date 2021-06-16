@@ -270,7 +270,7 @@ class InitialSolutions {
             totalSum += sum;
         }
 
-        Map<Integer, Double> normalizedSums = new LinkedHashMap<>();
+        LinkedHashMap<Integer, Double> normalizedSums = new LinkedHashMap<>();
         // normalize the summations to => timeSum/totalSum
         for (int i = 0; i < numNodes; i++) {
             double normalizedSum = (double) nodesDistancesSum.get(i) / totalSum;
