@@ -130,7 +130,7 @@ class InitialSolutions {
     }
 
     void greedyPickHubs() {
-        Map<Integer, Integer> nodesDistanceAvg = new LinkedHashMap<>();
+        LinkedHashMap<Integer, Integer> nodesDistanceAvg = new LinkedHashMap<>();
         for (int i = 0; i < numNodes; i++) {
             int sum = 0;
             for (int j = 0; j < numNodes; j++) {
@@ -198,7 +198,7 @@ class InitialSolutions {
         int remainingNodes = numNodes - numHubs;
 
         // a hash map of the hub-to-node distances
-        Map<Integer, Double> nodesToHubDistance = new LinkedHashMap<>();
+        LinkedHashMap<Integer, Double> nodesToHubDistance = new LinkedHashMap<>();
         // loop through vehicles lists
         for (int i = 0; i < pHCRP.getVehiclesList().size(); i++) {
             // if it's a new hub
@@ -346,7 +346,7 @@ class InitialSolutions {
         int remainingNodes = numNodes - numHubs;
 
         // a hash map of the hub-to-node distances
-        Map<Integer, Double> normalizedDistances = new LinkedHashMap<>();
+        LinkedHashMap<Integer, Double> normalizedDistances = new LinkedHashMap<>();
         // loop through vehicles lists
         for (int i = 0; i < pHCRP.getVehiclesList().size(); i++) {
             Random random = new Random();
