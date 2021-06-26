@@ -2,7 +2,6 @@ package com.abdul;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 
 class PHCRP {
     private double initCPU;
@@ -58,8 +57,8 @@ class PHCRP {
     }
 
     /**
-    * Copy a PHCRP object
-    * */
+     * Copy a PHCRP object
+     */
     PHCRP(PHCRP pHCRP) {
         this.dataset = pHCRP.getDataset();
         this.numNodes = pHCRP.getNumNodes();
@@ -406,5 +405,29 @@ class PHCRP {
         }
 
         return routes.toString();
+    }
+
+    /**
+     * Checks solution feasibility
+     */
+    boolean isFeasible() {
+        for (int n = 0; n < numNodes; n++) {
+            int count = 0;
+            // loop on hubs
+            for (int h : hubsArr) {
+                if (n == h) count++;
+            }
+            // loop on vehicle's nodes
+            for (int j = 0; j < numVehiclesPerHub * hubsArr.length; j++) {
+                for (int node : vehiclesList.get(j)) {
+                    if (n == node) count++;
+                }
+            }
+
+            if (count != 1)
+                return false;
+        }
+
+        return true;
     }
 }

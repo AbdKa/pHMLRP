@@ -5,7 +5,8 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.nio.charset.StandardCharsets;
-import java.util.List;
+import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 
 import static com.abdul.Utils.outputStream;
 import static com.abdul.Utils.printLine;
@@ -16,14 +17,15 @@ class VNS {
 
     //    0, insertNodeBetweenRoutes
     //    1, edgeOptWithinRoutes
-    //    2, insertTwoNodes
-    //    3, twoOptAlgorithm
-    //    4, insertNodeInRoute
-    //    5, swapNodeInRoute
-    //    6, swapNodeWithinRoutes
-    //    7, swapHubWithNode
+    //    2, insertNodeInRoute
+    //    3, swapNodeInRoute
+    //    4, swapNodeWithinRoutes
+    //    5, edgeOptInRoute
+    //    6, swapHubWithNode
+    //    , insertTwoNodes
+    //    , twoOptAlgorithm
     //    , nodesRemoveAndGreedyInsert
-    private List<List<Integer>> combinations;
+    private int[] combination = {0, 1, 2, 3, 4, 5, 6};
 
     private PHCRP bestPHCRP;
     private double initObj = Integer.MAX_VALUE;
@@ -38,7 +40,6 @@ class VNS {
     VNS(Params params) {
         this.params = params;
         this.silent = params.getSilent();
-        combinations = Utils.getCombinations("Combinations");
         MAX_RUN_TIME = Utils.getMaxRunTime(params.getNumNodes());
     }
 
@@ -73,52 +74,55 @@ class VNS {
 
         int iteration = 0;
 
+        PHCRP pHCRP = Utils.newPHCRPInstance(this.params);
+        bestPHCRP = new PHCRP(pHCRP);
+        initObj = pHCRP.getMaxCost();
+        minObj = initObj;
+        initCPU = pHCRP.getInitCPU();
+
         while (System.nanoTime() - start < MAX_RUN_TIME) {
-            for (int combIdx = 0; combIdx < combinations.size() && System.nanoTime() - start < MAX_RUN_TIME; combIdx++) {
-                // run on every combination
 
-//              1) shaking
-                PHCRP pHCRP = Utils.newPHCRPInstance(this.params);
-                double currentInitObj = pHCRP.getMaxCost();
+//            Operations operations = new Operations(pHCRP);
+//            operations.move(false);
 
-//              2&3) Best improvement & Neighborhood Change
-                for (int k : combinations.get(combIdx)) {
-                    // for each neighborhood
-                    if (!silent)
-                        System.out.println(combIdx + " " + k);
+            int k = 0;
+            while (k < combination.length) {
+                // for each neighborhood
 
-                    // if doesn't give a better solution or Maximum time reached, (VND)
-                    // break and jump to next neighborhood (Neighborhood Change)
-                    while (pHCRP.move(k) && System.nanoTime() - start < MAX_RUN_TIME) {
-                        // change neighborhood until no better solution, jump to next one
-                        iteration++;
-                    }
-
-                    double currentObj = pHCRP.getMaxCost();
-                    if (currentObj < minObj) {
-                        initObj = currentInitObj;
-                        setValues(iteration, pHCRP, currentObj);
-                    }
-
-//                  LS part
-                    iteration++;
-                    currentObj = doLS(pHCRP);
-                    if (currentObj < minObj) {
-                        initObj = currentInitObj;
-                        setValues(iteration, pHCRP, currentObj);
-                    }
-
-                    if (System.nanoTime() - start >= MAX_RUN_TIME)
-                        break;
+//              copy the best PHCRP
+                pHCRP = new PHCRP(bestPHCRP);
+//              1) shaking: random move
+                Operations operations = new Operations(pHCRP);
+                operations.move(true, true, -1);
+//              number of moves to shake (shuffle) the solution
+                int i = 0;
+                int rand = ThreadLocalRandom.current().nextInt(10, 101);
+                while(i < 20) {
+                    operations.move(false, false, combination[k]);
+                    i++;
                 }
+
+//              2) Best improvement
+                doLS(pHCRP);
+
+                iteration++;
+
+                double currentObj = pHCRP.getMaxCost();
+                if (currentObj < minObj) {
+                    if (!silent) System.out.println(combination[k] + " " + currentObj);
+                    setValues(iteration, pHCRP, currentObj);
+                    k = 0;
+                }
+
+//              3) Neighborhood Change
+                k++;
             }
         }
     }
 
     private void setValues(int iteration, PHCRP pHCRP, double currentObj) {
-        bestPHCRP = pHCRP;
+        bestPHCRP = new PHCRP(pHCRP);
         minObj = currentObj;
-        initCPU = pHCRP.getInitCPU();
         bestIteration = iteration;
 
         printLine(bestPHCRP, out, bestIteration, minObj);
@@ -127,17 +131,17 @@ class VNS {
     private double doLS(PHCRP pHCRP) {
         Operations operations = new Operations(pHCRP);
 
-        if (!silent)
-            System.out.println("Insertion LS");
+//        if (!silent)
+//            System.out.println("Insertion LS");
         operations.localSearchInsertion();
-        if (!silent)
-            System.out.println("SwapHub LS");
+//        if (!silent)
+//            System.out.println("SwapHub LS");
         operations.localSearchSwapHubWithNode();
-        if (!silent)
-            System.out.println("Swap LS");
+//        if (!silent)
+//            System.out.println("Swap LS");
         operations.localSearchSwap();
-        if (!silent)
-            System.out.println("EdgeOpt LS");
+//        if (!silent)
+//            System.out.println("EdgeOpt LS");
         operations.localSearchEdgeOpt();
 
         return pHCRP.getMaxCost();

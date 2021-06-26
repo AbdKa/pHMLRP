@@ -613,6 +613,40 @@ class Operations {
         return cost;
     }
 
+    void move(boolean acceptBad, boolean isRandom, int k) {
+
+        if (isRandom) {
+            Random random = new Random();
+            k = random.nextInt(8);
+        }
+
+        switch (k) {
+            case 0:
+                insertNodeBetweenRoutes(acceptBad, -1, -1, -1, -1);
+                break;
+            case 1:
+                edgeOptWithinRoutes(acceptBad, -1, -1, -1, -1);
+                break;
+            case 2:
+                insertNodeInRoute(acceptBad, -1, -1, -1);
+                break;
+            case 3:
+                swapNodeInRoute(acceptBad, -1, -1, -1);
+                break;
+            case 4:
+                swapNodeWithinRoutes(acceptBad, -1, -1, -1, -1);
+                break;
+            case 5:
+                edgeOptInRoute(acceptBad, -1, -1, -1);
+                break;
+//          two chances for swap hub with node
+            case 6:
+            case 7:
+                swapHubWithNode(acceptBad, -1, -1, -1);
+                break;
+        }
+    }
+
     /**
      * localSearchInsertion start
      */

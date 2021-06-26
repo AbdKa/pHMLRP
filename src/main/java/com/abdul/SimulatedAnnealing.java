@@ -5,7 +5,6 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.nio.charset.StandardCharsets;
-import java.util.Random;
 
 import static com.abdul.Utils.outputStream;
 import static com.abdul.Utils.printLine;
@@ -71,7 +70,8 @@ class SimulatedAnnealing {
             while (i < L && System.nanoTime() - start < MAX_RUN_TIME) {
 
                 PHCRP temp = new PHCRP(current);
-                randomMove(temp);
+                Operations operations = new Operations(temp);
+                operations.move(true, true, -1);
 
                 double difference = temp.getSaOperationCost() - current.getSaOperationCost();
 
@@ -142,40 +142,6 @@ class SimulatedAnnealing {
 
         if (!silent)
             System.out.printf("the best updated!\tT = %.5f\n", T);
-    }
-
-    private void randomMove(PHCRP pHCRP) {
-
-        Random random = new Random();
-        int randOpr = random.nextInt(8);
-
-        Operations operations = new Operations(pHCRP);
-
-        switch (randOpr) {
-            case 0:
-                operations.insertNodeInRoute(true, -1, -1, -1);
-                break;
-            case 1:
-                operations.insertNodeBetweenRoutes(true, -1, -1, -1, -1);
-                break;
-            case 2:
-                operations.swapNodeInRoute(true, -1, -1, -1);
-                break;
-            case 3:
-                operations.swapNodeWithinRoutes(true, -1, -1, -1, -1);
-                break;
-            case 4:
-                operations.edgeOptInRoute(true, -1, -1, -1);
-                break;
-            case 5:
-                operations.edgeOptWithinRoutes(true, -1, -1, -1, -1);
-                break;
-//          two chances for swap hub with node
-            case 6:
-            case 7:
-                operations.swapHubWithNode(true, -1, -1, -1);
-                break;
-        }
     }
 
     private void doLS() {

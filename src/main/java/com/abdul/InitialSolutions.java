@@ -395,6 +395,8 @@ class InitialSolutions {
                     for (Map.Entry<Integer, Double> n : normalizedDistances.entrySet()) {
                         // if this is the last node but already visited
                         if (x == normalizedDistances.size() - 2 && n.getValue() == -1.0) {
+//                            System.out.println("randomProb " + randomProb + " nodeProb " + n.getValue() +
+//                                    " node " + n.getKey() + " totalSum " + distancesSum);
                             j--;
                             break;
                         }
@@ -407,6 +409,7 @@ class InitialSolutions {
                                 j--;
                                 continue;
                             }
+
 //                            System.out.println("randomProb " + randomProb + " nodeProb " + n.getValue() +
 //                                    " node " + node + " totalSum " + distancesSum);
 
