@@ -82,12 +82,13 @@ class VNS {
 
         while (System.nanoTime() - start < MAX_RUN_TIME) {
 
-//            Operations operations = new Operations(pHCRP);
-//            operations.move(false);
-
             int k = 0;
             while (k < combination.length) {
                 // for each neighborhood
+
+//              break loop if MAX_RUN_TIME is reached
+                if (System.nanoTime() - start >= MAX_RUN_TIME)
+                    break;
 
 //              copy the best PHCRP
                 pHCRP = new PHCRP(bestPHCRP);
@@ -96,7 +97,6 @@ class VNS {
                 operations.move(true, true, -1);
 //              number of moves to shake (shuffle) the solution
                 int i = 0;
-                int rand = ThreadLocalRandom.current().nextInt(10, 101);
                 while(i < 20) {
                     operations.move(false, false, combination[k]);
                     i++;
