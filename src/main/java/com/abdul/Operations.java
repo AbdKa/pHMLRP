@@ -613,7 +613,7 @@ class Operations {
         return cost;
     }
 
-    void move(boolean acceptBad, boolean isRandom, int k) {
+    boolean move(boolean acceptBad, boolean isRandom, int k) {
 
         if (isRandom) {
             Random random = new Random();
@@ -622,29 +622,24 @@ class Operations {
 
         switch (k) {
             case 0:
-                insertNodeBetweenRoutes(acceptBad, -1, -1, -1, -1);
-                break;
+                return insertNodeBetweenRoutes(acceptBad, -1, -1, -1, -1);
             case 1:
-                edgeOptWithinRoutes(acceptBad, -1, -1, -1, -1);
-                break;
+                return edgeOptWithinRoutes(acceptBad, -1, -1, -1, -1);
             case 2:
-                insertNodeInRoute(acceptBad, -1, -1, -1);
-                break;
+                return insertNodeInRoute(acceptBad, -1, -1, -1);
             case 3:
-                swapNodeInRoute(acceptBad, -1, -1, -1);
-                break;
+                return swapNodeInRoute(acceptBad, -1, -1, -1);
             case 4:
-                swapNodeWithinRoutes(acceptBad, -1, -1, -1, -1);
-                break;
+                return swapNodeWithinRoutes(acceptBad, -1, -1, -1, -1);
             case 5:
-                edgeOptInRoute(acceptBad, -1, -1, -1);
-                break;
+                return edgeOptInRoute(acceptBad, -1, -1, -1);
 //          two chances for swap hub with node
             case 6:
             case 7:
-                swapHubWithNode(acceptBad, -1, -1, -1);
-                break;
+                return swapHubWithNode(acceptBad, -1, -1, -1);
         }
+
+        return false;
     }
 
     /**

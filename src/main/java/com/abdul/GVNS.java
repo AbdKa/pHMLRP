@@ -142,9 +142,12 @@ class GVNS {
                 break;
 
             Operations operations = new Operations(pHCRP);
-            operations.move(false, false, vndNeighborhoods[l]);
+            while (operations.move(false, false, vndNeighborhoods[l])) {
+                if (System.nanoTime() - start >= MAX_RUN_TIME)
+                    break;
 
-            doLS(pHCRP);
+                doLS(pHCRP);
+            }
 
             double currentObj = pHCRP.getMaxCost();
             if (currentObj < minObj) {
