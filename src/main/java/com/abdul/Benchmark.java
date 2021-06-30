@@ -4,8 +4,6 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.stream.IntStream;
 
 import static com.abdul.Consts.instances;
@@ -38,39 +36,21 @@ public class Benchmark {
                 String[] parts = s.split("\\.");
 
                 for (IS is : IS.values())
-                  //  for (ALGO algo : ALGO.values())
-                    {
-                        ALGO algo = ALGO.VNS;
-//                        System.out.println(v + " " + s + " " + is + " " + algo);
-
-/**                        String[] params = new String[]{
- //                                "--dataset", parts[0],
- //                                "--nodes", parts[1],
- //                                "--hubs", parts[2],
- //                                "--vehicles", parts[3],
- //                                "--initial", is.toString(),
- //                                "--algorithm", algo.toString(),
- //                                "--silent"
- //                        };*/
-
-                        ArrayList<String> params = new ArrayList<>(Arrays.asList(
-                                "--dataset", parts[0],
-                                "--nodes", parts[1],
-                                "--hubs", parts[2],
-                                "--vehicles", parts[3],
-                                "--initial", is.toString(),
-                                "--algorithm", algo.toString(),
-                                "--silent"));
-
-//                        add SA variants
-                        if (algo == ALGO.SA) {
-//                            params.add("--best");
-                            params.add("--force");
-                        }
-
-                        Main.main(params.toArray(new String[0]));
-//                        Main.main(params);
-                    }
+                //  for (ALGO algo : ALGO.values())
+                {
+                    ALGO algo = ALGO.SA;
+                    String[] params = new String[]{
+                            "--dataset", parts[0],
+                            "--nodes", parts[1],
+                            "--hubs", parts[2],
+                            "--vehicles", parts[3],
+                            "--initial", is.toString(),
+                            "--algorithm", algo.toString(),
+                            "--silent",
+                            "--force"
+                    };
+                    Main.main(params);
+                }
             }
         });
 
