@@ -38,7 +38,7 @@ public class Benchmark {
                 for (IS is : IS.values())
                 //  for (ALGO algo : ALGO.values())
                 {
-                    ALGO algo = ALGO.SA;
+                    ALGO algo = ALGO.GVNS;
                     String[] params = new String[]{
                             "--dataset", parts[0],
                             "--nodes", parts[1],
