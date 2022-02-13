@@ -35,10 +35,11 @@ public class Benchmark {
             for (String s : instances) {
                 String[] parts = s.split("\\.");
 
-                for (IS is : IS.values())
+//                for (IS is : IS.values())
+                for (IS is : new IS[]{IS.RND})
                 //  for (ALGO algo : ALGO.values())
                 {
-                    ALGO algo = ALGO.GVNS;
+                    ALGO algo = ALGO.HC;
                     String[] params = new String[]{
                             "--dataset", parts[0],
                             "--nodes", parts[1],

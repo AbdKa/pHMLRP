@@ -1,5 +1,6 @@
 package com.abdul;
 
+import com.abdul.algorithms.HillClimbing;
 import com.abdul.algorithms.SimulatedAnnealing;
 import com.abdul.algorithms.VNS;
 import com.lexicalscope.jewel.cli.ArgumentValidationException;
@@ -32,6 +33,10 @@ public class Main {
 //                        params.getNumVehicles() + "-" + params.getInitSol(), phcrp.getInitCPU());
 //                GVNS gVNS = new GVNS(params);
 //                gVNS.runGVNS();
+                break;
+            case HC:
+                HillClimbing hillClimbing = new HillClimbing(params);
+                hillClimbing.runHC();
                 break;
         }
     }

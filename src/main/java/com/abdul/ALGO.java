@@ -7,5 +7,6 @@ package com.abdul;
 public enum ALGO {
     SA, // Simulated Annealing
     VNS, // Variable Neighborhood Search
-    GVNS // General Variable Neighborhood Search
+    GVNS, // General Variable Neighborhood Search
+    HC // Hill Climbing
 }
