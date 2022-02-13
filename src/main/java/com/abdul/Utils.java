@@ -10,11 +10,11 @@ import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.zip.GZIPOutputStream;
 
-class Utils {
+public class Utils {
 
     static final int BUFFER_SIZE = 1 << 16; // 64K
 
-    static List<List<Integer>> getCombinations(String fileName) {
+    public static List<List<Integer>> getCombinations(String fileName) {
         final Map<String, Integer> hashMap;
         if (fileName.equals("ls_combinations")) {
             hashMap = Consts.localSearchMap;
@@ -69,7 +69,7 @@ class Utils {
     /**
      * @return OutputStream
      */
-    static OutputStream outputStream(Params params, String uniqueFileName) {
+    public static OutputStream outputStream(Params params, String uniqueFileName) {
         final String fileName = params.getResultPath() +
                 File.separator + params.getAlgorithm().toString() + File.separator + uniqueFileName;
 
@@ -83,7 +83,7 @@ class Utils {
         return stream;
     }
 
-    static void createTextFile() {
+    public static void createTextFile() {
         try {
             File myObj = new File("filename.txt");
             if (myObj.createNewFile()) {
@@ -98,7 +98,7 @@ class Utils {
         }
     }
 
-    static PHCRP newPHCRPInstance(Params params) {
+    public static PHCRP newPHCRPInstance(Params params) {
 
         PHCRP pHCRP = new PHCRP(
                 params.getDataset(),
@@ -140,7 +140,7 @@ class Utils {
         return DurationFormatUtils.formatDuration(TimeUnit.MILLISECONDS.convert(System.nanoTime() - startNano, TimeUnit.NANOSECONDS), "HH:mm:ss");
     }
 
-    static String getUniqueFileName(Params params) {
+    public static String getUniqueFileName(Params params) {
 
         final String algorithm;
 
@@ -154,14 +154,14 @@ class Utils {
                 UUID.randomUUID().toString().replaceAll("-", "");
     }
 
-    static double getSolCPU(long startTime) {
+    public static double getSolCPU(long startTime) {
         return (System.nanoTime() - startTime) / 1e9;
     }
 
     /**
      * Prints a single line to the csv file.
      */
-    static void printLine(PHCRP pHCRP, PrintWriter out, int counter, double newCost) {
+    public static void printLine(PHCRP pHCRP, PrintWriter out, int counter, double newCost) {
         out.print(counter);
         out.print(", ");
         out.print(newCost);
@@ -174,7 +174,7 @@ class Utils {
     /**
      * set MAX_RUN_TIME as per https://link.springer.com/article/10.1007/s00291-018-0526-2 and others
      */
-    static long getMaxRunTime(int numNodes) {
+    public static long getMaxRunTime(int numNodes) {
         long seconds = 0L;
         switch (numNodes) {
             case 10:

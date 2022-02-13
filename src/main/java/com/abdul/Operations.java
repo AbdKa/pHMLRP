@@ -5,10 +5,10 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 
-class Operations {
+public class Operations {
     private final PHCRP pHCRP;
 
-    Operations(PHCRP pHCRP) {
+    public Operations(PHCRP pHCRP) {
         this.pHCRP = pHCRP;
     }
 
@@ -613,7 +613,7 @@ class Operations {
         return cost;
     }
 
-    boolean move(boolean acceptBad, boolean isRandom, int k) {
+    public boolean move(boolean acceptBad, boolean isRandom, int k) {
 
         if (isRandom) {
             Random random = new Random();
@@ -645,7 +645,7 @@ class Operations {
     /**
      * localSearchInsertion start
      */
-    void localSearchInsertion() {
+    public void localSearchInsertion() {
         // create a list of all non-hub nodes
         List<Integer> initList = new ArrayList<>();
         for (List<Integer> list : pHCRP.getVehiclesList()) {
@@ -734,7 +734,7 @@ class Operations {
     /**
      * localSearchSwap start
      */
-    void localSearchSwap() {
+    public void localSearchSwap() {
         // create a list of all non-hub nodes
         List<Integer> initList = new ArrayList<>();
         for (List<Integer> list : pHCRP.getVehiclesList()) {
@@ -775,7 +775,7 @@ class Operations {
      * localSearchSwap end
      */
 
-    void localSearchSwapHubWithNode() {
+    public void localSearchSwapHubWithNode() {
         for (int h = 0; h < pHCRP.getHubsArr().length; h++) {
             for (int i = 0; i < pHCRP.getVehiclesList().size(); i++) {
                 for (int j = 0; j < pHCRP.getVehiclesList().get(i).size(); j++) {
@@ -787,7 +787,7 @@ class Operations {
         }
     }
 
-    void localSearchEdgeOpt() {
+    public void localSearchEdgeOpt() {
         // create a list of all non-hub nodes
         List<Integer> initList = new ArrayList<>();
         for (int i = 0; i < pHCRP.getVehiclesList().size(); i++) {

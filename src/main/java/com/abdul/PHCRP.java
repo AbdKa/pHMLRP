@@ -3,7 +3,7 @@ package com.abdul;
 import java.util.ArrayList;
 import java.util.List;
 
-class PHCRP {
+public class PHCRP {
     private double initCPU;
     private double maxCost, maxNonMinEdgeCost, maxCostAfterOperation = 0;
     private final DS dataset;
@@ -16,7 +16,7 @@ class PHCRP {
     private double[] collectionCostArr;
     private double[] distributionCostArr;
 
-    enum CostType {
+    public enum CostType {
         NORMAL, OPERATION
     }
 
@@ -59,7 +59,7 @@ class PHCRP {
     /**
      * Copy a PHCRP object
      */
-    PHCRP(PHCRP pHCRP) {
+    public PHCRP(PHCRP pHCRP) {
         this.dataset = pHCRP.getDataset();
         this.numNodes = pHCRP.getNumNodes();
         this.numHubs = pHCRP.getNumHubs();
@@ -79,7 +79,7 @@ class PHCRP {
         return dataset;
     }
 
-    int getNumNodes() {
+    public int getNumNodes() {
         return numNodes;
     }
 
@@ -87,7 +87,7 @@ class PHCRP {
         return numHubs;
     }
 
-    double getMaxCost() {
+    public double getMaxCost() {
         return maxCost;
     }
 
@@ -96,11 +96,11 @@ class PHCRP {
         saOperationCost = originalMaxCost;
     }
 
-    double getSaOperationCost() {
+    public double getSaOperationCost() {
         return saOperationCost;
     }
 
-    void setSaOperationCost(double cost) {
+    public void setSaOperationCost(double cost) {
         this.saOperationCost = cost;
     }
 
@@ -200,7 +200,7 @@ class PHCRP {
         return Dataset.getDistance(dataset, node1, node2);
     }
 
-    double calculateCost(CostType costType) {
+    public double calculateCost(CostType costType) {
         collectionCostArr = new double[numHubs * numVehiclesPerHub];
         distributionCostArr = new double[numHubs * numVehiclesPerHub];
         fillCollectionDistributionCostsArr(collectionCostArr, distributionCostArr);
@@ -389,7 +389,7 @@ class PHCRP {
         System.out.println();
     }
 
-    String getRoutes() {
+    public String getRoutes() {
         StringBuilder routes = new StringBuilder();
         // loop on hubs
         for (int i = 0; i < hubsArr.length; i++) {

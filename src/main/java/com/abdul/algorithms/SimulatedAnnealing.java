@@ -1,4 +1,9 @@
-package com.abdul;
+package com.abdul.algorithms;
+
+import com.abdul.Operations;
+import com.abdul.PHCRP;
+import com.abdul.Params;
+import com.abdul.Utils;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -9,7 +14,7 @@ import java.nio.charset.StandardCharsets;
 import static com.abdul.Utils.outputStream;
 import static com.abdul.Utils.printLine;
 
-class SimulatedAnnealing {
+public class SimulatedAnnealing {
 
     private final long MAX_RUN_TIME;
 
@@ -28,13 +33,13 @@ class SimulatedAnnealing {
     private PHCRP theBest;
     private double bestObj;
 
-    SimulatedAnnealing(Params params) {
+    public SimulatedAnnealing(Params params) {
         this.params = params;
         this.silent = params.getSilent();
         MAX_RUN_TIME = Utils.getMaxRunTime(params.getNumNodes());
     }
 
-    void runSA() {
+    public void runSA() {
 
         final String uniqueFileName = Utils.getUniqueFileName(params);
         OutputStream stream = outputStream(params, uniqueFileName);
@@ -43,6 +48,7 @@ class SimulatedAnnealing {
         out.println("iteration, cost, hubs, routes");
 
         theBest = Utils.newPHCRPInstance(params);
+        PHCRP initSol = new PHCRP(theBest);
         PHCRP current = Utils.newPHCRPInstance(params);
 
         // Global minimum
@@ -130,8 +136,10 @@ class SimulatedAnnealing {
         // Later of you can open this dump with CSV and apply text to columns.
         // You can create pivot tables, analyse results, min, max, average, compare algorithms etc.
         //TODO is this correct for capturing: initial solution's objective/CPU and SA's best solution's objective/CPU.
-        System.err.printf("%s\t%.2f\t%.2f\t%.2f\t%.2f\t%d\n",
-                uniqueFileName, initObj, theBest.getInitCPU(), bestObj, solCPU, bestIteration);
+//        System.err.printf("%s\t%.2f\t%.2f\t%.2f\t%.2f\t%d\n",
+//                uniqueFileName, initObj, theBest.getInitCPU(), bestObj, solCPU, bestIteration);
+        System.err.printf("%s\t%.2f\t%s\t%.2f\t%s\n",
+                uniqueFileName, initObj, initSol.getRoutes(), bestObj, theBest.getRoutes());
     }
 
     private void setBestValues(PrintWriter out, int counter) {

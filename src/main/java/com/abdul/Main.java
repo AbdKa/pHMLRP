@@ -1,5 +1,7 @@
 package com.abdul;
 
+import com.abdul.algorithms.SimulatedAnnealing;
+import com.abdul.algorithms.VNS;
 import com.lexicalscope.jewel.cli.ArgumentValidationException;
 import com.lexicalscope.jewel.cli.CliFactory;
 
@@ -24,8 +26,12 @@ public class Main {
                 vns.runVNS();
                 break;
             case GVNS:
-                GVNS gVNS = new GVNS(params);
-                gVNS.runGVNS();
+                PHCRP phcrp = Utils.newPHCRPInstance(params);
+                System.err.printf("%.5f\n", phcrp.getInitCPU());
+//                System.err.printf("%s\t%.5f\n", params.getDataset() + "." + params.getNumNodes() + "." + params.getNumHubs() + "." +
+//                        params.getNumVehicles() + "-" + params.getInitSol(), phcrp.getInitCPU());
+//                GVNS gVNS = new GVNS(params);
+//                gVNS.runGVNS();
                 break;
         }
     }

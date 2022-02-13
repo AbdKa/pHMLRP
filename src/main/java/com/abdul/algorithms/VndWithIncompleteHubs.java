@@ -1,5 +1,9 @@
-package com.abdul;
+package com.abdul.algorithms;
 
+import com.abdul.InitialSolutions;
+import com.abdul.PHCRP;
+import com.abdul.Params;
+import com.abdul.Utils;
 import org.json.simple.JSONArray;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;

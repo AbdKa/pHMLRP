@@ -1,4 +1,9 @@
-package com.abdul;
+package com.abdul.algorithms;
+
+import com.abdul.Operations;
+import com.abdul.PHCRP;
+import com.abdul.Params;
+import com.abdul.Utils;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -11,7 +16,7 @@ import java.util.concurrent.ThreadLocalRandom;
 import static com.abdul.Utils.outputStream;
 import static com.abdul.Utils.printLine;
 
-class VNS {
+public class VNS {
     private final long MAX_RUN_TIME;
     private final Params params;
 
@@ -37,13 +42,13 @@ class VNS {
 
     private PrintWriter out;
 
-    VNS(Params params) {
+    public VNS(Params params) {
         this.params = params;
         this.silent = params.getSilent();
         MAX_RUN_TIME = Utils.getMaxRunTime(params.getNumNodes());
     }
 
-    void runVNS() {
+    public void runVNS() {
         String uniqueFileName = Utils.getUniqueFileName(params);
         OutputStream stream = outputStream(params, uniqueFileName);
         out = new PrintWriter(new OutputStreamWriter(stream, StandardCharsets.US_ASCII));

@@ -16,7 +16,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Random;
 
-class InitialSolutions {
+public class InitialSolutions {
 
     private PHCRP pHCRP;
     private DS dataset;
@@ -24,7 +24,7 @@ class InitialSolutions {
     private int numHubs;
     private int numVehiclesPerHub;
 
-    InitialSolutions(PHCRP pHCRP, Params params, boolean doInit) {
+    public InitialSolutions(PHCRP pHCRP, Params params, boolean doInit) {
         init(pHCRP, params);
 
         if (doInit)

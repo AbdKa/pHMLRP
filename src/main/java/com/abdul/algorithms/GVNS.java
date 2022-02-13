@@ -1,4 +1,9 @@
-package com.abdul;
+package com.abdul.algorithms;
+
+import com.abdul.Operations;
+import com.abdul.PHCRP;
+import com.abdul.Params;
+import com.abdul.Utils;
 
 import java.io.IOException;
 import java.io.OutputStream;
