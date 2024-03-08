@@ -1,3 +1,4 @@
+Instance	Size	#hubs	#vehicles	initial solution	heuristics	file name - Universally Unique Identifier (UUID)	 objective value (initial)	 objective value (final)	elapsed time (final)	total # iterations
 TR	10	2	1	RND	SA01	f1996d44c0be434d922cba2873919669	8004	3597	10	22927
 TR	10	2	1	RND	SA01	bb22e9cc09d24646b6a9a5b5f43e5fbd	6874	3597	10	14941
 TR	10	2	1	RND	SA01	a1b631aeb181450ca42bd32f74b93955	7843	3597	10	22781
