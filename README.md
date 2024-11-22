@@ -1,20 +1,3 @@
-## Author
-Please feel free to contact Abdul Kader Kassoumeh at `abood.kassoumeh@gmail.com` if you have any questions, comments or contributions.
-
-## Citation Policy
-If you use this library for research purposes, please use the following citation:
-
-``` tex
-@article{
-  author = "Kassoumeh, Abdul Kader and Kartal, Z{\"u}hal and Arslan, Ahmet",
-  title = "The Effect of Different Initial Solutions on the Metaheuristic Algorithms for the Single Allocation \textit{p}-Hub Center and Routing Problem",
-  journal={PeerJ Computer Science},
-  pages={to appear},
-  year={2025},
-  note= {[Manuscript submitted for publication]}
-}
-```
-
 # IpHCVRP
 
 We introduce the *incomplete* p-hub center and routing network design problem (IpHCVRP).
@@ -22,8 +5,6 @@ For [pHCVRP](https://link.springer.com/article/10.1007/s00291-018-0526-2), see [
 
 ## How to build and run
 `mvn clean package` and `java -server -Xmx4g -jar target/pHMLRP.jar` will run the application with default values.
-
-
 
 
 # Gurobi / python stuff
@@ -65,3 +46,20 @@ You can create pivot tables, analyze the results (min, max, average) and compare
 * python3 /Library/gurobi911/mac64/setup.py `build` and then `install`
 * python3.9 -m pip install pulp --user
 * pip3 install dlib
+
+## Author
+Please feel free to contact Abdul Kader Kassoumeh at `abood.kassoumeh@gmail.com` if you have any questions, comments or contributions.
+
+## Citation Policy
+If you use this library for research purposes, please use the following citation:
+
+``` tex
+@article{
+  author = "Kassoumeh, Abdul Kader and Kartal, Z{\"u}hal and Arslan, Ahmet",
+  title = "The Effect of Different Initial Solutions on the Metaheuristic Algorithms for the Single Allocation \textit{p}-Hub Center and Routing Problem",
+  journal={PeerJ Computer Science},
+  pages={to appear},
+  year={2025},
+  note= {[Manuscript submitted for publication]}
+}
+```
